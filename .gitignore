@@ -1,0 +1,20 @@
+# Compiled Source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+
+# Logs and Databases #
+######################
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+# Files in the 'files' Directory #
+##################################
+/dashboard/files
