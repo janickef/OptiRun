@@ -15,6 +15,10 @@
 *.sqlite
 *.sqlite3
 
+# Configuration #
+######################
+*.ini
+
 # Files in the 'files' Directory #
 ##################################
 /dashboard/files
