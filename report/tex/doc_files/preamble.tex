@@ -1,0 +1,104 @@
+% Setting document class and simple settings.
+\documentclass[12pt,a4paper,oneside,fleqn]{article}
+
+% geometry is for setting document margins
+\usepackage[left=3.8cm,right=3.8cm,top=5cm,bottom=5cm]{geometry}
+
+% Fonts and input encoding. Don't screw around with this, e.g. lines 5-20
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage[adobe-utopia]{mathdesign}
+\usepackage{mathdesign}
+\usepackage[utf8]{inputenc}
+
+% siunitx package is for correctly typesetting chemistry stuff. Google and check out documentation for this.
+\usepackage{textcomp}
+\usepackage[detect-all=true]{siunitx}
+\sisetup{
+        math-micro=\muup,
+        math-ohm  =\Omegaup,
+        text-micro={\fontfamily{mdput}\textmu},
+        text-ohm  ={\fontfamily{mdput}\textohm}
+}
+
+%\renewcommand{\linespread}{1.0}
+
+% microtype is a typesetting package that makes documents look better by doing several small adjustments
+\usepackage[stretch=10]{microtype}
+
+% booktabs is for making pretty tables
+\usepackage{booktabs}			
+
+% graphicx is for including.. graphics. The declared graphics extensions should be sufficient.					
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+
+% setspace is used for \setstrech command used for i.e. references and table of contents. Also allows for easy setting of double line space as is customary for these kinds of documents.
+\usepackage{setspace}
+\setstretch{1.4}
+
+% parskip changes the paragraph skip mechanism to a hard space between paragraphs and no indentations. This is the most "Norwegian" way to do it, so I include the command proactively... (I didn't personally use parskip in my thesis, but lots of people prefer this way of separating paragraphs)
+%\usepackage{parskip}
+
+% epstopdf converts eps pictures to pdf files which can be embedded in the document
+\usepackage{epstopdf}		
+
+% mathtools has some additional math symbols that can come in handy
+\usepackage{mathtools}
+
+% multicol and multirow are for making table cells which span several columns or rows.
+\usepackage{multicol,multirow}								
+
+% natbib handles references. Currently set up to show numbered references sorted by order of appearance.
+\usepackage[sort&compress,numbers,comma]{natbib}
+
+% xfrac is a fraction package allowing for different fractions, i.e. \sfrac and more. See documentation.
+\usepackage{xfrac}	
+
+% float package enhances float placement. See documentation!												
+\usepackage{float}											
+
+% color package is used for getting the front page lines in the correct color. No joke. Don't use colors in your documents outside of figures, people!	
+\usepackage{color}
+\definecolor{uisblue}{rgb}{0.471, 0.506, 0.737}
+
+% lipsum is used for placeholder text. Add "\lipsum[1]" where you need some text and BAM!
+\usepackage{lipsum}
+
+% caption is used to get captions just right. Juuuuust right.
+\usepackage[hang,justification=justified,singlelinecheck=false,labelfont=bf]{caption}		
+
+% hyperref allows you to output digital documents with "clickables" for references, TOC etc.					
+\usepackage[hidelinks]{hyperref}												
+
+% enumitem is used for customizing list spacing
+\usepackage{enumitem}					
+\setlist[itemize]{itemsep=0.1mm}
+\setlist[enumerate]{itemsep=0.1mm}
+
+% mhchem is used for chemical formulas. See documentation!
+\usepackage[version=3]{mhchem}		
+
+
+
+% If you don't want any words hyphenated, activate these lines: You may get some strange results from this, like some instances of 3 short words for one line of text with oceans of space in between.
+
+%\pretolerance 10000
+%\hyphenpenalty 10000
+%\exhyphenpenalty 10000
+
+
+\usepackage{pdfpages}
+\usepackage[english]{babel}
+\usepackage{blindtext}
+
+
+% Setting section title format
+\usepackage[T1]{fontenc}
+\usepackage{titlesec, color}
+
+% Quotes
+%\usepackage{csquotes}
+
+
+\usepackage{listings}

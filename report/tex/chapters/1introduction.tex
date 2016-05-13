@@ -1,0 +1,105 @@
+\section{Introduction}
+\thispagestyle{plain}
+%\thispagestyle{empty}
+
+\comment{"Professional testing of software is an essential task that requires a profound knowledge of testing techniques." (ISTQB Foundations)}
+
+\noindent Software systems, ranging from business applications to consumer products, have grown to form a fundamental element in our society. People are becoming increasingly dependent on computers, and wish to be in control of the digital content they consume. As a consequence of digital content being increasingly accessible, the importance of, and demand for, high-quality software has become substantial. Enhanced pressure on software vendors to deliver frequent releases of high-quality software requires efficiency in every stage of the software development process.
+
+Software testing constitutes a central aspect to the software development process. It plays a critical role in quality assurance and defect detection, and is an important means to ensure that the software in question behaves as expected and according to specifications.
+
+%\cite{http://www.istqb.org/downloads/send/2-foundation-level-documents/3-foundation-level-syllabus-2011.html, pp 11}
+
+
+
+
+\comment{
+    Introduction to Software testing in general and then more specifically functional testing, regression testing, web testing - test automation vs manual testing.
+    
+    Talk a little about Altibox and TV Overalt, their situation (software fuuuulll of bugs, several full time consultants as manual testers), how the author
+}
+
+\comment{
+    Just a few decades ago, our main source of entertainment in a digital form was television. Today, we use computers, smart TVs, tablets, smart phones and smart watches for active interaction between user and content. We are online and available on multiple platforms at all times, and we expect our software and media content to do the same.
+    As an effect of this development, people have grown used to being in control of the software and media content they wish to subject themselves to. Users want constant access to all of their content on every platform, and thus, the demand for high quality software has accelerated rapidly.
+}
+
+%\PRLsep
+
+%\noindent
+
+
+
+
+
+
+
+% \subsection{Origin} % Briefly describe how this thesis came to be
+% Om Altibox? %Probably just remove this subsection altogether
+
+\subsection{Origin} % Briefly describe why this thesis has been done
+The subsidiary company of the Lyse Group, Altibox, is a telecommunication service provider. They offer a selection of services including broadband, \emph{Internet Protocol Television} (IPTV) and \emph{Voice over Internet Protocol}, (VoIP). Since its origin, the company has grown a great deal, and at a considerably higher pace than originally anticipated. Because the company had trouble keeping up with its rapid development, they neglected to apply a number of established business practices in several different areas, including the field of software testing. \comment{The existing test process will be discussed in Chapter \ref{chapter.discussion}.}
+
+IPTV has long been among Altibox' most prominent services, and has previously been available primarily through the use of TV decoders. In the later years, however, an important focus area for Altibox has been to expand the availability of their TV and \emph{Video On Demand} (VOD) content by applying \emph{Over-The-Top} (OTT) technology, which means that the content is made accessible over the Internet. This is accomplished through the development of \emph{TV Overalt}, which is available both as a web application for desktops and as mobile applications for portable devices. %The web-based version of TV Overalt has been used as the study object in this project. % Finn en bedre formulering av den siste setningen
+
+\subsection{Motivation} % Briefly describe why this thesis has been done
+Altibox currently perform all software testing manually. They have wished to incorporate test automation in the test process of the web-based version on TV Overalt for some time, but have failed to make it a priority. Automated tests for web-based systems on the user's level generally run slowly, and Altibox therefore desired a system that would let them execute such tests efficiently. They also wanted the tests to be executed in a controlled environment.
+
+This thesis presents \toolname: a tool that will help Altibox incorporate test automation according to their needs. The tool is not limited to TV Overalt, however. It can be applied as a testing platform for a broad range of web applications.
+
+\comment{
+FÅ FRAM AT HASTIGHET ER DET ALTIBOX TRENGER ALLER MEST. DE TRENGER AT DE RIKTIGE TEST CASENE BLIR KJØRT SÅ TIDLIG SOM MULIG I EN TEST RUN (within a reasonable amount of time, PRIORITY/BUSINESS IMPACT, ETC.), AT TEST RUNS GENERELT GÅR SUPERKJAPT (DERAV SCHEDULING ALGORITME), OG AT MAN FÅR SVAR ASAP (DJANGO-LOGG, JIRA ISSUES OG MOBILNOTIFIKASJONER)
+}
+
+
+
+\comment{
+Altibox tjenesteleverandør telecommunication (leverer tjenester som internett, telefoni, tv over 400.000 kunder, datterselskap i Lyse-konsernet. 
+
+
+TV Overalt [...], 
+
+- vokst så raskt at man ikke har etablert prosesser man burde i samme tempo som andre bedrifter (test og andre prosesser), veien blir til når du går, ting skjer fort (mangel på tid, ressurser, kunnskap, kompetanse), konsulenter, eksterne folk -> mangel på etablerte testprosesser ble synlig
+- dårlig /ingen testprosess
+- knowit sitter i bergen, klager litt på testere fordi det er "plagsomt"
+
+- ott (internet) is the future -> stb er ikke fremtiden, web tar over
+når du vil, hvor du vil, på hvilken device du vil - live tv-sendinger er på vei til å dø ut, kundenes forventniger over.  lokal lagring på fysisk disk er på vei ut - cloud is the future
+fremtidsrettet
+-konvergens mellom gammel type stb og tv overalt, bli mer og mer samme tjeneste
+- konsumere innholdet
+pvr
+}
+
+
+
+
+\subsection{Purpose} % Briefly describe what you wish to accomplish with this thesis / problem statement
+The aim of this project was to design and create a tool that would substantiate test automation with a distinguished intent of optimizing the time of test runs as well as provide control and feedback of test results. The tool is intended to be utilized during system or acceptance testing by technical test analysts.
+
+The main area of use is execution of Selenium test scripts for web applications. Tests should be able to be executed remotely in a controlled distributed environment. An algorithm for optimally allocating test cases on the available test machines in the distributed environment should be provided. Further, an interface for uploading, managing, executing and scheduling test scripts should be included, and logs from results of previous test runs should be available here. Upon a failed test, an option to report this in the issue tracking system should be provided.
+
+\comment{
+    \begin{itemize}
+        \item Scheduling of future runs of Selenium test scripts for web applications should be supported.
+        \item 
+        \item 
+        \item 
+        \item Information about test scripts, test schedules and execution logs should be stored in a database.
+        \item 
+        \item A mobile application for receiving notifications upon a failed test should be created.
+\end{itemize}
+}
+
+\subsection{Outline}
+
+The remainder of this thesis is organized as follows:
+
+\begin{Description}
+  \item[\betterfakesc{Chapter} \ref{chapter.background}]\indent provides a theoretical basis for the thesis by discussing some background information relevant to this thesis.
+  \item[\betterfakesc{Chapter} \ref{chapter.technology}]introduces some essential tools and technology used throughout this project.
+  \item[\betterfakesc{Chapter} \ref{chapter.system_overview}]presents an overview of \toolname, and presents the dashboard from the user's perspective.
+  \item[\betterfakesc{Chapter} \ref{chapter.implementation}]describes the implementation of the system. Some features are explained in detail.
+  \item[\betterfakesc{Chapter} \ref{chapter.discussion}]presents and discusses some experimental results as well as an evaluation of the system.
+  \item[\betterfakesc{Chapter} \ref{chapters.conclusion}]provides some suggestions for further work and concludes this thesis.
+\end{Description}

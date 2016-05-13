@@ -1,0 +1,340 @@
+% Simple thesis template for University of Stavanger
+% Importing document preamble, containing all packages, document type and settings
+\input{doc_files/preamble}
+
+\usepackage{graphicx}
+
+\usepackage[toc,page]{appendix}
+
+\usepackage{fix-cm}
+\usepackage[pdftex,dvipsnames]{xcolor}
+\usepackage{titlesec}
+
+\usepackage{makecell}
+
+\usepackage{tabu}
+
+\usepackage{tabularx}
+%\usepackage{lscape}
+\usepackage{pdflscape}
+
+% Importing custom commands for input of figures, tables, captions etc. See file for description of commands.
+
+\input{doc_files/commands}
+
+\usepackage{floatpag,mwe}
+
+
+%\renewcommand{\sfdefault}{qag}
+\usepackage{packages/kbordermatrix}
+
+\usepackage{url}
+%\usepackage{hyperref}
+%\usepackage[hidelinks]{hyperref}
+
+\usepackage[justification=centering]{caption}
+\usepackage{beramono}
+
+\usepackage{listings}
+
+%\geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in }
+
+\comment{
+\newenvironment{Description}{\list{}{%
+    \let\makelabel\descriptionlabel    % this comes from the original description environment
+    \setlength{\rightmargin-1cm}{}% this comes from the original quote environment
+    \setlength{\labelwidth}{0pt}%          this is new
+    }}{\endlist}
+    }
+    
+\newlist{Description}{description}{1}
+\setlist[Description]{labelindent=0.8\parindent,leftmargin=0.8\parindent}
+
+\definecolor{light_gray}{gray}{0.95}
+\definecolor{mypink2}{RGB}{137, 31, 127}
+
+\usepackage{courier}
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+
+
+\lstset{
+  language=Python,
+  %belowcaptionskip=4mm,
+  belowskip=4mm,
+  showstringspaces=false,
+  columns=flexible,
+  backgroundcolor=\color{light_gray},
+  basicstyle={\scriptsize\ttfamily},
+  numberstyle=\scriptsize\color{black},
+  keywordstyle=\bfseries,
+  stringstyle=\bfseries,
+  commentstyle=\textit,
+  breaklines=true,
+  numbers=left,
+  breakatwhitespace=true,
+  tabsize=3,
+  captionpos=b,
+  frame=tb,
+  framextopmargin=1pt,
+  framexbottommargin=1pt,
+  framexleftmargin=1pt,
+  framexrightmargin=1pt,
+  %framexleftmargin=18.4pt,
+  xleftmargin=3.4ex
+}
+
+%\DeclareCaptionFormat{listing}{\rule{\dimexpr\textwidth\relax}{1.4pt}\par\vskip1pt#1#2#3}
+\DeclareCaptionFormat{listing}{{\scriptsize}{#1#2#3}}
+\captionsetup[lstlisting]{format=listing}
+
+
+\renewcommand\lstlistingname{Listing}
+\renewcommand\lstlistlistingname{Listings}
+
+\newcommand\toolname{OptiRun}
+
+\DeclareMathAlphabet{\cmsy}{OMS}{cmsy}{m}{n}
+
+\newcommand{\PRLsep}{\noindent\makebox[\linewidth]{\resizebox{0.3333\linewidth}{1pt}{$\bullet$}}\bigskip}
+
+\newcommand\fakesc[1]{\uppercase{{\scriptsize #1}}}
+
+
+\usepackage{xstring} % needed for IfEqCase
+\usepackage{forloop}
+
+\newcounter{sccounter}
+\newcounter{tempStringLength}
+
+\newcommand{\betterfakesc}[1]{%
+    % this \betterfakesc command requires these two packages:
+    %   xstring
+    %   forloop
+    %
+    % First, we obtain the length of the input string.
+    \StrLen{#1}[\stringLength]%
+    %
+    % Our main forloop will be using a condition of “while less than \stringLength”,
+    % so we’ll need to increase \stringLength by 1 so the forloop will be able to iterate 
+    % over the entire string. we’ll use a temporary counter tempStringLength to make
+    % this increase. That’s what the next three lines are about.
+    \setcounter{tempStringLength}{\stringLength}%
+    \addtocounter{tempStringLength}{1}%
+    \def\stringLength{\arabic{tempStringLength}}%
+    %
+    % Here is our main loop. We iterate over the characters in the input string,
+    % and the currentLetter is compared to the case rules we have defined. Basically
+    % if the currentLetter is any of the lowercase a-z letters, then we apply a 
+    % “fake small caps” effect to it and output it.
+    \forloop[1]{sccounter}{1}{\value{sccounter}<\stringLength}{%
+        \StrChar{#1}{\value{sccounter}}[\currentLetter]%
+        %
+        \IfEqCase*{\currentLetter}{%
+        % The lines below are the rules. Obviously more could be added.
+        {a}{{\uppercase{\scriptsize a}}}%
+        {b}{{\uppercase{\scriptsize b}}}%
+        {c}{{\uppercase{\scriptsize c}}}%
+        {d}{{\uppercase{\scriptsize d}}}%
+        {e}{{\uppercase{\scriptsize e}}}%
+        {f}{{\uppercase{\scriptsize f}}}%
+        {g}{{\uppercase{\scriptsize g}}}%
+        {h}{{\uppercase{\scriptsize h}}}%
+        {i}{{\uppercase{\scriptsize i}}}%
+        {j}{{\uppercase{\scriptsize j}}}%
+        {k}{{\uppercase{\scriptsize k}}}%
+        {l}{{\uppercase{\scriptsize l}}}%
+        {m}{{\uppercase{\scriptsize m}}}%
+        {n}{{\uppercase{\scriptsize n}}}%
+        {o}{{\uppercase{\scriptsize o}}}%
+        {p}{{\uppercase{\scriptsize p}}}%
+        {q}{{\uppercase{\scriptsize q}}}%
+        {r}{{\uppercase{\scriptsize r}}}%
+        {s}{{\uppercase{\scriptsize s}}}%
+        {t}{{\uppercase{\scriptsize t}}}%
+        {u}{{\uppercase{\scriptsize u}}}%
+        {v}{{\uppercase{\scriptsize v}}}%
+        {w}{{\uppercase{\scriptsize w}}}%
+        {x}{{\uppercase{\scriptsize x}}}%
+        {y}{{\uppercase{\scriptsize y}}}%
+        {z}{{\uppercase{\scriptsize z}}}%
+        }%
+        % if our \currentLetter isn’t any of the letters we have rules for,
+        % then just output it now
+        [{\currentLetter}]%
+    }%
+}
+
+%%%
+
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+\fancyhf{}
+
+\rhead{\fancyplain{}{}} % predefined ()
+\lhead{\fancyplain{}{\slshape \nouppercase \rightmark}} % 1. sectionname, 1.1 subsection name etc
+%\lhead{\fancyplain{}{\betterfakesc \rightmark}} % 1. sectionname, 1.1 subsection name etc
+\cfoot{\fancyplain{}{\thepage}}
+
+\comment{
+    \fancypagestyle{plain}{%
+        \fancyhf{}% Clear header/footer
+        \fancyfoot[OR]{\thepage}%
+        \fancyfoot[EL]{\thepage}%
+        \renewcommand{\headrulewidth}{0pt}%
+    }
+}
+
+% Option to only compile parts of the document. Shortens compiling time and makes longer documents more manageable
+% Remove comment from the parts you want to compile, as well as opening/closing of command
+% Comment out entire command for compiling full document
+
+%\includeonly{
+%chapters/abstract,						
+%chapters/acknowledgement,
+%chapters/introduction,
+%chapters/template,
+%chapters/example
+%}
+
+
+
+%\newcommand{\hsp}{\hspace{20pt}}
+%\titleformat{\section}[hang]{\Huge\bfseries}{\thesection\hsp\textcolor{black}}{0pt}{\Huge\bfseries}
+
+
+
+\definecolor{gray75}{gray}{0.55}
+\newcommand{\hsp}{\hspace{0pt}}
+\titleformat{\section}[hang]
+    {\vspace*{2.4cm}\flushright\fontseries{b}\fontsize{60}{0}\selectfont}
+    {\fontseries{b}\fontsize{115}{40}\selectfont\textcolor{gray75}\thesection\hsp}
+    {0em}
+    {\\\fontsize{25}{100}\emph}[]
+
+\titlespacing*{\section}{0cm}{0cm}{1.7cm}
+
+\renewcommand{\baselinestretch}{1} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+%\usepackage[pdftex,dvipsnames]{xcolor}  % Coloured text etc.
+% 
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+
+%\renewcommand{\sectionheadstartvskip}{\vspace*{-2\baselineskip}}
+
+%\usepackage[a4paper, total={6in, 8in}]{geometry}
+
+\usepackage[T1]{fontenc}
+
+
+%\renewcommand{\UrlFont}{\scriptsize \ttfamily}
+\renewcommand{\UrlFont}{\ttfamily}
+
+% ********** DOCUMENT BEGINS **********
+\begin{document}		%The document is defined within this environment
+
+%\include{other_docs/TODO}
+    
+    % Include UiS front page
+    \includepdf[pages={1}]{pdf_pages/draft_front_page.pdf} % REMEMBER TO CREATE CORRECT FRONT PAGE BEFORE SUBMITTING THESIS
+    
+    % Including personalized front page
+    % \include{other_docs/custom_cover_page}
+    \include{other_docs/tmp_cover}
+    
+    % Setting page before thesis begins in roman numerals 
+    \pagenumbering{roman}			
+    
+    % Adjusting counter after inserting frontpage
+    \setcounter{page}{3}
+    \setcounter{page}{1}
+    
+    % Inserting abstract and acknowledgements
+    
+    
+    \include{other_docs/abstract}
+    \include{other_docs/acknowledgements}
+
+
+% Inserting TOC with custom line spacing (setstretch argument) to avoid odd page breaks
+{
+    \setstretch{1.2}
+    \thispagestyle{plain}
+    \tableofcontents
+}
+
+\newpage
+
+
+
+% Resetting page counter and setting page numbers in thesis in arabic numerals
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+% Include chapters
+\include{chapters/1introduction}
+\include{chapters/2background}
+\include{chapters/3technology}
+\include{chapters/4system_overview}
+\include{chapters/5implementation}
+\include{chapters/6discussion}
+\include{chapters/7conclusion}
+
+    
+\renewcommand\thesection{\Alph{section}}
+\setcounter{section}{0}
+
+\include{appendices/setup}
+%\include{appendices/test_data}
+\include{appendices/test_template}
+
+
+% Inserting list of figures and list of tables. Remove \newpage between lists if they can fit in one page (compile to check)
+
+    %\comment{
+        \thispagestyle{plain}
+        %\onehalfspacing
+        \renewcommand{\listfigurename}{Figures}
+        %\listoffigures
+        \newpage
+    %}
+    
+    \comment{
+        \thispagestyle{plain}
+        \listoftables
+        \newpage
+    }
+    
+    %\comment{
+        \thispagestyle{plain}
+        \renewcommand{\lstlistlistingname}{\lstlistingname s}
+        \lstlistoflistings
+        \newpage
+    %}
+    
+    % Inserting references, again with custom line spacing (setstrech) to avoid odd page breaks or fit to whole pages
+    \small
+    \setstretch{.8}
+    %\bibliographystyle{unsrtnat}		%Inserting bibliography
+    %\bibliographystyle{IEEEtran}
+    \clearpage
+    \thispagestyle{plain}
+    \bibliographystyle{plain}
+    \bibliography{doc_files/references}
+    \newpage
+
+
+
+\end{document}						%End of document
+

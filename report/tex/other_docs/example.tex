@@ -1,0 +1,215 @@
+\section{Template Instructions}\label{sec.templateinstructions}
+\thispagestyle{plain}
+
+\subsection{Text Formatting}
+
+Learning \LaTeX{}!\\
+This will produce \textit{italicized} text.\\
+This will produce \textbf{bold faced} text.\\
+This will produce \textsc{small caps} text.\\
+This will produce \texttt{typewriter} text.\\
+\\
+This text is \begin{tiny}tiny\end{tiny}.\\
+This text is \begin{small}small\end{small}.\\
+This text is normal sized.\\
+This text is \begin{large}large\end{large}.\\
+This text is \begin{Large}Large\end{Large}.\\
+This text is \begin{LARGE}LARGE\end{LARGE}.\\
+This text is \begin{huge}huge\end{huge}.\\
+This text is \begin{Huge}Huge\end{Huge}.\\
+\begin{center}This text is centered.\end{center}\\
+\begin{flushleft}This text is left-justified.\end{flushleft}\\
+\begin{flushright}This text is right-justified.\end{flushright}\\
+\\
+This \hspace{1cm} is a horizontal space of 1cm.\\
+This \hspace{2cm} is a horizontal space of 2cm.\\
+This fills the whole page width \hfill with a large space!\\
+\begin{center}\includegraphics[width=1cm]{figures/uis_logo}\end{center}
+\begin{center}\includegraphics[scale=0.5]{figures/uis_logo}\end{center}
+\break
+
+This section is written so that the commands defined in docfiles/commands can be used and shown in practice, along with examples of maths, labeling, referencing and such. 
+
+\subsection{Labels and Cross-references}\label{sec.labels}
+
+In the \verb|*.tex|-file, one can see that a label has been assigned for this section using the \verb|\label| command. All labels can be referenced via the \verb|\ref|-command. To refer to this section, called "Template Instructions," you can use the label that has been given to the section (\verb|sec.templateinstructions|) and use the user-created command \verb|\secref|. Combining the command and the label, simply write out in your code \verb|\secref{sec.templateinstructions}| which gives the following output: "\secref{sec.templateinstructions}."
+
+Labels for figures, tables and equations work the same way. The user-created commands to insert figures and tables also require an argument which sets the labels, so you always have a label to which you can refer later.
+
+\subsection{Figures}\label{sec.figures}
+
+To insert a figure, the commands file contains a user-created command which helps simplify the process. This file, called \verb|template.tex|, lies in a folder which contains another folder called "figures." Inside this folder lies a picture called "placeholder" which we will insert into this document here:
+
+\fig{placeholder}{0.3}{fig.placeholder}{This is a placeholder figure.}{H}
+
+As is evident from the source code, the user-created command \verb|\fig| requires five separate arguments:
+
+\begin{enumerate}
+	\item The name of the picture you want to insert. \textbf{Note:} the figure is required to be in the "figures" folder. If the figure is not in this folder, \LaTeX{} cannot insert the picture.
+	\item How wide the picture is to be when inserted, as a fraction of textwidth. If the second argument is 1.0, the picture will be as wide as the text column. In this case it is \SI{30}{\percent} the width of the column, and the height is calculated directly from this where \LaTeX{} assumes locked aspect ratios (height/width ratio is kept the same as in the source file).
+	\item The label you want to associate with this particular figure.
+	\item The figure caption you want inserted below the figure.
+	\item The float placement---where do you want this picture inserted? Use \verb|H| for "HERE," use \verb|ht| for "here-ish, or top of page."
+\end{enumerate}
+
+To refer to the figure, use the \verb|\figref| command together with the label. You will get the following output: "\figref{fig.placeholder}." Remember to use these kinds of names instead of labeling figures with "fig1"---names like that end up being completely meaningless \textit{i.e.} if you jumble the sections slightly or add sections.
+
+\subsection{Tables}\label{sec.tables}
+
+Tables are somewhat tricky due to how horrible it is to actually preserve some likeness to a table during coding. I suggest thinking through each and every table thoroughly before making it, with focus on simplification and orientation. Tables can be inserted with the \verb|\tab| command.
+
+\tab{lcc}{tab.greekletters}{This is a simple table with greek letters.}{H}{
+	
+\toprule
+Name 	& Upper case 	& Lower case\\
+\midrule
+Gamma	& $\Gamma$		& $\gamma$ 	\\
+Theta	& $\Theta$		& $\theta$	\\
+Omega	& $\Omega$		& $\omega$	\\
+\bottomrule
+
+}
+	
+It's very helpful to space out the command so that the table is more or less isolated from the rest of the code. This makes it easier to keep track of the cumbersome tabular formatting in \LaTeX{}. Like figures and sections, tables also have a designated reference command, \verb|\tabref|, which will produce "\tabref{tab.greekletters}."
+	
+The multirow and multicolumn table options are shown below in purposefully ugly formatting. In this table, there has been input one multicolumn cell containing $\theta$ and one multirow cell containing $\omega$:
+
+\tab{|c|c|c|}{tab.multi}{Table showing multicol and multirow functions}{H}{
+
+\hline	
+1 								& 2		& 3 					\\ \hline
+\multicolumn{2}{|c|}{$\theta$} 	& \multirow{2}{*}{$\omega$}		\\ \cline{1-2}	
+7								& 8		& 						\\ \hline
+}
+	
+The use of \verb|\cline| and \verb|\hline| is of little importance here, unless it is actually desired to create such an odd table. The \verb|booktabs| package used in \tabref{tab.greekletters} offers a more correct tabular format and should be adhered to where possible, e.g. always. Refer to the \verb|booktabs| documentation for more information of how to construct beautiful tables.~\cite{package.booktabs}
+
+\subsection{Equations}\label{sec.equations}
+
+Equations or math can be added to a \LaTeX{} document in several ways. The ability of the typesetting engine to handle math and produce excellent equations is one of the major reasons that \LaTeX{} is highly popular amongst researchers and scholars.
+
+\subsubsection{In-line Maths}\label{sec.inlinemaths}
+
+We can begin with inputting a simple equation while we write. For example Newton's famed Second Law of Motion can be written in its simplest form like this: $\vec{F}=m\vec{a}$. Anything placed between \$-signs will be typeset in "math mode" which is completely different from "text mode." Text is italicized, and commands are required to set up everything in the equation. But don't worry, it's just like writing an equation on paper---just input everything from left to right like you usually do, compile the document, and see if you have to do any alterations. If you are looking for the command for a specific symbol, visit the Detexify website and draw it!~\cite{web.detexify}
+
+\subsubsection{Math Environments}\label{sec.mathenvironments}
+
+If we want something math-like to be more emphasized, we create a "math environment" which will output whatever we put inside on its own line with space around it, but will not number it as an equation. This is done with backslash/bracket pairs such as this: \verb|\[ ... \]| where \dots will be replaced by your clever maths. 
+\[\frac{d}{dt}\left(\frac{\partial L}{\partial\dot{q}}\right)=\frac{\partial L}{\partial q}\]
+Don't add line space between the math environment and the succeeding and preceding paragraph. This will prevent extra spaces being placed between the math environment and paragraph. \LaTeX{} handles spacing automatically assuming that no extra spaces were inserted.
+
+\subsubsection{Numbered Equations}\label{sec.numberedequations}
+
+Finally we can insert a numbered equation, and this has to be done by calling in the \verb|equation| environment. Again, avoid additional spacing out of this environment to prevent additional whitespace in your document (see source code):
+\begin{equation}
+		\left(\nabla \times \textrm{\textbf{F}} \right) \cdot \textrm{\textbf{\^{n}}} \: \overset{\textrm{def}}{=} \: \lim_{A \to 0} \: \left( \frac{1}{\lvert A \rvert} \: \oint_{C} \textrm{\textbf{F}} \cdot d\textrm{\textbf{r}} \right)
+		\label{curlDef}
+\end{equation}
+As for sections, tables and figures, equations can also be referenced; \eqref{curlDef}. The reference format differs slightly from the others due to the nature of equations. If you have tons of equations in your document, it could make a lot of sense to number the equations not only by order of appearance but also which section they appear. Consider adding the line \verb|\numberwithin{equation}{section}| to your preamble if that is the case. This equation would then be numbered "\ref{sec.templateinstructions}.\ref{curlDef}" and so forth.
+
+\subsubsection{Aligned Equations}\label{sec.alignedequations}
+
+If you want to include several equations in sequence and want them to look somewhat organized, it's common to use an alignment environment, simply called \verb|align|. This allows for labeling of individual equations even though you are using just one environment. %After this paragraph I will add a space because if I don't, the word "environment" will be widowed on its own page before the equations. Use your best judgement on these things!
+
+\begin{align}
+\label{eq.sin2u} \sin \: (2u)	& = 2 \sin u \cos u				\\
+\label{eq.cos2u} \cos \: (2u) 	& = 1 - 2 \sin^{2} u			\\ 
+\label{eq.tan2u} \tan \: (2u)	& = \frac{2\tan u}{1-\tan^{2}u}	
+\end{align}
+Now we can refer to each of these trigonometric identities independently: \eqref{eq.sin2u} \eqref{eq.cos2u} \eqref{eq.tan2u}. To suppress numbering of any one line in the \verb|align| environment, you can use the \verb|\nonumber| command like this:
+\begin{align}
+			e^{\pi i} +1 	& =  	0				&	\\
+\nonumber 	\mathbb{R}		& \sim  2^{\mathbb{N}}	&	\\
+			F(n) 			& =		\frac{\varphi^{n} - \left( - \frac{1}{\varphi} \right)^{n} }{\sqrt{5}}	,& \textrm{where} \quad \varphi = \frac{1 + \sqrt{5}}{2}
+\end{align}
+If you prefer to remove all numbers, use the \verb|align*| environment instead. Yes, just add an asterisk to the environment name. TL;DR --- you can do pretty much whatever you want. Google is your friend!
+
+Just remember to not space out your equations.
+
+\subsubsection{Spacing in Equations}\label{sec.spacingequation}
+
+One last thing about equations---this document is using a different font from the standard \LaTeX{} issue Computer Modern. Adobe Utopia looks way better in text but a side effect is that the spacing in math environment tends to be a bit worse compared to the default set-up. (What did I say about not screwing around too much with the defaults?) The best way to combat this is to just compile the document and see what you get. Add spaces where it's needed by inserting \verb|\:| between symbols that are too close.
+
+\subsection{Lists}\label{sec.lists}
+
+You can create unordered (bullet points) and ordered (numbered) lists in \LaTeX{} with ease. If you want unordered lists, use \verb|\begin{itemize} ... \end{itemize}| and have one list item per line of code, where each line of code begins with \verb|\item|. In \TeX studio you can hit \verb|ctrl+shift+i| for automatically inputting \verb|\item|. The following source code should be an adequate starting point:
+
+\begin{itemize}
+	\item First bullet
+	\item Second bullet
+	\item Third bullet
+\end{itemize}
+
+For ordered lists, use \verb|\begin{enumerate} ... \end{enumerate}| instead of the \verb|itemize| command. Everything else is \textbf{exactly} the same.
+
+\subsubsection{Nested Lists}\label{sec.nestedlists}
+
+Nested lists can be a useful tool for ruining your day. A nested list is a list within a list, so we are more or less intentionally getting ourselves into some kind of Listception movie plot. Sounds like a terrible movie where the entirety of the plot goes right over your head. Anyway, here is an example of a simple nested list. If we here assume that our list has three items where the first item has two sub-items, we get the following list:
+
+\begin{enumerate}
+	\item I like to
+		\begin{enumerate}
+			\item Move it
+			\item Move it
+		\end{enumerate}
+	\item Oh dear God
+	\item Stahp
+\end{enumerate}
+
+\subsection{Units}\label{sec.units}
+
+Units are important to get right. In \LaTeX{} it would be silly to write out units manually when it can be done properly the first time. The \verb|siunitx| package will take care of all your unit needs.~\cite{package.siunitx} To add confusion to matters, the correct way of writing out units is not really convenient to pull off without packaging because of the inner workings of word- and letter spacing in \LaTeX{}. To illustrate this, let's consider these two identical statements: "1 cm" versus "\SI{1}{\centi \metre}" -- they look to be completely~the~same, but the latter is correctly formatted with the appropriate space between value and unit. Caring about this stuff is of course fairly anal, and most of you won't bother using the \verb|siunitx| package, but you have now been warned! One of the many small things this package does is for example to allow you to use the proper symbol for the "micro" prefix; \si{\micro}. No, "$\mu$" has never been a correct prefix---but again, this is details some find important and some do not.
+
+\subsection{Typesetting}\label{sec.typesetting}
+
+A few words on typesetting tips and tricks.
+
+\subsubsection{Nonbreaking Space}\label{sec.nonbreakingspace}
+
+ some times you want to insert what's called a \textit{nonbreaking space}. Simply put, this space will do the same thing as a regular space, but it will force the two words connected by said space to be on the same line of text, no matter what. A major use for this is to connect your citations to the end of the sentence it cites. See how this has been done throughout this document.
+
+In Word\texttrademark inserting a nonbreaking space done by hitting \verb|ctrl+shift+space|, but not many know this. In \LaTeX{}, simply use the tilde sign (source code uses the similarity math sign as it's more fit for purpose): $\sim$
+
+If you don't know how to type a tilde, you clearly haven't been spending enough time in front of your computer, but you can steal one here in the source code invisible to the output file: ~ 
+
+\subsubsection{Forced Page-break}\label{sec.forcedpagebreak}
+
+You can force a page-break easily by inserting \verb|\newpage|.
+
+\subsubsection{Common Sense}\label{sec.commonsense}
+
+While \LaTeX{} and virtually all other typesetting systems and word processors allow it, NEVER EVER use underlined text. Unless you are literally typing your report on an old-school typewriter, you use \textbf{bold} and \textit{italicized} text for emphasis. Underlining is for typewriters where magically applying a bold font just isn't going to happen. Underlining is so last century. And very soon university freshmen won't be.
+
+\subsection{Workflow}\label{sec.workflow}
+
+I recommend having all your \LaTeX{} stuff on Dropbox. This prevents you from losing everything if your computer crashes, but also means that you have a backup on your computer if the Cloud rains away.
+
+The three laws about constructing a \LaTeX{} document:
+
+\begin{enumerate}
+	\item Compile your document
+	\item Compile your document frequently
+	\item Compile your document \textbf{all the time}
+\end{enumerate}
+
+They've done studies you know. \SI{60}{\percent} of the time, it works everytime.~\cite{rudd.2004} The other \SI{40}{\percent} of the time, there are going to be bugs in your code that you are usually only made aware of when you compile your document. In my experience it's better to deal with these bugs right away, unless you are in some serious writing mojo. Compiling the document is also a must after inserting figures and tables, to check whether the placement and captions are correct. It's also necessary when fidgeting with equations to get them right.
+
+
+
+\subsubsection{Online Editors}\label{sec.onlineeditors}
+
+Through online editors, it's possible to use \LaTeX{} without having to install the software locally. Sites like ShareLaTeX specialize in this kind of stuff.~\cite{web.sharelatex}
+
+I recommend doing it locally though, because then you can write as long as you have your computer with you. On the train, on the bus, during flights, when you are in tunnels or in valleys with bad connections, if you are at your cabin, wherever you go to write your Thesis, you bring your computer anyways, but there's not always continuous access to the internet!
+
+\subsubsection{Collaboration}\label{sec.collaboration}
+
+It's completely possible to collaborate on a \LaTeX{} document. See ShareLaTeX.~\cite{web.sharelatex}
+
+
+	
+	
+	
+	
+	
+	

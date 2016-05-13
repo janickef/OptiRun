@@ -1,0 +1,58 @@
+% This command just renews what the header of the TOC will be. I prefer "Table of Contents" over "Contents"
+\renewcommand{\contentsname}{Contents}
+% \renewcommand{\tablesname}{Tables}
+%\renewcommand{\figuresname}{Contets}
+
+% For referencing figures, tables and equations consistently.
+\newcommand{\figref}[1]{Figure~\ref{#1}}	% Referencing a figure
+\newcommand{\tabref}[1]{Table~\ref{#1}}		% Referencing a table
+\newcommand{\eref}[1]{Equation~\ref{#1}}	% Referencing an equation
+\newcommand{\secref}[1]{Section~\ref{#1}}	% Referencing a section
+
+% Command for inserting figure with caption. Requires 5 arguments:
+%
+%	1) Location/Name of picture file
+%	2) Width of picture in document as a fraction of textwidth
+%	3) Label of figure (for referencing)
+%	4) Figure caption
+%	5) Float placement
+\newcommand{\fig}[5]{
+	\begin{figure}[#5]										% Figure placement
+		\includegraphics[width=#2\textwidth]{figures/#1}	% Figure size and name
+		\caption{#4}										% Figure caption	 (short, long)
+		\label{#3}											% Reference label
+	\end{figure}
+}
+
+% Command for inserting figure without caption (used in front page) and has 3 arguments:
+%
+%	1) Name of picture file
+%	2) Width of picture in document as a fraction of textwidth
+%	3) Label
+\newcommand{\fignc}[3]{
+	\begin{figure}[H]										% Figure placement
+		\includegraphics[width=#2\textwidth]{figures/#1}	% Figure size and name
+		\label{#3}											% Figure label
+	\end{figure}
+}
+
+% Command for inserting table with caption. Requires 5 arguments:
+%
+%	1) Number of and type of columns (i.e. ccc for 3 basic centered columns)
+%	2) Label of table (for referencing)
+%	3) Table caption
+%	4) Float placement
+%	5) Table data
+\newcommand{\tab}[5]{
+ \vspace{3mm}							% Bit of spacing before the table
+	\begin{table}[#4]					% Table placement
+
+		\caption{#3}						% Table caption (short, long)
+	\begin{tabular}{#1}					% Table properties, structure
+	#5									% Table data
+	\end{tabular}		
+	\label{#2}							% Reference label
+	\end{table}
+}
+
+\newcommand{\comment}[1]{}

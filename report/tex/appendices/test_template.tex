@@ -1,0 +1,33 @@
+\section{Automated Test Template}
+\thispagestyle{plain}
+\comment{One page for each test set; one table and one or two graphs? plus maybe some other facts? Average test duration? Best case scenario total duration? Number of machines? Number of tests? Number of machines each test is executable on? Opti-X result and OR-X result?}
+
+This template for automated test scripts should be strictly conformed to:
+    
+\begin{lstlisting}[caption=Template for Automated Test Scripts, label={listing.test_template}]
+import json
+import sys
+import unittest
+from selenium import webdriver
+
+class NameOfTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        data = json.loads(sys.argv[1])
+
+        cls.driver = webdriver.Remote(
+            command_executor=data['command_executor'],
+            desired_capabilities=data['desired_capabilities']
+        )
+
+    def name_of_test(self):
+        """ Write the test script here """
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.driver is not None:
+            cls.driver.quit()
+
+if __name__ == "__main__":
+    unittest.main(argv=['TestCase'])
+\end{lstlisting}
