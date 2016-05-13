@@ -1,0 +1,394 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+@font-face{
+    font-family:'FontAwesome';
+    font-weight:normal;
+    font-style:normal;
+    src:url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?v=4.3.0');
+    src:url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'),
+        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2'),
+        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff?v=4.3.0') format('woff'),
+        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'),
+        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
+}
+
+body {
+    background: #eee;
+    color: #666;
+}
+
+.object-tools a.addlink {
+    background-image: url(../static/admin/img/icon-addlink-white.png);
+    background-color: #79aec8;
+}
+
+.object-tools a:hover, .object-tools a:focus {
+    background-color: #6C9CB4;
+}
+
+.object-tools a:link, .object-tools a:visited {
+    background-color: #79aec8;
+}
+
+.addlink {
+    background: url(../static/admin/img/icon-addlink.png) 0 1px no-repeat;
+}
+
+.changelink, .inlinechangelink {
+    background: url(../static/admin/img/icon-changelink.png) 0 1px no-repeat;
+}
+
+.changelink:hover, .inlinechangelink:hover {
+    background: url(../static/admin/img/icon-changelink-hover.png) 0 1px no-repeat;
+}
+
+.deletelink {
+    background: url(../static/admin/img/icon-deletelink.png) 0 1px no-repeat;
+}
+
+#user-tools a:hover, #user-tools a:focus {
+    border-bottom: 1px solif black;
+    text-decoration: none;
+    /*border-bottom: 1px solid rgba(255, 255, 255, 0.5);*/
+}
+
+.section {
+    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    font-weight: 300;
+}
+
+a:link, a:visited {
+    color: #555;
+    text-decoration: none;
+}
+
+a:link, a:visited {
+    color: #555;
+    text-decoration: none;
+}
+
+a:focus, a:hover {
+    color: #888;
+}
+
+div.breadcrumbs {
+    background: #777;
+}
+
+.selector-chosen h2 {
+    background: #f8f8f8;
+    color: #666;
+}
+
+#content-related {
+    background: #fff;
+}
+
+#content-related .module h2 {
+    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    font-weight: 300;
+    font-size: 20px;
+    color: #777
+}
+
+#content-related h3 {
+    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    color: #777
+}
+
+#branding{
+    margin:0 auto;
+    padding-top: 8pt;
+    padding-bottom: 8pt;
+}
+
+#branding h1 {
+    color: #fff;
+    font-size: 34pt;
+    font-family: 'Orbitron';
+    text-shadow: 1px 1px 1px black, 1px 1px 1px rgba(0,0,0,0.15);
+}
+
+#user-tools {
+    padding-top: 8pt;
+    padding-bottom: 5pt;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+    color: #79aec8;
+}
+
+#branding h1 a:focus, #branding h1 a:hover {
+    color: #6C9CB4;
+}
+
+#header {
+    color: #79aec8;
+    background: #333;
+    height: 50pt;
+    text-align: center;
+    vertical-align: middle;
+}
+
+a.section:focus, a.section:hover {
+    color: #c4dce8;
+    text-decoration: none;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: #777;
+}
+
+#user-tools a:focus, #user-tools a:hover {
+    text-decoration: none;
+    border-bottom-color: #79aec8;
+    color: #79aec8;
+}
+
+.paginator a:link, .paginator a:visited {
+    padding: 2px 6px;
+    background: #79aec8;
+    text-decoration: none;
+    color: #fff;
+}
+
+.module {
+    border: none;
+    margin-bottom: 30px;
+    background: #fff;
+}
+
+.action-select {
+    background:black;
+}
+
+#changelist .actions .button {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.15) inset;
+    color: #333;
+    cursor: pointer;
+    font-size: 13px;
+    height: 24px;
+    line-height: 1;
+    margin: 0;
+    padding: 4px 8px;
+}
+
+/*
+
+    Form elements for intermediate page
+
+*/
+
+.intermediate thead th input[type="checkbox"] + label{
+    line-height: normal;
+    font-size: 13px;
+    color: #bbb;
+}
+
+.intermediate input[type="radio"], .intermediate_select_all input[type='radio'],
+.intermediate input[type="checkbox"], .intermediate_select_all input[type="checkbox"] {
+    display: none
+}
+
+input[type="radio"] + label, input[type="checkbox"] + label {
+    cursor: pointer;
+    cursor: hand;
+    color: #bbb;
+    vertical-align:middle;
+    text-align:center;
+}
+
+fieldset {
+    border: none;
+}
+
+.fa {
+    border-radius: 50%;
+}
+
+table.intermediate .fa {
+    padding: 5px;
+}
+
+.intermediate input[type="radio"] + label, .intermediate input[type="checkbox"] + label {
+.intermediate_select_all input[type="radio"] + label, .intermediate_select_all input[type="checkbox"] + label
+    color: #bbb;
+    padding-top:10px;
+    vertical-align:middle;
+    text-align:center;
+
+    /*-webkit-text-stroke-width: 0.7px;
+    -webkit-text-stroke-color: #555;*/
+
+
+    /*text-shadow: 1px 1px 1px grey, -1px -1px -1px grey*/
+    /*text-shadow: 2px 0 0 #aaa, -2px 0 0 #aaa, 0 2px 0 #aaa, 0 -2px 0 #aaa, 1px 1px #aaa, -1px -1px 0 #aaa, 1px -1px 0 #aaa, -1px 1px 0 #aaa;*/
+}
+
+.intermediate input[type="radio"] + label:hover, .intermediate input[type="checkbox"] + label:hover,
+.intermediate_select_all input[type="radio"] + label:hover, .intermediate_select_all input[type="checkbox"] + label:hover {
+    /*-webkit-text-stroke-color: black;*/
+    /*text-shadow: 1px 0 0 #555, -1px 0 0 #555, 0 1px 0 #555, 0 -2px 0 #555, 1px 1px #555, -1px -1px 0 #555, 1px -1px 0 #555, -1px 1px 0 #555;*/
+    color: #888;
+}
+
+.intermediate input[type="radio"]:checked + label, .intermediate input[type="checkbox"]:checked + label,
+.intermediate_select_all input[type="radio"]:checked + label, .intermediate_select_all input[type="checkbox"]:checked + label {
+    /*-webkit-text-stroke-color: black;*/
+    /*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+    color: #555;
+}
+
+
+.intermediate input[type="radio"]:checked + label:hover, .intermediate input[type="checkbox"]:checked + label:hover,
+.intermediate_select_all input[type="radio"]:checked + label:hover, .intermediate_select_all input[type="checkbox"]:checked + label:hover {
+    /*-webkit-text-stroke-color: black;*/
+    /*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+    color: #777;
+}
+
+.intermediate .intermediate_select_all {
+    margin-right: 20pt;
+}
+
+.add_related {
+    display: none;
+}
+
+.selector-chosen h2 {
+    background: #f8f8f8;
+    color: #666;
+}
+
+a#add_id_groups.related-widget-wrapper-link.add-related, a#add_id_test_cases.related-widget-wrapper-link.add-related{
+    display:none;
+}
+
+/*
+.intermediate input[type="radio"]:first-child + label, .intermediate input[type="checkbox"]:first-child + label {
+    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    font-size:11px;
+    margin-top: 0px;
+    padding-top:7px;
+    padding-bottom:10px;
+    width: 39px;
+    height: 39px;
+    border:solid 1px #888;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    text-transform: uppercase;
+
+    vertical-align:middle;
+    text-align:center;
+}
+
+.intermediate input[type="radio"]:first-child:hover + label, .intermediate input[type="checkbox"]:first-child:hover + label {
+    border-color:#555;
+}
+
+.intermediate input[type="radio"]:first-child:checked + label, .intermediate input[type="checkbox"]:first-child:checked + label {
+    border-color: #333;
+}*/
+
+
+
+
+
+input[type="checkbox"] {
+    /*display:none;*/
+}
+/*
+input[type="checkbox"] + label span {
+    display:inline-block;
+    width:19px;
+    height:19px;
+    background:url(static/check_radio_sheet.png) left top no-repeat;
+}*/
+
+input[type="checkbox" i] {
+    border: 1px solid black;
+}
+
+input[type="checkbox"]:checked {
+   border: 1px solid black;
+}
+
+#changelist table input {
+    border: 10px solid black;
+    margin: 0;
+    vertical-align: baseline;
+    background:url(https://cdn.tutsplus.com/webdesign/uploads/legacy/tuts/391_checkboxes/check_radio_sheet.png) left top no-repeat;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #777;
+    box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.5) inset;
+}
+
+input[type=submit].default, .submit-row input.default {
+    background: #777;
+    box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.5) inset;
+}
+
+input[type=submit]:hover.default, .submit-row input:hover.default {
+    background: #555;
+}
+
+input[type=submit]:hover, input[type=button]:hover {
+    background: #555;
+}
+
+.submit-row a.deletelink {
+    display: block;
+    background: #79aec8;
+    border-radius: 4px;
+    padding: 10px 15px;
+    height: 15px;
+    line-height: 15px;
+    color: #fff;
+}
+
+.result-display {
+    border:1px solid;
+    border-radius:2px;
+    text-transform:uppercase;
+    font-size:11px;
+    font-weight:400;
+}
+
+.result-display::before, .result-display::after{
+    content:"\00a0";
+}
+
+.result-display-passed {
+    /*color:#70BF2B;*/
+    color:#79aec8;
+}
+
+.result-display-failed {
+    /*color:#DD4646;*/
+    color:#333;
+}
+
+
+.field-title {
+    text-transform: capitalize;
+    font-weight:550;
+    font-size:12px;
+}
+
+td, th {
+    border-bottom: 1px solid white;
+}
+
+.typewriter {
+    font-family: 'Lucida Sans Typewriter', 'Lucida Console', monaco, 'Bitstream Vera Sans Mono', monospace;
+    font-size: 11px;
+    color: #333;
+}

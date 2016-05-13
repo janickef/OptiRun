@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+
+{% load staticfiles %}
+
+
+{% block extrastyle %}
+<link href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Orbitron&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="{{ STATIC_URL }}extra.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+{% endblock %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('OptiRun') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+<script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
