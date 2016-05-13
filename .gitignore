@@ -22,3 +22,5 @@
 # Files in the 'files' Directory #
 ##################################
 /dashboard/files
+*.ini
+*.sqlite3
