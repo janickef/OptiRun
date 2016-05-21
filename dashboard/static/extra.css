@@ -1,5 +1,6 @@
 @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 
+/*
 @font-face{
     font-family:'FontAwesome';
     font-weight:normal;
@@ -11,45 +12,11 @@
         url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'),
         url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
 }
+*/
 
 body {
     background: #eee;
     color: #666;
-}
-
-.object-tools a.addlink {
-    background-image: url(../static/admin/img/icon-addlink-white.png);
-    background-color: #79aec8;
-}
-
-.object-tools a:hover, .object-tools a:focus {
-    background-color: #6C9CB4;
-}
-
-.object-tools a:link, .object-tools a:visited {
-    background-color: #79aec8;
-}
-
-.addlink {
-    background: url(../static/admin/img/icon-addlink.png) 0 1px no-repeat;
-}
-
-.changelink, .inlinechangelink {
-    background: url(../static/admin/img/icon-changelink.png) 0 1px no-repeat;
-}
-
-.changelink:hover, .inlinechangelink:hover {
-    background: url(../static/admin/img/icon-changelink-hover.png) 0 1px no-repeat;
-}
-
-.deletelink {
-    background: url(../static/admin/img/icon-deletelink.png) 0 1px no-repeat;
-}
-
-#user-tools a:hover, #user-tools a:focus {
-    border-bottom: 1px solif black;
-    text-decoration: none;
-    /*border-bottom: 1px solid rgba(255, 255, 255, 0.5);*/
 }
 
 .section {
@@ -73,6 +40,7 @@ a:focus, a:hover {
 
 div.breadcrumbs {
     background: #777;
+    height: 20px;
 }
 
 .selector-chosen h2 {
@@ -108,7 +76,6 @@ div.breadcrumbs {
     color: #fff;
     font-size: 34pt;
     font-family: 'Orbitron';
-    text-shadow: 1px 1px 1px black, 1px 1px 1px rgba(0,0,0,0.15);
 }
 
 #user-tools {
@@ -127,7 +94,7 @@ div.breadcrumbs {
 #header {
     color: #79aec8;
     background: #333;
-    height: 50pt;
+    height: 67px;
     text-align: center;
     vertical-align: middle;
 }
@@ -391,4 +358,129 @@ td, th {
     font-family: 'Lucida Sans Typewriter', 'Lucida Console', monaco, 'Bitstream Vera Sans Mono', monospace;
     font-size: 11px;
     color: #333;
+}
+
+app-testautomation {
+    display: inline-block;
+}
+
+#content {
+    padding-left: 280px
+}
+
+html, body, #container {
+    height: 100%;
+}
+
+#menubar {
+    width: 240px;
+    min-height: 625px;
+    height: calc(100% - 128px);
+    position: absolute;
+    text-transform: uppercase;
+    background: #ccc;
+    left: 0;
+    top: 128px;
+}
+
+#menu-logout {
+    bottom: 0;
+    position: absolute;
+    text-align: center;
+    clear: both;
+    width: 100%;
+    padding-bottom: 25px;
+    font-size: 14pt;
+}
+
+ul {
+    -webkit-padding-start: 0px;
+    -webkit-margin-before: 0px;
+    -webkit-margin-after: 0px;
+    padding: 0;
+}
+
+#menubar ul li {
+    padding: 0.6em 0 0.6em 1em;
+    list-style-type: none;
+    border-bottom: 1px solid #eee;
+}
+
+#menubar ul li:hover, #menubar #auth-nested li:hover, #menubar #testautomation-nested li:hover {
+    background: #eee;
+    color: #666;
+}
+
+#menubar #auth-nested, #menubar #testautomation-nested, #menubar ul {
+    margin: 0;
+}
+
+#menubar #auth-nested li, #menubar #testautomation-nested li {
+    background: #ddd;
+    padding-left: 25px;
+}
+
+.deletelink {
+    background: url(../static/admin/img/icon-deletelink.svg) 0 1px no-repeat;
+    background-size: 13px 13px
+}
+
+.addlink {
+    background: url(../static/admin/img/icon-addlink-blue.svg) 0 1px no-repeat;
+    background-size: 13px 13px
+}
+
+.addlink:hover {
+    background: url(../static/admin/img/icon-addlink-blue-hover.svg) 0 1px no-repeat;
+    background-size: 13px 13px
+}
+
+.changelink {
+    background: url(../static/admin/img/icon-changelink.svg) 0 1px no-repeat;
+    background-size: 13px 13px
+}
+
+.changelink:hover {
+    background: url(../static/admin/img/icon-changelink-hover.svg) 0 1px no-repeat;
+    background-size: 13px 13px
+}
+
+.object-tools a:link, .object-tools a:visited {
+    background-color: #79aec8;
+}
+
+.object-tools a:hover, .object-tools a:focus {
+    background-color: #6C9CB4;
+}
+
+.object-tools a.addlink {
+    background-image: url(../static/admin/img/icon-addlink-white.svg);
+    background-size: 13px 13px;
+    background-color: #79aec8;
+}
+
+.object-tools a.addlink:hover {
+    background-image: url(../static/admin/img/icon-addlink-white.svg);
+    background-size: 13px 13px;
+    background-color: #6C9CB4;
+}
+
+.module table, .breadcrumbs {
+    text-transform: capitalize;
+}
+
+#error {
+    padding: 40px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#error h1 {
+    font-size: 100pt;
+    line-height: 90px;
+}
+
+#error p {
+    font-size: 14pt;
+    text-transform: capitalize;
 }

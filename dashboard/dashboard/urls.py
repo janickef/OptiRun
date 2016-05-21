@@ -13,16 +13,23 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 
 urlpatterns = [
     url(r'^testautomation/', include('testautomation.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^admin/about/', TemplateView.as_view(template_name='admin/about.html')),
+    url(r'^admin/help/', TemplateView.as_view(template_name='admin/help.html')),
     url(r'^$', RedirectView.as_view(url='/admin/', permanent=True)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG is False:   #if DEBUG is True it will be served automatically
+    urlpatterns += patterns('',
+                            url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+    )
 
 admin.site.site_header = 'OptiRun'

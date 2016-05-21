@@ -127,7 +127,8 @@ class TestCaseAdmin(admin.ModelAdmin):
     # Field methods for TestCaseAdmin
     def times_run(self, obj):
         return Log.objects.filter(test_id=obj.pk).exclude(result__isnull=True).count()
-    times_run.short_description = "Number of Times Executed"
+    # times_run.short_description = "Number of Times Executed"
+    times_run.short_description = "Execution Count"
 
     def result_summary(self, obj):
         passed_count = Log.objects.filter(test_id=obj.pk, result=True).count()
@@ -158,8 +159,7 @@ class TestCaseAdmin(admin.ModelAdmin):
             prev = Log.objects.filter(test_id=obj.pk).exclude(result__isnull=True).order_by('-end_time').first()
             prev_time = prev.end_time.replace(tzinfo=timezone.utc).astimezone(timezone.get_current_timezone())
             formatted = formats.date_format(prev_time, "DATETIME_FORMAT")
-            #tag_wrap = '%s <button type="submit"><a href="/admin/testautomation/log/%d/change/" target="_blank"> View Log <i class="fa fa-caret-right"></i></a></button>' % (formatted, prev.pk)
-            tag_wrap = '<a href="/admin/testautomation/log/%d/change/" target="_blank">%s</a>' % (prev.pk, formatted)
+            tag_wrap = '<a href="/admin/web_test_automation/log/%d/change/" target="_blank">%s</a>' % (prev.pk, formatted)
             return tag_wrap
         except:
             return "-"
@@ -332,7 +332,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
     fieldsets = [
         (None,          {'fields': ['title', 'start_time']}),
-        ('Recurrence',  {'fields': ['repeat', 'recurrence_rule', 'range', 'end_by']}),
+        ('Recurrence',  {'fields': ['repeat', 'recurrence_rule', 'range', 'end_by'], 'classes': ('collapse',)}),
         ('Groups',      {'fields': ['groups']}),
         ('Test Cases',  {'fields': ['test_cases']}),
     ]
@@ -500,11 +500,12 @@ def get_jira_settings():
     server = config.get('JIRA', 'server')
     username = config.get('JIRA', 'username')
     password = config.get('JIRA', 'password')
+    project_key = config.get('JIRA', 'project_key')
 
-    return server, username, password
+    return server, username, password, project_key
 
 
-jira_server, username, password = get_jira_settings()
+jira_server, username, password, project_key = get_jira_settings()
 
 jira_options = {
     'server':          jira_server,
@@ -565,12 +566,12 @@ def search(jira_instance, obj):
 
     try:
         return jira_instance.search_issues(
-            'project=NGTV '
+            'project=%s '
             'AND reporter = currentUser() '
             'AND status != Closed '
             'AND type = Bug '
             'AND summary ~ "OptiRun: %s (%s) FAILED" '
-            % (obj.test, str(obj.test_id))
+            % (project_key, obj.test, str(obj.test_id))
         )
     except:
         return False
@@ -583,7 +584,7 @@ def create(jira_instance, obj):
 
     try:
         jira_instance.create_issue(
-            project='NGTV',
+            project=project_key,
             summary='OptiRun: %s (%s) FAILED' % (obj.test, str(obj.test_id)),
             description='*_Produced %s._*\n\n' % obj.end_time.strftime("%d.%m.%Y %H:%M") + get_description(obj),
             issuetype={'name': 'Bug'},

@@ -25,7 +25,6 @@ from testautomation.models import TestMachine
 
 class TestMachineManager:
     def __init__(self, project_path):
-        self._machines = []
         self._base_url = 'http://%s:%s/grid/api/proxy?id=' % (socket.gethostname(), self.get_port(project_path))
 
         for model in TestMachine.objects.all():
@@ -52,7 +51,46 @@ class TestMachineManager:
         machines.
         """
 
-        return [machine for machine in self._machines if self.is_active(machine)]
+        tmp_machines = [machine for machine in TestMachine.objects.filter(approved=True) if self.is_active(machine)]
+
+        machines = []
+        for machine in tmp_machines:
+            browsers = []
+            if machine.chrome:
+                browsers.append({
+                    'browser': 'chrome',
+                    'version': machine.chrome,
+                })
+            if machine.internet_explorer:
+                browsers.append({
+                    'browser': 'internet explorer',
+                    'version': machine.internet_explorer,
+                })
+            if machine.firefox:
+                browsers.append({
+                    'browser': 'firefox',
+                    'version': machine.firefox,
+                })
+            if machine.edge:
+                browsers.append({
+                    'browser': 'edge',
+                    'version': machine.edge,
+                })
+
+            platform = {
+                'os': machine.operating_system,
+                'version': machine.operating_system_ver
+            }
+
+            machines.append(TestMachineObj(
+                browsers,
+                machine.ip,
+                platform,
+                machine.url,
+                machine.uuid,
+            ))
+
+        return machines
 
     @staticmethod
     def is_active(machine):
@@ -68,6 +106,9 @@ class TestMachineManager:
             active = True if e.code == 403 else False
         except:
             pass
+        if not active:
+            machine.active = False
+            machine.save()
         return active
 
     def add_machine(self, url):
@@ -77,45 +118,32 @@ class TestMachineManager:
         machines. Otherwise, the connection is ignored.
         """
 
-        if not any(machine.url == url for machine in self._machines):
-            json_url = self._base_url+url
+        json_url = self._base_url+url
+        while True:
+            try:
+                response = urllib2.urlopen(json_url)
+                data = json.loads(response.read())
 
-            while True:
-                try:
-                    response = urllib2.urlopen(json_url)
-                    data = json.loads(response.read())
-
-                    if data['success'] and not data['request']['configuration']['uuid']:
-                        break
-
-                    ip   = data['request']['configuration']['host']
-                    uuid = data['request']['configuration']['uuid']
-
-                    platform = None
-                    browsers = []
-
-                    for c in data['request']['capabilities']:
-                        if c['seleniumProtocol'] == "WebDriver":
-                            browsers.append({
-                                'browser': c['browserName'],
-                                'version': c['version'] if 'version' in c else None
-                            })
-
-                            if not platform:
-                                platform = self.get_platform(c['platform'])
-                    self._machines.append(TestMachineObj(browsers, ip, platform, url, uuid))
-
-                    model = TestMachine.objects.filter(hostname__iexact=data['request']['configuration']['hostname']).first()
-                    if not model:
-                        model = TestMachine(
-                            hostname=data['request']['configuration']['hostname'],
-                            approved=False
-                        )
-                    self.add_model(model, data, platform)
-                    print "New test machine connected: %s" % url
+                if data['success'] and not data['request']['configuration']['uuid']:
                     break
-                except:
-                    continue
+                if len(data['request']['capabilities']) >= 1:
+                    platform = self.get_platform(data['request']['capabilities'][0]['platform'])
+                else:
+                    break
+
+                model = TestMachine.objects.filter(
+                    hostname__iexact=data['request']['configuration']['hostname']
+                ).first()
+                if not model:
+                    model = TestMachine(
+                        hostname=data['request']['configuration']['hostname'],
+                        approved=False
+                    )
+                self.add_model(model, data, platform)
+                print "New test machine connected: %s" % url
+                break
+            except:
+                continue
 
     @staticmethod
     def add_model(model, data, platform):
@@ -150,11 +178,11 @@ class TestMachineManager:
         model.save()
 
     @staticmethod
-    def delete_model(model):
+    def deactivate_model(model):
         model.url = None
         model.uuid = None
         model.active = False
-
+        model.save()
 
     @staticmethod
     def get_platform(init):
@@ -182,7 +210,9 @@ class TestMachineManager:
         This method removes a machine from the machine list.
         """
 
-        self._machines = [n for n in self._machines if n.url != url]
+        model = TestMachine.objects.filter(url=url).first()
+        if model:
+            self.deactivate_model(model)
         print "Removed test machine: %s" % url
 
     def handle_hub_msg(self, msg):

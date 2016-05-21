@@ -6,14 +6,14 @@
 
 {% load staticfiles %}
 
-<!--<script src="{% static "js/jquery.js" %}"></script>-->
-
-
-<!--
-<script type="text/javascript" src="{{ STATIC_URL }}js/intermediate.js"></script>
--->
-
-
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="/admin/">Home</a>
+        › <a href="/admin/testautomation/">Testautomation</a>
+        › <a href="/admin/testautomation/testcase">Test Cases</a>
+        › Test Environment
+    </div>
+{% endblock %}
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}
@@ -109,15 +109,6 @@
         </tbody>
     </table>
 
-    <!--
-    <script type="text/javascript">
-        val = $("input[id~='any']" ).val();
-        val = "there"
-        alert("hello " + val);
-        alert("hei");
-    </script>
-    -->
-
     {% for obj in queryset %}
         <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
     {% endfor %}
@@ -131,7 +122,6 @@
 
 <script src="{{ STATIC_URL }}js/toggles.js" language="JavaScript" type="text/javascript"></script>
 {% endblock %}
-
 
 <!-- Back button: <a href=javascript:history.go(-1)>Go back</a> -->
 

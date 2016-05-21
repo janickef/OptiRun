@@ -1,4 +1,6 @@
 $(document).ready(function() {
+
+    /*
     $(".breadcrumbs").replaceWith(
     '<div class="breadcrumbs">' +
     '<a href="/admin/">Home</a> › ' +
@@ -7,6 +9,7 @@ $(document).ready(function() {
     'Test Environment' +
     '</div>'
     )
+    */
 
     /*
     This function is called every time SELECT ALL RANDOM BROWSER is clicked
