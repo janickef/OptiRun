@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^admin/about/', TemplateView.as_view(template_name='admin/about.html')),
     url(r'^admin/help/', TemplateView.as_view(template_name='admin/help.html')),
+    url(r'^admin/download/', TemplateView.as_view(template_name='admin/download.html')),
     url(r'^$', RedirectView.as_view(url='/admin/', permanent=True)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -24,3 +24,5 @@ dashboard/db.sqlite3
 dashboard/db.sqlite3
 *.ini
 dashboard/db.sqlite3
+dashboard/config.ini
+dashboard/db.sqlite3

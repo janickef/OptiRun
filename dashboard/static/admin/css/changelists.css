@@ -343,3 +343,37 @@
 #changelist table tbody tr.selected {
     background-color: #e1edf3;
 }
+
+
+
+
+
+#changelist #toolbar form input[type="submit"], #changelist .actions .button {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) inset;
+}
+
+#changelist-filter {
+    width: 160px;
+}
+
+.change-list .filtered .results, .change-list .filtered .paginator, .filtered #toolbar, .filtered div.xfull {
+    margin-right: 180px;
+    width: auto;
+}
+
+#changelist-form, .module, .filtered {
+    background: #eee;
+}
+
+.filtered .actions {
+    margin-right: 180px;
+    border-right: none;
+}
+
+#changelist-filter h3 {
+    text-transform: capitalize;
+}
+
+£content h1 {
+    content: 'Test Cases';
+}

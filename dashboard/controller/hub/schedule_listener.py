@@ -27,7 +27,7 @@ django.setup()
 from testautomation.models import Schedule, Log
 
 
-class ScheduleChecker:
+class ScheduleListener:
     def __init__(self, test_executor):
         self._executor = test_executor
         self._prev_time = datetime.utcnow()
@@ -181,5 +181,5 @@ class ScheduleChecker:
             self._lock.acquire()
             self._schedule = tmp_schedule
             self._lock.release()
-            time.sleep(30)
+            time.sleep(900)
 
