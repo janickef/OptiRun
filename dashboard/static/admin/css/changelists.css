@@ -69,7 +69,7 @@
 
 #changelist #toolbar {
     padding: 8px 10px;
-    margin-bottom: 15px;
+    /*margin-bottom: 15px;*/
     border-top: 1px solid #eee;
     border-bottom: 1px solid #eee;
     background: #f8f8f8;
@@ -125,7 +125,8 @@
     right: 0;
     z-index: 1000;
     width: 240px;
-    background: #f8f8f8;
+    /*background: #f8f8f8;*/
+    background: white;
     border-left: none;
     margin: 0;
 }
@@ -175,13 +176,13 @@
 }
 
 #changelist-filter li.selected a {
-    color: #5b80b2;
+    color: black;
 }
 
 #changelist-filter a:focus, #changelist-filter a:hover,
 #changelist-filter li.selected a:focus,
 #changelist-filter li.selected a:hover {
-    color: #036;
+    color: #333;
 }
 
 /* DATE DRILLDOWN */

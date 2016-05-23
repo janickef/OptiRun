@@ -1,15 +1,22 @@
 # OptiRun
 
-Package Installations:
+## Package Installations:
 
-| Package Name | Installation Command ('pip') |
-| ---          | ---                          |
-| Django       | `pip install django`         |
-| Jira         | `pip install jira`           |
+| Package Name | Installation          |
+| ---          | ---                   |
+| Django       | `pip install django`  |
+| Jira         | `pip install jira`    |
+| or-tools	   | [Installation guidelines](https://developers.google.com/optimization/installing#python "Installing or-tools | Installing from binaries | Python") |
 
-Setup:
+
+## Setup:
+
+1. Install Python
+
 ```
 python manage.py shell
 >>> from django.contrib.sites.models import Site
 >>> Site.objects.create(name='<hostname>', domain='<hostname>')
+
+>>> Site.objects.create(name='lnor010710', domain='lnor010710')
 ```

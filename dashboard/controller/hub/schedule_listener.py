@@ -88,21 +88,28 @@ class ScheduleListener:
             while True:
                 json_data = conn.recv(buffer_size)
                 if json_data:
-                    try:
-                        data = json.loads(json_data)
-                        for item in data:
-                            next_occurrence = rrulestr(item['rrule_string']).after(datetime.utcnow())
-                            if next_occurrence and item['activated']:
-                                self._schedule[item['pk']] = next_occurrence
-                                print "Added/updated %i" % item['pk']
+                    data = json.loads(json_data)
+                    for item in data:
+                        try:
+                            if item['activated']:
+                                next_occurrence = rrulestr(item['rrule_string']).after(datetime.utcnow())
+                                if next_occurrence:
+                                    self._schedule[item['pk']] = next_occurrence
+                                    print "Added/updated %i" % item['pk']
+                                else:
+                                    res = self._schedule.pop(item['pk'])
+                                    if res:
+                                        print "Removed %i from schedule" % item['pk']
                             else:
                                 res = self._schedule.pop(item['pk'])
                                 if res:
                                     print "Removed %i from schedule" % item['pk']
-                    except:
-                        pass
+                        except:
+                            pass
                 else:
                     break
+            print "schedule:"
+            print self._schedule
             self._lock.release()
             conn.close()
 

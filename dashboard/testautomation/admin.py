@@ -560,7 +560,7 @@ def get_description(obj):
 
 def search(jira_instance, obj):
     """
-    This method uses JIRA's API to search for issues that matches the search string that includes the ID and the
+    This method uses the JIRA REST API to search for issues that matches the search string that includes the ID and the
     title of the test, and returns a list of any matching results.
     """
 
@@ -579,7 +579,7 @@ def search(jira_instance, obj):
 
 def create(jira_instance, obj):
     """
-    This method uses JIRA's API to create a new issue.
+    This method uses the JIRA REST API to create a new issue.
     """
 
     try:
@@ -598,7 +598,7 @@ def create(jira_instance, obj):
 
 def comment(jira_instance, issue, obj):
     """
-    This method uses JIRA's API to search for issues that matches the search string that includes the ID and the
+    This method uses the JIRA REST API to search for issues that matches the search string that includes the ID and the
     title of the test, and returns a list of any matching results.
     """
 
@@ -665,7 +665,7 @@ class LogAdmin(admin.ModelAdmin):
         'platform_display',
         'console_log_display',
         'output_display',
-        'jira_issues'
+        'get_jira_issues'
     )
 
     fields = readonly_fields
@@ -693,7 +693,7 @@ class LogAdmin(admin.ModelAdmin):
         'platform'
     ]
 
-    def jira_issues(self, obj):
+    def get_jira_issues(self, obj):
         issues = get_issues(obj)
 
         if issues:
@@ -707,7 +707,7 @@ class LogAdmin(admin.ModelAdmin):
             return '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Contact with JIRA could not be established. Check VPN.'
         return '-'
 
-    jira_issues.allow_tags = True
+    get_jira_issues.allow_tags = True
 
 
     def result_display(self, obj):
@@ -758,7 +758,7 @@ class LogAdmin(admin.ModelAdmin):
     output_display.allow_tags = True
     output_display.short_description = "Output"
 
-    def report_to_JIRA(self, request, queryset):
+    def report_to_jira(self, request, queryset):
         unique_obj = []
 
         for obj in queryset:
@@ -790,7 +790,7 @@ class LogAdmin(admin.ModelAdmin):
         if success == 0 and failure == 0:
             self.message_user(request, 'Could not establish connection with JIRA.', level=messages.WARNING)
 
-    actions = [report_to_JIRA]
+    actions = [report_to_jira]
 
     ###
     def has_add_permission(self, request):

@@ -365,7 +365,7 @@ app-testautomation {
 }
 
 #content {
-    padding-left: 280px
+    padding-left: 240px
 }
 
 html, body, #container {
@@ -373,9 +373,10 @@ html, body, #container {
 }
 
 #menubar {
-    width: 240px;
+    width: 200px;
     min-height: 625px;
-    height: calc(100% - 128px);
+    /*height: calc(100% - 128px);*/
+    height: 100%;
     position: absolute;
     text-transform: uppercase;
     background: #ccc;
@@ -485,7 +486,17 @@ ul {
     text-transform: capitalize;
 }
 
+table.intermediate {
+    width: 100%;
+}
 
+table.intermediate td {
+    vertical-align: middle;
+}
+
+.messagelist {
+    margin-left:
+}
 
 
 /*
