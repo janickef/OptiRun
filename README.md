@@ -6,7 +6,7 @@
 | ---          | ---                   |
 | Django       | `pip install django`  |
 | Jira         | `pip install jira`    |
-| or-tools	   | [Installation guidelines](https://developers.google.com/optimization/installing#python "Installing or-tools | Installing from binaries | Python") |
+| or-tools	   | [Installation guidelines](https://developers.google.com/optimization/installing#python "Installing or-tools - Installing from binaries - Python") |
 
 
 ## Setup:
