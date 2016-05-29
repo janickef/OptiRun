@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+
+{% load staticfiles %}
+
+<script src="{{ STATIC_URL }}js/logout.js" language="JavaScript" type="text/javascript"></script>
+
+{% block usertools %}
+    <div id="user-tools">
+        <a href="/admin/login/">Log in</a>
+    </div>
+{% endblock %}
+
+{% block content %}
+        <p>Hope to see you again soon!</p>
+        <a href="/admin/login/">Log in again</a>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs"></div>
+{% endblock %}

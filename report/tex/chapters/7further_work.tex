@@ -1,0 +1,32 @@
+\section{Further Work}\label{chapters.further_work}
+\thispagestyle{plain}
+
+The Altibox testing staff are planning to adopt test automation by introducing \toolname \space in the testing of TV Overalt, and have already started discussing possible extensions. The tool provides a decent foundation for embarking on test automation, but is in its current state by no means perfect. This chapter presents some suggestions for further work that could improve the value of the product in order to further satisfy Altibox' specific needs as well as increasing the worth of \toolname \space for more general use.
+
+\subsection{Extended Browser \& Platform Support}
+
+Since the author did not have access to a Macintosh computer during the work on this project, \toolname \space does not support this operating system, and by extension, it is also not possible to run tests in the Safari browser with \toolname. Additionally, mobile devices are not supported as test machines in this project, so \toolname \space can not be executed in browsers on such devices. All of the aforementioned browsers and platforms are compatible with Selenium, and could without further ado be included in a Selenium Grid, and therefore in \toolname.
+
+Safari on Mac machines and mobile Apple devices as well as Chrome on mobile devices running the Android operating system are all supported by TV Overalt, which means that Altibox must include these browsers and platforms in the testing process. By extending \toolname \space to also support these, the automation coverage of TV Overalt could be greatly increased.
+    
+\subsection{App Testing}
+
+\emph{Appium} is an open source, cross-platform test automation framework for use with both native and hybrid mobile apps as well as mobile web apps \cite{appium-getting-started}. It supports iOS, Android and FirefoxOS, and is compatible with Selenium Grid \cite{appium-api-reference}. Including Appium in the project would extend \toolname \space to also support testing of apps for mobile devices.
+
+For Altibox, who also has app versions of TV Overalt for Android and iOS, this would mean that TV Overalt could have some of its testing covered by automation in all of its forms. Since the apps looks and behaves slightly different on different screen sizes and OS versions, the apps are currently manually tested on a large selection of devices. This involves a great deal of work being repeated, which could be avoided if \toolname \space were extended to include app testing as well.
+    
+\subsection{Notifications}
+
+Scheduling tests for future execution and then being able to forget about them and not having to go back to the execution log to see the result, while still being notified if something went wrong, would be highly convenient. This is especially true for tests that are scheduled to be executed repeatedly or if \toolname \space were to be adopted in part as a monitoring service.
+
+This could become reality by implementing a notification service in which \toolname \space on one end sent out a message upon a failed test execution, and an application on the other end received the message and created a notification based on the content. One way of doing this is to use \emph{Google Cloud Messaging} (GCM) \cite{gcm}, or its successor, \emph{Firebase Cloud Messaging} (FCM), \cite{fcm}, which are both cross-platform messaging services created to deliver messages for notification purposes. They support iOS and Android as well as the Chrome web browser, where it can be used for browser extension notifications. This improvement requires app development, but FCM provides instructions for incorporating the messaging solution on their website, so implementing minimal apps made solely for notifications should not require too much effort. Nevertheless it is also a possibility to invest more time and effort in the mobile app development, and create apps with some of the same functionality as the web-based user interface of \toolname.
+
+
+\comment{\subsection{Spira Integration}}
+
+
+\subsection{Continuous Integration}
+
+Test automation is commonly applied to continuous integration (CI) \cite{ci} environments, which automatically builds and tests code contained in specified repositories. It can provide frequent and rapid feedback on the code in uploaded commits, and can thus be of excellent value for software developers.
+
+Jenkins, a commonly used CI tool, offers a Selenium plugin \cite{jenkins-selenium} that turns a prepared Jenkins cluster into a Selenium Grid cluster, and thus allows for execution of Selenium tests in the Jenkins cluster. This way, executions of Selenium tests uploaded to \toolname \space could be automatically triggered by for instance GitHub commits. This way, the developers could get instant feedback on their committed code, which could lead increased cost-efficiency as bugs could be identified as early as possible.

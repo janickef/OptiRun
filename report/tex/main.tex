@@ -3,8 +3,7 @@
 \input{doc_files/preamble}
 
 \usepackage{graphicx}
-
-\usepackage[toc,page]{appendix}
+\usepackage{notoccite}
 
 \usepackage{fix-cm}
 \usepackage[pdftex,dvipsnames]{xcolor}
@@ -12,7 +11,18 @@
 
 \usepackage{makecell}
 
+\usepackage{multirow}
+
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{lscape}
+\usepackage{rotating}
+\usepackage{epstopdf}
+
 \usepackage{tabu}
+
+%\usepackage[title]{appendix}
+\usepackage[titletoc]{appendix}
 
 \usepackage{tabularx}
 %\usepackage{lscape}
@@ -247,7 +257,7 @@
 %\include{other_docs/TODO}
     
     % Include UiS front page
-    \includepdf[pages={1}]{pdf_pages/draft_front_page.pdf} % REMEMBER TO CREATE CORRECT FRONT PAGE BEFORE SUBMITTING THESIS
+    \includepdf[pages={1}]{pdf_pages/front_page.pdf} % REMEMBER TO CREATE CORRECT FRONT PAGE BEFORE SUBMITTING THESIS
     
     % Including personalized front page
     % \include{other_docs/custom_cover_page}
@@ -289,16 +299,22 @@
 \include{chapters/4system_overview}
 \include{chapters/5implementation}
 \include{chapters/6discussion}
-\include{chapters/7conclusion}
+\include{chapters/7further_work}
+\include{chapters/8conclusion}
 
     
-\renewcommand\thesection{\Alph{section}}
-\setcounter{section}{0}
+%\renewcommand\thesection{\Alph{section}}
+%\setcounter{section}{0}
 
+\addappheadtotoc
+\include{appendices/appendices}
+
+\begin{appendices}
 \include{appendices/setup}
-%\include{appendices/test_data}
+\include{appendices/user_manual}
 \include{appendices/test_template}
-
+\include{appendices/poster}
+\end{appendices}
 
 % Inserting list of figures and list of tables. Remove \newpage between lists if they can fit in one page (compile to check)
 
@@ -306,7 +322,7 @@
         \thispagestyle{plain}
         %\onehalfspacing
         \renewcommand{\listfigurename}{Figures}
-        %\listoffigures
+        \listoffigures
         \newpage
     %}
     
@@ -326,7 +342,7 @@
     % Inserting references, again with custom line spacing (setstrech) to avoid odd page breaks or fit to whole pages
     \small
     \setstretch{.8}
-    %\bibliographystyle{unsrtnat}		%Inserting bibliography
+    \bibliographystyle{unsrtnat}		%Inserting bibliography
     %\bibliographystyle{IEEEtran}
     \clearpage
     \thispagestyle{plain}

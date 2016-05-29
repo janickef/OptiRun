@@ -5,8 +5,7 @@ A number of distinctive tools and technologies have been applied throughout the 
 \subsection{The Python Programming Language}
 The Python programming language has largely been used in the conduction of this project. Python has efficient high-level data structures, and is known for being simple, yet powerful. Since Python programs are executed by an interpreter, it is considered an interpreted language \cite{abyteofpython}.
 
-Building this project on Python was a natural choice for several reasons. Python is compatible with Selenium, which is introduced in Section \ref{subsec.selenium}. Other reasons include offering a large set of libraries and having high-quality documentation. Additionally, Python supports multithreading and is suitable for running a program as a service. Details of the implementation will be discussed in Chapter \ref{chapter.implementation}. 
-\improvement{Will change to Python 3.x if time.} Version 2.7.11 of Python has been used in this project.
+Building this project on Python was a natural choice for several reasons. Python is compatible with Selenium, which is introduced in Section \ref{subsec.selenium}. Other reasons include offering a large set of libraries and having high-quality documentation. Additionally, Python supports multithreading and is suitable for running a program as a service. Details of the implementation will be discussed in Chapter \ref{chapter.implementation}. Version 2.7.11 of Python was used in this project.
 
 
 \subsection{Selenium}\label{subsec.selenium}
@@ -14,7 +13,7 @@ Selenium is an umbrella project for automation of web browsers. Several differen
 
 %%% SUBSUBSECTION: Selenium WebDriver %%%
 \subsubsection{Selenium WebDriver}
-Selenium WebDriver consists of a set of libraries that helps with automation of tests for web applications, and a set of executable WebDriver files, one for each browser, that perform the actual automation specified in the WebDriver scripts. Selenium WebDriver interacts directly with the browser by sending calls using the native support for automation for each browser \cite{selDocWebDriver}. Selenium WebDriver runs on Windows, Linux and Macintosh, and supports most conventional web browsers, including Firefox, Chrome, Internet Explorer, Opera and Safari.
+Selenium WebDriver consists of a set of libraries that helps with automation of tests for web applications, and a set of executable WebDriver files, one for each browser, that perform the actual automation specified in the WebDriver scripts. Selenium WebDriver interacts directly with the browser by sending calls using the native support for automation for each browser \cite{selDocWebDriver}. Selenium WebDriver runs on Windows, Linux and Mac, and supports most conventional web browsers.
 
 The WebDriver is used to create a new instance of the requested web browser. It is used to fetch a given web page, and then locates UI elements. When an element is located, the WebDriver can be used to perform an action on the element, such as clicking a button, checking a checkbox, or populating a text field.
 
@@ -36,7 +35,7 @@ The WebDriver is used to create a new instance of the requested web browser. It 
 \lstlistingname \space \ref{listing.selWebDriverEx} shows a simple example of how Selenium WebDriver can be used with Python to open the Chrome web browser, navigate to the Altibox TV Overalt start page, locate the \emph{Login} button, and click it. \toolname \space revolves around executing scripts that uses the Selenium 2.0 libraries and WebDrivers to execute automated web browser tests.
 
 \subsubsection{Selenium Grid}\label{subsubsec.seleniumGrid}
-Selenium Grid is a tool for executing Selenium tests on remote machines in a distributed environment, and thus allowing for parallel execution. This also opens up for running tests on different operating systems.
+Selenium Grid is a tool for executing Selenium tests on remote machines in a distributed environment, and thus allowing for executing tests on multiple machines in parallel. This also opens up for running tests on different operating systems.
 
 Reasons for wanting to incorporate Selenium Grid include being able to run tests against multiple browsers, browser versions and browsers running on different operating systems, and to reduce the execution time of the tests. In practice, a grid is made up of one Selenium Grid Server; a \emph{hub}, and one or more slave machines; \emph{nodes}, all running a Selenium Standalone Server. The nodes use Selenium WebDriver to communicate with the hub through a JSON wire protocol \cite{selGrid}.
 
@@ -68,7 +67,7 @@ class Schedule(models.Model):
 Aside from allowing rapid progression of development, one of the main reasons for choosing Django rather than building the dashboard from scratch or using a different web framework, is its powerful administrator site. An administrator site was exactly what was needed to build the dashboard of \toolname. Another contributing factor was to provide consistency and the ability to communicate seamlessly with the remaining parts of the system, since Django builds on the same programming language as the rest of the system. The dashboard will be presented in Chapter \ref{chapter.system_overview}. Details concerning the implementation will be explained in Chapter \ref{chapter.implementation}. Version 1.9 of Django was used in this project.
 
 \subsection{OR-Tools}\label{subsection.ortools}
-Google's \emph{Operations Research Tools} (OR-Tools) \cite{ortools} is an open source library for combinatorial and constraint optimization. The tool set is written in C++, but is available with bindings for other programming languages such as Java, C\# and Python. The OR-Tools library strictly conforms to the Google coding styles, and is of such high quality that it has been accepted for usage internally at Google.
+Google's \emph{Operations Research Tools} (OR-tools) \cite{ortools} is an open source library for combinatorial and constraint optimization. The tool set is written in C++, but is available with bindings for other programming languages such as Java, C\# and Python. The OR-tools library strictly conforms to the Google coding styles, and is of such high quality that it has been accepted for usage internally at Google.
 
 \lstlistingname \space \ref{listing.or_tools} shows how a simple optimization problem is solved using this library. In this problem, a list of integers will be assigned values ranging from 0 to 2. A constraint specifying that no two identical numbers should be placed beside each other is added as a constraint. Maximizing the sum of the integers is specified as the objective. The solver searches for better and better solutions until finally arriving at an optimal solution.
 
@@ -97,4 +96,4 @@ while solver.NextSolution():
 >>> [2, 1, 2] Sum = 5
 \end{lstlisting}
 
-As a means to evaluate the optimization mechanism of test allocations designed for this project, an alternative version using OR-Tools has also been implemented. This alternative implementation, as well as a discussion, evaluation and thorough comparison of the two versions will be presented later in the report.
+As a means to evaluate the optimization mechanism of test allocations designed for this project, an alternative version using OR-tools has also been implemented. This alternative implementation will be presented in Chapter \ref{chapter.implementation}, and a discussion, evaluation and comparison of the two implementations will be presented in Chapter \ref{chapter.discussion}.
