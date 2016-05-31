@@ -1,6 +1,5 @@
 import sys
 import re
-import subprocess
 
 from os import path, listdir
 
@@ -67,10 +66,12 @@ def get_browsers(current_dir, uu_id):
 
 	return ret_str
 
+
 def get_selenium_server_path(current_dir):
 	for file in listdir(current_dir):
 		if file.startswith('selenium-server-standalone') and file.endswith('.jar'):
 			return path.abspath(path.join(current_dir, str(file)))
+
 
 def get_driver(current_dir, browser):
 	driver_dir = path.abspath(path.join(current_dir, 'drivers'))
@@ -83,7 +84,7 @@ if 'linux' in sys.platform:
 	current_dir = sys.path[0]
 
 	selenium_server_path = get_selenium_server_path(current_dir)
-	
+
 	command = 'java -jar "%s"' % selenium_server_path
 	command += ' -role node'
 	command += ' -hubHost %s' % "lnor010710"

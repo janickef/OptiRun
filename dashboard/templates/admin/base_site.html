@@ -7,6 +7,10 @@
     <link href="http://fonts.googleapis.com/css?family=Orbitron&subset=latin,latin-ext" rel="stylesheet" type="text/css">
     <link href="{{ STATIC_URL }}extra.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}js/toggles.js" language="JavaScript" type="text/javascript"></script>
 {% endblock %}
 
 {% block title %}
@@ -30,55 +34,61 @@
 
 {% block footer %}
     {% if user.is_authenticated %}
-        <div id="menubar">
+    <div id="menubar">
             <ul>
                 <a href="/admin/"><li><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&emsp;Home</li></a>
                 {% if perms.auth %}
-                    <a href="/admin/auth/"><li><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&emsp;User Administration</li></a>
+                    <li id="auth" onclick="toggle('auth')">
+                        <i class="fa fa-dot-circle-o" aria-hidden="true"></i>&emsp;User Administration
+                        <span id="auth-right" class="right"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                    </li>
                     <ul id="auth-nested">
                         {% if perms.auth.can_change_user or perms.auth.can_add_user or perms.auth.can_delete_user %}
-                            <a href="/admin/auth/user"><li><i class="fa fa-user" aria-hidden="true"></i>&emsp;Users</li></a>
+                            <a href="/admin/auth/user"><li>Users</li></a>
                         {% endif %}
 
                         {% if perms.auth.can_change_group or perms.auth.can_add_group or perms.auth.can_delete_group %}
-                            <a href="/admin/auth/group"><li><i class="fa fa-users" aria-hidden="true"></i>&emsp;Groups</li></a>
+                            <a href="/admin/auth/group"><li>Groups</li></a>
                         {% endif %}
                     </ul>
                 {% endif %}
 
                 {% if perms.testautomation %}
-                    <a href="/admin/testautomation"><li><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&emsp;Test Automation</li></a>
+                    <li id="testautomation" onclick="toggle('testautomation')">
+                        <i class="fa fa-dot-circle-o" aria-hidden="true"></i>&emsp;Test Automation
+                        <span id="testautomation-right" class="right"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                    </li>
                     <ul id="testautomation-nested">
                     {% if perms.testautomation.can_change_test_cases or perms.testautomation.can_add_test_cases or perms.testautomation.can_delete_test_cases %}
-                        <a href="/admin/testautomation/testcase"><li><i class="fa fa-object-ungroup" aria-hidden="true"></i>&emsp;Test Cases</li></a>
+                        <a href="/admin/testautomation/testcase"><li>Test Cases</li></a>
                     {% endif %}
 
                     {% if perms.testautomation.can_change_groups or perms.testautomation.can_add_groups or perms.testautomation.can_delete_groups %}
-                        <a href="/admin/testautomation/group"><li><i class="fa fa-object-group" aria-hidden="true"></i>&emsp;Groups</li></a>
+                        <a href="/admin/testautomation/group"><li>Groups</li></a>
                     {% endif %}
 
                     {% if perms.testautomation.can_change_test_machines or perms.testautomation.can_add_test_machines or perms.testautomation.can_delete_test_machines %}
-                        <a href="/admin/testautomation/testmachine"><li><i class="fa fa-desktop" aria-hidden="true"></i>&emsp;Test Machines</li></a>
+                        <a href="/admin/testautomation/testmachine"><li>Test Machines</li></a>
                     {% endif %}
 
                     {% if perms.testautomation.can_change_logs or perms.testautomation.can_add_logs or perms.testautomation.can_delete_logs %}
-                        <a href="/admin/testautomation/log"><li><i class="fa fa-book" aria-hidden="true"></i>&emsp;Execution Log</li></a>
+                        <a href="/admin/testautomation/log"><li>Execution Log</li></a>
                     {% endif %}
 
                     {% if perms.testautomation.can_change_schedules or perms.testautomation.can_add_schedules or perms.testautomation.can_delete_schedules %}
-                        <a href="/admin/testautomation/schedule"><li><i class="fa fa-calendar" aria-hidden="true"></i>&emsp;Schedule</li></a>
+                        <a href="/admin/testautomation/schedule"><li>Schedule</li></a>
                      {% endif %}
                     </ul>
                 {% endif %}
 
                 <a href="/admin/download/"><li><i class="fa fa-download" aria-hidden="true"></i>&emsp;Download</li></a>
-                <a href="/admin/help/"><li><i class="fa fa-info-circle" aria-hidden="true"></i>&emsp;Help</li></a>
                 <a href="/admin/about/"><li><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&emsp;About</li></a>
+                <a href="/admin/help/"><li><i class="fa fa-info-circle" aria-hidden="true"></i>&emsp;Help</li></a>
             </ul>
-            <a id="menu-logout" href="/admin/logout/"><i class="fa fa-sign-out fa-3x fa-flip-horizontal" aria-hidden="true"></i><br>Log Out</a>
         </div>
     {% endif %}
 {% endblock %}
+
 
 
 

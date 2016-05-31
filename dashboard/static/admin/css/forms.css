@@ -163,6 +163,7 @@ form .aligned table p {
 
 .colM .aligned .vLargeTextField, .colM .aligned .vXMLLargeTextField {
     width: 610px;
+    height: 20px;
 }
 
 .checkbox-row p.help {
@@ -210,8 +211,8 @@ fieldset.collapsed {
 }
 
 fieldset.collapsed h2 {
-    background: #f8f8f8;
-    color: #666;
+    background: #777;
+    color: #fff;
 }
 
 fieldset .collapse-toggle {
@@ -221,7 +222,7 @@ fieldset .collapse-toggle {
 fieldset.collapsed .collapse-toggle {
     background: transparent;
     display: inline;
-    color: #447e9b;
+    color: #c4dce8;
 }
 
 /* MONOSPACE TEXTAREAS */
@@ -235,7 +236,7 @@ fieldset.monospace textarea {
 .submit-row {
     padding: 12px 14px;
     margin: 0 0 20px;
-    background: #f8f8f8;
+    background: #fff;
     border: 1px solid #eee;
     border-radius: 4px;
     text-align: right;

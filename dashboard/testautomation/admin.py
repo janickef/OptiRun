@@ -9,17 +9,23 @@ from os import path
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin import helpers
+from django.contrib.admin.views.main import ChangeList
 from django.core import serializers
+from django.db import models
 from django.db.models import Avg
+from django.forms import TextInput, Textarea
 from django.http import HttpResponse
 from django.template.response import TemplateResponse
 from django.utils import formats
+
+from django.contrib.admin import SimpleListFilter
 from django.utils import timezone
 
 from .forms import TestCaseAdminForm, ScheduleAdminForm
 from .models import TestCase, Group, Schedule, Log, TestMachine
 
 browsers = ['chrome', 'edge', 'firefox', 'internet explorer']
+
 
 def capability_version_display(attr, attr_ver):
     try:
@@ -73,7 +79,36 @@ def get_server_settings(port_name):
     return int(port)
 
 
+class TestCaseChangeList(ChangeList):
+    def __init__(self, *args, **kwargs):
+        super(TestCaseChangeList, self).__init__(*args, **kwargs)
+        self.title = 'Test Cases'
+
+
 class TestCaseAdmin(admin.ModelAdmin):
+    def get_changelist(self, request, **kwargs):
+        return TestCaseChangeList
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = [
+            (None,     {'fields': ['title', 'script', 'description']}),
+            ('Groups', {'fields': ['groups']}),
+        ]
+
+        if obj is not None:
+            fieldsets += [
+                ('Previous Execution',     {'fields': ['prev_date_link', 'prev_res']}),
+                ('Execution Summary',      {'fields': ['times_run', 'avg_dur_display', 'result_summary']}),
+                ('Created',                {'fields': ['created', 'created_by']}),
+                ('Last Updated',           {'fields': ['last_updated', 'last_updated_by_display']})
+            ]
+        return fieldsets
+
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'size': '40'})},
+        models.TextField: {'widget': Textarea(attrs={'rows': 4, 'cols': 40})},
+    }
+
     readonly_fields = (
         'created',
         'created_by',
@@ -89,15 +124,6 @@ class TestCaseAdmin(admin.ModelAdmin):
 
     form = TestCaseAdminForm
 
-    fieldsets = [
-        (None,          {'fields': ['title', 'script']}),
-        (None,          {'fields': ['groups']}),
-        (None,          {'fields': ['prev_date_link', 'prev_res']}),
-        (None,          {'fields': ['times_run', 'avg_dur_display', 'result_summary']}),
-        (None,          {'fields': ['created', 'created_by']}),
-        (None,          {'fields': ['last_updated', 'last_updated_by_display']})
-    ]
-
     list_display = (
         'title',
         'times_run',
@@ -112,8 +138,9 @@ class TestCaseAdmin(admin.ModelAdmin):
     )
 
     list_filter = [
+        'groups',
         'created_by',
-        'last_updated_by'
+        'last_updated_by',
     ]
 
     search_fields = [
@@ -175,17 +202,6 @@ class TestCaseAdmin(admin.ModelAdmin):
     prev_res.short_description = "Previous Result"
     prev_res.allow_tags = True
 
-    # Action methods for TestCaseAdmin
-    def export_as_json(modeladmin, request, queryset):
-        response = HttpResponse(content_type="application/json")
-        serializers.serialize("json", queryset, stream=response)
-        print response
-
-    #def export_selected_objects(modeladmin, request, queryset):
-    #    selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-    #    ct = ContentType.objects.get_for_model(queryset.model)
-    #    return HttpResponseRedirect("/export/?ct=%s&ids=%s" % (ct.pk, ",".join(selected)))
-
     def admin_action(self, request, queryset):
         if request.POST.get('post'):
             data = []
@@ -204,18 +220,14 @@ class TestCaseAdmin(admin.ModelAdmin):
                         'title':        obj.title,
                     })
 
-            #hostname, port = get_server_settings()
             port = get_server_settings('request_port')
-
             json_data = json.dumps(data)
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((socket.gethostname(), port))
                 s.send(json_data)
                 s.close()
-
                 executions = len(queryset)
-
                 if executions == 1:
                     message_part = "1 test case was"
                 else:
@@ -238,6 +250,9 @@ class TestCaseAdmin(admin.ModelAdmin):
             return TemplateResponse(request, '../templates/admin/intermediate.html',
                 context, current_app=self.admin_site.name)
 
+    admin_action.short_description = 'Execute Now'
+
+    """
     def execute_now(self, request, queryset):
         response = HttpResponse(content_type="application/json")
         serializers.serialize("json", queryset, stream=response)
@@ -280,8 +295,10 @@ class TestCaseAdmin(admin.ModelAdmin):
                 "Selected test cases were not executed. Contact with server could not be established.",
                 level=messages.ERROR
             )
+    """
 
-    actions = [execute_now, export_as_json, admin_action]
+    # actions = [execute_now, admin_action]
+    actions = [admin_action]
 
     # On save method for TestCaseAdmin
     def save_model(self, request, obj, form, change):
@@ -306,16 +323,47 @@ class TestCaseAdmin(admin.ModelAdmin):
 admin.site.register(TestCase, TestCaseAdmin)
 
 
+class GroupChangeList(ChangeList):
+    def __init__(self, *args, **kwargs):
+        super(GroupChangeList, self).__init__(*args, **kwargs)
+        self.title = 'Groups'
+
+
 class GroupAdmin(admin.ModelAdmin):
+    def get_changelist(self, request, **kwargs):
+        return GroupChangeList
+
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'size': '40'})},
+        models.TextField: {'widget': Textarea(attrs={'rows': 4, 'cols': 40})},
+    }
+
     fieldsets = [
-        (None,          {'fields': ['title']}),
+        (None,          {'fields': ['title', 'description']}),
         ('Test Cases',  {'fields': ['test_cases']}),
     ]
-    list_display = ('title', 'created', 'created_by', 'last_updated', 'last_updated_by')
+
+    list_display = (
+        'title',
+        'created',
+        'created_by',
+        'last_updated',
+        'last_updated_by',
+    )
+
     filter_horizontal = ('test_cases',)
 
-    list_filter = ['created_by', 'last_updated_by']
-    search_fields = ['title', 'created_by', 'last_updated_by']
+    list_filter = [
+        'created_by',
+        'last_updated_by',
+    ]
+
+    search_fields = [
+        'title',
+        'created_by',
+        'last_updated_by',
+        'description',
+    ]
 
     def save_model(self, request, obj, form, change):
         if obj.pk is None:
@@ -326,24 +374,42 @@ class GroupAdmin(admin.ModelAdmin):
 admin.site.register(Group, GroupAdmin)
 
 
+class ScheduleChangeList(ChangeList):
+    def __init__(self, *args, **kwargs):
+        super(ScheduleChangeList, self).__init__(*args, **kwargs)
+        self.title = 'Schedules'
+
+
 class ScheduleAdmin(admin.ModelAdmin):
+    def get_changelist(self, request, **kwargs):
+        return ScheduleChangeList
 
     form = ScheduleAdminForm
 
     fieldsets = [
-        (None,          {'fields': ['title', 'start_time']}),
-        ('Recurrence',  {'fields': ['repeat', 'recurrence_rule', 'range', 'end_by'], 'classes': ('collapse',)}),
+        (None,          {'fields': ['title', 'start_time', 'activated']}),
+        ('Recurrence',  {'fields': ['repeat', 'recurrence_rule', 'range', 'end_by']}),
         ('Groups',      {'fields': ['groups']}),
         ('Test Cases',  {'fields': ['test_cases']}),
     ]
-    list_display = ('title', 'rrule_string', 'next_execution', 'activated')
-    #list_display = ('title', 'rrule_string', 'next_execution', 'activity_status')
-                    #'created_date', 'created_by', 'last_updated', 'last_updated_by')
+
+    list_display = ('title', 'activated', 'next_execution', 'recurrence_rule_display')
     filter_horizontal = ('test_cases', 'groups')
     radio_fields = {'recurrence_rule': admin.VERTICAL, 'range': admin.VERTICAL}
 
     list_filter = ['activated', 'created_by', 'last_updated_by']
     search_fields = ['title', 'created_by', 'last_updated_by']
+
+    def recurrence_rule_display(self, obj):
+        if obj.repeat and (obj.range == 0 or obj.end_by >= datetime.utcnow()):
+            if obj.recurrence_rule == 0:
+                return 'Daily'
+            elif obj.recurrence_rule == 1:
+                return 'Weekly'
+            return 'Monthly'
+        return '-'
+
+    recurrence_rule_display.short_description = "Recurrence"
 
     def activate(self, request, queryset):
         changed_count = 0
@@ -445,7 +511,6 @@ class ScheduleAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if obj.pk is None:
             obj.created_by = request.user
-            obj.activated = True
         obj.last_updated_by = request.user
 
         utc_diff = datetime.now() - datetime.utcnow()
@@ -462,7 +527,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         elif obj.recurrence_rule == 1:
             pattern = "WEEKLY"
         else:
-            pattern = "MINUTELY"
+            pattern = "MONTHLY"
         rrule_string += "FREQ=" + pattern
         if not obj.repeat:
             rrule_string += ";COUNT=1"
@@ -622,11 +687,10 @@ def report(obj):
     if jira_instance:
         search_res = search(jira_instance, obj)
         if search_res:
-            success = True
             for issue in search_res:
                 if not comment(jira_instance, issue, obj):
-                    success = False
-            return success
+                    return create(jira_instance, obj)
+            return True
         else:
             return create(jira_instance, obj)
     else:
@@ -643,13 +707,59 @@ def get_issues(obj):
     if jira_instance:
         try:
             return [{'key': item.key, 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
+            # return [{'key': item.key, 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
+            # return [{'key': "%s (%s)" % (item.key, item.status), 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
+            # return [{'key': item.key + item.fields.status, 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
         except:
             return False
     else:
         return False
 
 
+class LogResultFilter(SimpleListFilter):
+    title = 'Result'
+    parameter_name = 'result'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('PASSED', ('Passed')),
+            ('FAILED', ('Failed')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'PASSED':
+            return queryset.filter(result=True)
+        elif self.value() == 'FAILED':
+            return queryset.filter(result=False)
+
+
+class LogExecutedFilter(SimpleListFilter):
+    title = 'Executed?'
+    parameter_name = 'executed'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('EXECUTED', 'Executed'),
+            ('NOT EXECUTED', 'Not Executed'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'EXECUTED':
+            return queryset.filter(result__isnull=False)
+        elif self.value() == 'NOT EXECUTED':
+            return queryset.filter(result__isnull=True)
+
+
+class LogChangeList(ChangeList):
+    def __init__(self, *args, **kwargs):
+        super(LogChangeList, self).__init__(*args, **kwargs)
+        self.title = 'Execution Log'
+
+
 class LogAdmin(admin.ModelAdmin):
+    def get_changelist(self, request, **kwargs):
+        return LogChangeList
+
     readonly_fields = (
         'test',
         'result_display',
@@ -668,7 +778,20 @@ class LogAdmin(admin.ModelAdmin):
         'get_jira_issues'
     )
 
-    fields = readonly_fields
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = [
+            (None,               {'fields': ['test', 'result_display', 'get_jira_issues', 'note']}),
+            ('Test Environment', {'fields': ['browser_version_display', 'platform_display', 'test_machine_ip']}),
+            ('Time',             {'fields': ['start_time', 'end_time', 'duration']}),
+        ]
+
+        if obj.console_log:
+            fieldsets += [('Console Log', {'fields': ['console_log_display'], 'classes': ['collapse']})]
+
+        if obj.output:
+            fieldsets += [('Output', {'fields': ['output_display'], 'classes': ['collapse']})]
+
+        return fieldsets
 
     list_display = (
         'test',
@@ -680,7 +803,8 @@ class LogAdmin(admin.ModelAdmin):
     )
 
     list_filter = [
-        'result',
+        LogResultFilter,
+        LogExecutedFilter,
     ]
 
     search_fields = [
@@ -704,9 +828,10 @@ class LogAdmin(admin.ModelAdmin):
                     ret_str += ', '
             return ret_str
         elif issues is False:
-            return '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Contact with JIRA could not be established. Check VPN.'
+            return '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Contact with JIRA server could not be established.'
         return '-'
 
+    get_jira_issues.short_description = "JIRA Issues"
     get_jira_issues.allow_tags = True
 
 
@@ -790,14 +915,16 @@ class LogAdmin(admin.ModelAdmin):
         if success == 0 and failure == 0:
             self.message_user(request, 'Could not establish connection with JIRA.', level=messages.WARNING)
 
+    report_to_jira.short_description = 'Report to JIRA'
+
     actions = [report_to_jira]
 
     ###
     def has_add_permission(self, request):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
     """def has_change_permission(self, request, obj=None):
         return False"""
@@ -805,7 +932,57 @@ class LogAdmin(admin.ModelAdmin):
 admin.site.register(Log, LogAdmin)
 
 
+class TestMachineBrowserFilter(SimpleListFilter):
+    title = 'Browser'
+    parameter_name = 'browser'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('CHROME',            ('Chrome')),
+            ('EDGE',              ('Edge')),
+            ('FIREFOX',           ('Firefox')),
+            ('INTERNET EXPLORER', ('Internet Explorer')),
+        )
+
+    def queryset(self, request, queryset):
+        queryset = queryset.filter(active=True)
+        if self.value() == 'CHROME':
+            return queryset.filter(chrome__isnull=False)
+        elif self.value() == 'EDGE':
+            return queryset.filter(edge__isnull=False)
+        elif self.value() == 'FIREFOX':
+            return queryset.filter(firefox__isnull=False)
+        elif self.value() == 'INTERNET EXPLORER':
+            return queryset.filter(internet_explorer__isnull=False)
+
+
+class TestMachinePlatformFilter(SimpleListFilter):
+    title = 'Platform'
+    parameter_name = 'platform'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('LINUX',            ('Linux')),
+            ('WINDOWS',          ('Windows')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'LINUX':
+            return queryset.filter(operating_system='Linux')
+        elif self.value() == 'WINDOWS':
+            return queryset.filter(operating_system='Windows')
+
+
+class TestMachineChangeList(ChangeList):
+    def __init__(self, *args, **kwargs):
+        super(TestMachineChangeList, self).__init__(*args, **kwargs)
+        self.title = 'Test Machines'
+
+
 class TestMachineAdmin(admin.ModelAdmin):
+    def get_changelist(self, request, **kwargs):
+        return TestMachineChangeList
+
     readonly_fields = [
         'url',
         'uuid',
@@ -814,14 +991,25 @@ class TestMachineAdmin(admin.ModelAdmin):
         'browsers_display',
     ]
 
-    fields = [
-        'hostname',
-        'ip',
-        'approved',
-    ] + readonly_fields
+    def get_fieldsets(self, request, obj=None):
+        if obj is None:
+            return [
+                (None, {'fields': ['hostname']}),
+            ]
+        return [
+            (None, {'fields': ['hostname', 'approved']}),
+            (None, {'fields': ['active', 'platform_display', 'browsers_display']}),
+        ]
 
     search_fields = [
         'hostname',
+    ]
+
+    list_filter = [
+        'active',
+        'approved',
+        TestMachineBrowserFilter,
+        TestMachinePlatformFilter,
     ]
 
     list_display = [
@@ -833,7 +1021,8 @@ class TestMachineAdmin(admin.ModelAdmin):
     ]
 
     def hostname_display(self, obj):
-        return obj.hostname.upper()
+        #return obj.hostname.upper()
+        return obj.hostname
     hostname_display.short_description = "Hostname"
 
     def browsers_list_display(self, obj):
@@ -887,7 +1076,8 @@ class TestMachineAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if obj.pk is None:
             obj.active = False
-            obj.operating_system = 'Unknown'
+            obj.approved = True
+            obj.operating_system = '-'
         obj.save()
 
 admin.site.register(TestMachine, TestMachineAdmin)

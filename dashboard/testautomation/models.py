@@ -13,9 +13,18 @@ from django.utils.encoding import python_2_unicode_compatible
 class TestCase(models.Model):
     # Write
     title           = models.CharField(max_length=80, null=False)
-    script          = models.FileField(upload_to='scripts', blank=True, null=True)
+    script          = models.FileField(upload_to='scripts')
     description     = models.TextField(null=True, blank=True)
 
+    #priority        = models.IntegerField(
+    #    'Priority',
+    #    choices=(
+    #        (0, '1 - Low Priority'),
+    #        (1, '2 - Medium Priority'),
+    #        (2, '3 - High Priority')
+    #    ),
+    #    default=0,
+    #)
     groups          = models.ManyToManyField('Group', blank=True)
     schedules       = models.ManyToManyField('Schedule', blank=True)
 
@@ -25,18 +34,21 @@ class TestCase(models.Model):
     last_updated    = models.DateTimeField('Last Updated', auto_now=True)
     last_updated_by = models.ForeignKey(User, related_name='test_case_update')
 
+    # JIRA
+    #jira_priority   =
+
+    #jira_severity   =
+
     def __str__(self):
         return self.title
 
 
 @python_2_unicode_compatible
 class Group(models.Model):
-    # Write
     title           = models.CharField(max_length=80, null=False)
+    description     = models.TextField(null=True, blank=True)
     test_cases      = models.ManyToManyField('TestCase', through=TestCase.groups.through, blank=True)
     schedules       = models.ManyToManyField('Schedule', blank=True)
-
-    # Additional
     created         = models.DateTimeField('Created', auto_now_add=True)
     created_by      = models.ForeignKey(User, related_name='group_create')
     last_updated    = models.DateTimeField('Last updated', auto_now=True)
@@ -50,6 +62,7 @@ class Group(models.Model):
 class Schedule(models.Model):
     # Write
     title = models.CharField(max_length=80, null=False)
+    description = models.TextField(null=True, blank=True)
     test_cases = models.ManyToManyField('TestCase', through=TestCase.schedules.through, blank=True)
     groups = models.ManyToManyField('Group', through=Group.schedules.through, blank=True)
 
@@ -58,22 +71,22 @@ class Schedule(models.Model):
     repeat = models.BooleanField('Repeat?')
 
     recurrence_rule = models.IntegerField(
-            'Recurrence Pattern',
-            choices=(
-                (0, 'Repeat Daily'),
-                (1, 'Repeat Weekly'),
-                (2, 'Repeat Monthly')
-            ),
-            default=0,
+        'Recurrence Pattern',
+        choices=(
+            (0, 'Repeat Daily'),
+            (1, 'Repeat Weekly'),
+            (2, 'Repeat Monthly')
+        ),
+        default=0,
     )
 
     range = models.IntegerField(
-            'Range of Recurrence',
-            choices=(
-                (0, 'No End Date'),
-                (2, 'End date')
-            ),
-            default=0,
+        'Range of Recurrence',
+        choices=(
+            (0, 'No End Date'),
+            (2, 'End date')
+        ),
+        default=0,
     )
 
     end_by = models.DateTimeField('End By', null=True, blank=True)
@@ -147,6 +160,7 @@ class TestMachine(models.Model):
     uuid                 = models.CharField('UUID', editable=False, max_length=80, null=True, blank=True)
     active               = models.BooleanField(editable=False)
     approved             = models.BooleanField()
+    description = models.TextField(null=True, blank=True)
 
     # OPERATING SYSTEM
     operating_system     = models.CharField(max_length=30, null=True, blank=True, editable=False)

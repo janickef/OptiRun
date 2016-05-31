@@ -1,19 +1,5 @@
 @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 
-/*
-@font-face{
-    font-family:'FontAwesome';
-    font-weight:normal;
-    font-style:normal;
-    src:url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?v=4.3.0');
-    src:url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'),
-        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2'),
-        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.woff?v=4.3.0') format('woff'),
-        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'),
-        url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
-}
-*/
-
 body {
     background: #eee;
     color: #666;
@@ -135,7 +121,7 @@ a.section:focus, a.section:hover {
     background: #fff none repeat scroll 0 0;
     border: 1px solid black;
     border-radius: 4px;
-    box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.15) inset;
+    /*box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.15) inset;*/
     color: #333;
     cursor: pointer;
     font-size: 13px;
@@ -143,31 +129,6 @@ a.section:focus, a.section:hover {
     line-height: 1;
     margin: 0;
     padding: 4px 8px;
-}
-
-/*
-
-    Form elements for intermediate page
-
-*/
-
-.intermediate thead th input[type="checkbox"] + label{
-    line-height: normal;
-    font-size: 13px;
-    color: #bbb;
-}
-
-.intermediate input[type="radio"], .intermediate_select_all input[type='radio'],
-.intermediate input[type="checkbox"], .intermediate_select_all input[type="checkbox"] {
-    display: none
-}
-
-input[type="radio"] + label, input[type="checkbox"] + label {
-    cursor: pointer;
-    cursor: hand;
-    color: #bbb;
-    vertical-align:middle;
-    text-align:center;
 }
 
 fieldset {
@@ -182,45 +143,95 @@ table.intermediate .fa {
     padding: 5px;
 }
 
+#intermediate-container {
+    width: 700px;
+}
+
+.submit-row {
+    padding: 12px 14px;
+    background: #fff;
+    text-align: right;
+    overflow: hidden;
+    margin-top: 35px;
+}
+
+.intermediate {
+    text-align: middel;
+    margin: 0 auto;
+    text-align: left;
+}
+
+/*
+.intermediate thead th.center, .intermediate tbody tr.center {
+    text-align: center;
+}
+*/
+
+.intermediate thead th {
+    background: #777;
+    color: #fff;
+    border: none;
+    font-weight: 300;
+    font-size: 13px;
+}
+
+.intermediate tbody {
+    background: #fff;
+}
+
+.intermediate tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.intermediate thead th input[type="checkbox"] + label{
+    line-height: normal;
+    font-size: 13px;
+}
+
+.intermediate input[type="radio"], .intermediate_select_all input[type='radio'],
+.intermediate input[type="checkbox"], .intermediate_select_all input[type="checkbox"] {
+    display: none
+}
+
 .intermediate input[type="radio"] + label, .intermediate input[type="checkbox"] + label {
-.intermediate_select_all input[type="radio"] + label, .intermediate_select_all input[type="checkbox"] + label
+    cursor: pointer;
+    cursor: hand;
+    color: #bbb;
+    vertical-align:middle;
+    font-size: 13px;
+}
+
+.intermediate thead input[type="radio"] + label, .intermediate thead input[type="checkbox"] + label {
+    color: #fff;
+    padding-top:10px;
+    vertical-align:middle;
+
+}
+
+.intermediate tbody input[type="radio"] + label, .intermediate tbody input[type="checkbox"] + label {
     color: #bbb;
     padding-top:10px;
     vertical-align:middle;
-    text-align:center;
-
-    /*-webkit-text-stroke-width: 0.7px;
-    -webkit-text-stroke-color: #555;*/
-
-
-    /*text-shadow: 1px 1px 1px grey, -1px -1px -1px grey*/
-    /*text-shadow: 2px 0 0 #aaa, -2px 0 0 #aaa, 0 2px 0 #aaa, 0 -2px 0 #aaa, 1px 1px #aaa, -1px -1px 0 #aaa, 1px -1px 0 #aaa, -1px 1px 0 #aaa;*/
+    text-align: center;
 }
 
-.intermediate input[type="radio"] + label:hover, .intermediate input[type="checkbox"] + label:hover,
-.intermediate_select_all input[type="radio"] + label:hover, .intermediate_select_all input[type="checkbox"] + label:hover {
-    /*-webkit-text-stroke-color: black;*/
-    /*text-shadow: 1px 0 0 #555, -1px 0 0 #555, 0 1px 0 #555, 0 -2px 0 #555, 1px 1px #555, -1px -1px 0 #555, 1px -1px 0 #555, -1px 1px 0 #555;*/
-    color: #888;
+.intermediate thead input[type="radio"]:checked + label, .intermediate thead input[type="checkbox"]:checked + label {
+    color: #c4dce8;
+    text-align: center;
 }
 
-.intermediate input[type="radio"]:checked + label, .intermediate input[type="checkbox"]:checked + label,
-.intermediate_select_all input[type="radio"]:checked + label, .intermediate_select_all input[type="checkbox"]:checked + label {
-    /*-webkit-text-stroke-color: black;*/
-    /*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+.intermediate thead input[type="radio"] + label:hover, .intermediate_select_all input[type="checkbox"] + label:hover,
+.intermediate thead input[type="radio"]:checked + label:hover, .intermediate thead input[type="checkbox"]:checked + label:hover {
+    color: #d5e6ee;
+}
+
+.intermediate tbody input[type="radio"] + label:hover, .intermediate tbody input[type="checkbox"] + label:hover,
+.intermediate tbody input[type="radio"]:checked + label, .intermediate tbody input[type="checkbox"]:checked + label {
     color: #555;
 }
 
-
-.intermediate input[type="radio"]:checked + label:hover, .intermediate input[type="checkbox"]:checked + label:hover,
-.intermediate_select_all input[type="radio"]:checked + label:hover, .intermediate_select_all input[type="checkbox"]:checked + label:hover {
-    /*-webkit-text-stroke-color: black;*/
-    /*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+.intermediate tbody input[type="radio"]:checked + label:hover, .intermediate tbody input[type="checkbox"]:checked + label:hover {
     color: #777;
-}
-
-.intermediate .intermediate_select_all {
-    margin-right: 20pt;
 }
 
 .add_related {
@@ -235,48 +246,6 @@ table.intermediate .fa {
 a#add_id_groups.related-widget-wrapper-link.add-related, a#add_id_test_cases.related-widget-wrapper-link.add-related{
     display:none;
 }
-
-/*
-.intermediate input[type="radio"]:first-child + label, .intermediate input[type="checkbox"]:first-child + label {
-    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    font-size:11px;
-    margin-top: 0px;
-    padding-top:7px;
-    padding-bottom:10px;
-    width: 39px;
-    height: 39px;
-    border:solid 1px #888;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
-    text-transform: uppercase;
-
-    vertical-align:middle;
-    text-align:center;
-}
-
-.intermediate input[type="radio"]:first-child:hover + label, .intermediate input[type="checkbox"]:first-child:hover + label {
-    border-color:#555;
-}
-
-.intermediate input[type="radio"]:first-child:checked + label, .intermediate input[type="checkbox"]:first-child:checked + label {
-    border-color: #333;
-}*/
-
-
-
-
-
-input[type="checkbox"] {
-    /*display:none;*/
-}
-/*
-input[type="checkbox"] + label span {
-    display:inline-block;
-    width:19px;
-    height:19px;
-    background:url(static/check_radio_sheet.png) left top no-repeat;
-}*/
 
 input[type="checkbox" i] {
     border: 1px solid black;
@@ -295,12 +264,12 @@ input[type="checkbox"]:checked {
 
 .button, input[type=submit], input[type=button], .submit-row input, a.button {
     background: #777;
-    box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.5) inset;
+    /*box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.5) inset;*/
 }
 
 input[type=submit].default, .submit-row input.default {
     background: #777;
-    box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.5) inset;
+    /*box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.5) inset;*/
 }
 
 input[type=submit]:hover.default, .submit-row input:hover.default {
@@ -334,12 +303,10 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 .result-display-passed {
-    /*color:#70BF2B;*/
     color:#79aec8;
 }
 
 .result-display-failed {
-    /*color:#DD4646;*/
     color:#333;
 }
 
@@ -360,38 +327,37 @@ td, th {
     color: #333;
 }
 
-app-testautomation {
-    display: inline-block;
+.app-sites, #content-related {
+    display: none;
 }
 
+#login-form {
+    padding-bottom: 20px;
+}
+
+
 #content {
-    padding-left: 240px
+    padding-left: 260px;
 }
 
 html, body, #container {
     height: 100%;
+    overflow-y:auto;
+}
+
+#container {
+    background-image: url(../static/admin/img/menubar-background.png);
+    background-repeat: repeat-y;
 }
 
 #menubar {
-    width: 200px;
-    min-height: 625px;
-    /*height: calc(100% - 128px);*/
-    height: 100%;
+    width: 220px;
+    min-height: calc(100%-128px);
+    bottom:0px;
+    overflow-y:auto;
     position: absolute;
     text-transform: uppercase;
-    background: #ccc;
-    left: 0;
     top: 128px;
-}
-
-#menu-logout {
-    bottom: 0;
-    position: absolute;
-    text-align: center;
-    clear: both;
-    width: 100%;
-    padding-bottom: 25px;
-    font-size: 14pt;
 }
 
 ul {
@@ -402,9 +368,22 @@ ul {
 }
 
 #menubar ul li {
-    padding: 0.6em 0 0.6em 1em;
+    padding: 0.6em 1em 0.6em 1em;
     list-style-type: none;
     border-bottom: 1px solid #eee;
+    background: #ccc;
+    cursor: pointer;
+    cursor: hand;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.right {
+    float: right;
 }
 
 #menubar ul li:hover, #menubar #auth-nested li:hover, #menubar #testautomation-nested li:hover {
@@ -412,8 +391,8 @@ ul {
     color: #666;
 }
 
-#menubar #auth-nested, #menubar #testautomation-nested, #menubar ul {
-    margin: 0;
+#menubar #auth-nested, #menubar #testautomation-nested {
+    display: none;
 }
 
 #menubar #auth-nested li, #menubar #testautomation-nested li {
@@ -497,18 +476,3 @@ table.intermediate td {
 .messagelist {
     margin-left:
 }
-
-
-/*
-#menubar {
-    display: none;
-}
-
-#content {
-    padding-left: 40px;
-}
-
-#changelist-filter {
-    width: 100px;
-}
-*/

@@ -17,89 +17,104 @@
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-    <p>Select which browsers and platforms you want each test case to be executed on. If no browsers are selected for<br>
-        a given test case, a browser and platform will be selected at random based on the current pool of available test<br>
-        machines.<br></p>
+    <div id="intermediate-container">
+        <p>Select which browsers and platforms you want each test case to be executed on. If no browsers are selected
+            for a given test case, a browser and platform will be selected at random based on the current pool of
+            available test machines.</p>
 
-    <table class="intermediate">
-        <thead>
-            <tr>
-                <th>Test Case</th>
-                <th>Choose Browser(s)</th>
-                <th>Choose Platform</th>
-            </tr>
 
-            <tr>
-                <th></th>
-                <th>
-                    <fieldset class="indermediate intermediate_select_all" id="select_all_browsers">
-                        <input type="checkbox" name ="browsers" id="select_all_browser_any" value="any" checked >
-                        <label for="select_all_browser_any" data-toggle="tooltip" title="Any browser"><i class="fa fa-random fa-3x"></i></label>
-
-                        <input type="checkbox" name="browsers_firefox" id="select_all_browsers_firefox" value="firefox">
-                        <label for="select_all_browsers_firefox" data-toggle="tooltip" title="Mozilla Firefox"><i class="fa fa-firefox fa-3x"></i></label>
-
-                        <input type="checkbox" name="browsers_internet-explorer" id="select_all_browsers_internet-explorer" value="internet explorer">
-                        <label for="select_all_browsers_internet-explorer" data-toggle="tooltip" title="Internet Explorer"><i class="fa fa-internet-explorer fa-3x"></i></label>
-
-                        <input type="checkbox" name="browsers_edge"id="select_all_browsers_edge" value="edge">
-                        <label for="select_all_browsers_edge" data-toggle="tooltip" title="Edge"><i class="fa fa-edge fa-3x"></i></label>
-
-                        <input type="checkbox" name="browsers_chrome" id="select_all_browsers_chrome"value="chrome">
-                        <label for="select_all_browsers_chrome" data-toggle="tooltip" title="Google Chrome"><i class="fa fa-chrome fa-3x"></i></label>
-                    </fieldset>
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for obj in queryset %}
+        <table class="intermediate">
+            <thead>
                 <tr>
-                    <td>{{ obj }} </td>
-                    <td>
-                        <fieldset class="intermediate" id="{{ obj.pk }}_browsers">
-
-                            <input type="checkbox" name ="{{ obj.pk }}_browsers_any" id="{{ obj.pk }}_browsers_any" value="any" checked >
-                            <label for="{{ obj.pk }}_browsers_any" data-toggle="tooltip" title="Any browser"><i class="fa fa-random fa-3x"></i></label>
-
-                            <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_firefox" value="firefox" >
-                            <label for="{{ obj.pk }}_browser_firefox" data-toggle="tooltip" title="Mozilla Firefox"><i class="fa fa-firefox fa-3x"></i></label>
-
-                            <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_internet-explorer" value="internet explorer" >
-                            <label for="{{ obj.pk }}_browser_internet-explorer" data-toggle="tooltip" title="Internet Explorer"><i class="fa fa-internet-explorer fa-3x"></i></label>
-
-                            <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_edge" value="edge" >
-                            <label for="{{ obj.pk }}_browser_edge" data-toggle="tooltip" title="Edge"><i class="fa fa-edge fa-3x"></i></label>
-
-                            <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_chrome"value="chrome" >
-                            <label for="{{ obj.pk }}_browser_chrome" data-toggle="tooltip" title="Chrome"><i class="fa fa-chrome fa-3x"></i></label>
-                        </fieldset>
-                    </td>
-
-                    <td>
-                        <fieldset class="intermediate" id="{{ obj.pk }}_platform">
-                            <input type="radio" name="{{ obj.pk }}_platform" value="any" id="{{ obj.pk }}_platform_any" checked>
-                            <label for="{{ obj.pk }}_platform_any" data-toggle="tooltip" title="Any platform"><i class="fa fa-random fa-3x"></i></label>
-
-                            <input type="radio" name="{{ obj.pk }}_platform" value="windows" id="{{ obj.pk }}_platform_windows">
-                            <label for="{{ obj.pk }}_platform_windows" data-toggle="tooltip" title="Windows"><i class="fa fa-windows fa-3x"></i></label>
-
-                            <input type="radio" name="{{ obj.pk }}_platform" value="linux"id="{{ obj.pk }}_platform_linux">
-                            <label for="{{ obj.pk }}_platform_linux" data-toggle="tooltip" title="Linux"><i class="fa fa-linux fa-3x"></i></label>
-                        </fieldset>
-                    </td>
+                    <th></th>
+                    <th class="center">Choose Browser(s)</th>
+                    <th class="center">Choose Platform</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
-    {% for obj in queryset %}
-        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
-    {% endfor %}
-    <input type="hidden" name="action" value="admin_action" />
-    <input type="hidden" name="post" value="yes" />
-    <input type="submit" value="Execute" />
+                <tr>
+                    <th></th>
+                    <th class="center">
+                        <fieldset class="indermediate intermediate_select_all" id="select_all_browsers">
+                            <input type="checkbox" name ="browsers" id="select_all_browser_any" value="any" checked >
+                            <label for="select_all_browser_any" data-toggle="tooltip" title="Any browser"><i class="fa fa-random fa-3x"></i></label>
+
+                            <input type="checkbox" name="browsers_firefox" id="select_all_browsers_firefox" value="firefox">
+                            <label for="select_all_browsers_firefox" data-toggle="tooltip" title="Mozilla Firefox"><i class="fa fa-firefox fa-3x"></i></label>
+
+                            <input type="checkbox" name="browsers_internet-explorer" id="select_all_browsers_internet-explorer" value="internet explorer">
+                            <label for="select_all_browsers_internet-explorer" data-toggle="tooltip" title="Internet Explorer"><i class="fa fa-internet-explorer fa-3x"></i></label>
+
+                            <input type="checkbox" name="browsers_edge"id="select_all_browsers_edge" value="edge">
+                            <label for="select_all_browsers_edge" data-toggle="tooltip" title="Edge"><i class="fa fa-edge fa-3x"></i></label>
+
+                            <input type="checkbox" name="browsers_chrome" id="select_all_browsers_chrome"value="chrome">
+                            <label for="select_all_browsers_chrome" data-toggle="tooltip" title="Google Chrome"><i class="fa fa-chrome fa-3x"></i></label>
+                        </fieldset>
+                    </th>
+                    <th class="center">
+                        <fieldset class="indermediate intermediate_select_all" id="dlfkjg">
+                            <input type="radio" name="platforms" value="any" id="select_all_platforms_any" checked>
+                            <label for="select_all_platforms_any" data-toggle="tooltip" title="Any platform"><i class="fa fa-random fa-3x"></i></label>
+
+                            <input type="radio" name="platforms" value="windows" id="select_all_platforms_windows">
+                            <label for="select_all_platforms_windows" data-toggle="tooltip" title="Windows"><i class="fa fa-windows fa-3x"></i></label>
+
+                            <input type="radio" name="platforms" value="linux" id="select_all_platforms_linux">
+                            <label for="select_all_platforms_linux" data-toggle="tooltip" title="Linux"><i class="fa fa-linux fa-3x"></i></label>
+                        </fieldset>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <td>{{ obj }}</td>
+                        <td class="center">
+                            <fieldset class="intermediate" id="{{ obj.pk }}_browsers">
+
+                                <input type="checkbox" name ="{{ obj.pk }}_browsers_any" id="{{ obj.pk }}_browsers_any" value="any" checked >
+                                <label for="{{ obj.pk }}_browsers_any" data-toggle="tooltip" title="Any browser"><i class="fa fa-random fa-3x"></i></label>
+
+                                <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_firefox" value="firefox" >
+                                <label for="{{ obj.pk }}_browser_firefox" data-toggle="tooltip" title="Mozilla Firefox"><i class="fa fa-firefox fa-3x"></i></label>
+
+                                <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_internet-explorer" value="internet explorer" >
+                                <label for="{{ obj.pk }}_browser_internet-explorer" data-toggle="tooltip" title="Internet Explorer"><i class="fa fa-internet-explorer fa-3x"></i></label>
+
+                                <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_edge" value="edge" >
+                                <label for="{{ obj.pk }}_browser_edge" data-toggle="tooltip" title="Edge"><i class="fa fa-edge fa-3x"></i></label>
+
+                                <input type="checkbox" name="{{ obj.pk }}_browsers" id="{{ obj.pk }}_browser_chrome"value="chrome" >
+                                <label for="{{ obj.pk }}_browser_chrome" data-toggle="tooltip" title="Chrome"><i class="fa fa-chrome fa-3x"></i></label>
+                            </fieldset>
+                        </td>
+                        <td class="center">
+                            <fieldset class="intermediate" id="{{ obj.pk }}_platform">
+                                <input type="radio" name="{{ obj.pk }}_platform" value="any" id="{{ obj.pk }}_platform_any" checked>
+                                <label for="{{ obj.pk }}_platform_any" data-toggle="tooltip" title="Any platform"><i class="fa fa-random fa-3x"></i></label>
+
+                                <input type="radio" name="{{ obj.pk }}_platform" value="windows" id="{{ obj.pk }}_platform_windows">
+                                <label for="{{ obj.pk }}_platform_windows" data-toggle="tooltip" title="Windows"><i class="fa fa-windows fa-3x"></i></label>
+
+                                <input type="radio" name="{{ obj.pk }}_platform" value="linux"id="{{ obj.pk }}_platform_linux">
+                                <label for="{{ obj.pk }}_platform_linux" data-toggle="tooltip" title="Linux"><i class="fa fa-linux fa-3x"></i></label>
+                            </fieldset>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% for obj in queryset %}
+            <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
+        {% endfor %}
+        <input type="hidden" name="action" value="admin_action" />
+        <input type="hidden" name="post" value="yes" />
+
+        <div class="submit-row">
+            <input type="submit" value="EXECUTE" />
+        </div>
+    </div>
 </form>
 
 <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>

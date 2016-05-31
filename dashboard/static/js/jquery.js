@@ -1,19 +1,4 @@
 $(document).ready(function() {
-
-    /*
-    $(".breadcrumbs").replaceWith(
-    '<div class="breadcrumbs">' +
-    '<a href="/admin/">Home</a> › ' +
-    '<a href="/admin/testautomation/">Testautomation</a> › ' +
-    '<a href="/admin/testautomation/testcase">Test Cases</a> › ' +
-    'Test Environment' +
-    '</div>'
-    )
-    */
-
-    /*
-    This function is called every time SELECT ALL RANDOM BROWSER is clicked
-    */
     $("#select_all_browser_any").click(function(event) {
         if ($(event.target).is(':checked')) {
             $("input:checkbox[name$='_browsers']").each(function () {
@@ -32,9 +17,6 @@ $(document).ready(function() {
         }
     });
 
-    /*
-    This function is called every time SELECT ALL SPECIFIC BROWSER is clicked
-    */
     $("[name^='browsers_']").click(function(event) {
         var browser = $(event.target).attr('name').split("_").slice(-1)[0];
         var id = "_browser_" + browser;
@@ -140,6 +122,50 @@ $(document).ready(function() {
 
         } else {
             $(event.target).prop("checked", true);
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+$(document).ready(function() {
+    $("[id^='select_all_platforms_']").click(function(event) {
+        var platform = $(event.target).attr('id').split("_").slice(-1)[0];
+        var id = "_platform_" + platform;
+        var selector = "input:radio[id$='"+id+"']";
+
+        if ($(event.target).is(':checked')) {
+            $(selector).each(function () {
+                $(this).prop("checked", true);
+            });
+
+            $("input:radio[name$='_platforms_any']").each(function () {
+                $(this).prop("checked", false);
+            });
+
+            $("input:radio[name$='_platforms_any']").each(function () {
+                $(this).prop("checked", false);
+            });
+        }
+    });
+
+    $("[name$='_platform']").click(function(event) {
+        var platform = $(event.target).attr('id').split("_").slice(-1)[0];
+
+        $("input:radio[id^='select_all_platforms_']").each(function () {
+            $(this).prop("checked", false);
+        });
+
+        if ($("input:radio[id$='_platform_" + platform + "']:checked").length == $("input:radio[id$='_platform_" + platform + "']").length) {
+            $("input:radio[id='select_all_platforms_" + platform + "']").each(function () {
+                $(this).prop("checked", true);
+            });
         }
     });
 });
