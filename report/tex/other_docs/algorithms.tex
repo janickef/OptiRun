@@ -1,0 +1,210 @@
+\section*{\hfill Algorithms \hfill}
+\thispagestyle{plain}
+
+\begin{algorithm}
+	\caption{Authenticated Broadcast: Source}\label{ac1}
+	\begin{algorithmic}[1]
+		\Function{OnEvent}{Send, $m$}
+			\ForAll{replicas}
+				\State Send<$m$>
+			\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\comment{
+\begin{algorithm}
+	\caption{Authenticated Broadcast: Replica}\label{ac2}
+	\begin{algorithmic}[1]
+		\Function{Init}{}
+			\State $sent \gets false$
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, $m$}
+			\If{$sent = false$}
+				\ForAll{destinations}
+					\State Send<$r$, $m$>
+				\EndFor
+				\State $sent \gets true$
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Authenticated Broadcast: Destination}\label{ac3}
+	\begin{algorithmic}[1]
+		\Function{Init}{}
+			\State $messages \gets \varnothing$
+			\State $processed \gets false$
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, $r$, $m$}
+			\If{tuple ($r$, $m$) $\notin messages$}
+				\State $messages \gets messages$ $\cup$ tuple ($r$, $m$)
+				\If {$\# messages > 2f$ \& $processed = false$}
+					\State Process($m$)
+					\State $processed \gets true$
+				\EndIf
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Bracha's Reliable Broadcast: Source}\label{brb1}
+	\begin{algorithmic}[1]
+		\Function{OnEvent}{Send, $m$}
+			\ForAll{replicas}
+				\State Send<SEND, $m$>
+			\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Bracha's Reliable Broadcast: Replica}\label{brb2}
+	\begin{algorithmic}[1]
+		\Function{Init}{}
+			\State $echoSent \gets false$
+			\State $echoes \gets \varnothing$
+			\State $readySent \gets false$
+			\State $readys \gets \varnothing$
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, SEND, $m$}
+			\If{$echoSent = false$}
+				\ForAll{replicas}
+					\State Send<ECHO, $r$, $m$>
+				\EndFor
+				\State $echoSent \gets true$
+			\EndIf
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, ECHO, $m$}
+			\If{tuple ($r$, $m$) $\notin echoes$}
+				\State $echoes \gets echoes$ $\cup$ tuple ($r$, $m$)
+				\If {$\# echoes > \frac{n + f}{2}$ \& $readySent = false$}
+					\ForAll{replicas \& destinations}
+						\State Send<READY, $r$, $m$>
+					\EndFor
+					\State $readySent \gets true$
+				\EndIf
+			\EndIf
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, READY, $m$}
+			\If{tuple ($r$, $m$) $\notin readys$}
+				\State $readys \gets readys$ $\cup$ tuple ($r$, $m$)
+				\If {$\# readys > f$ \& $readySent = false$}
+					\ForAll{replicas \& destinations}
+						\State Send<READY, $r$, $m$>
+					\EndFor
+					\State $readySent \gets true$
+				\EndIf
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Bracha's Reliable Broadcast: Destination}\label{brb3}
+	\begin{algorithmic}[1]
+		\Function{Init}{}
+			\State $readys \gets \varnothing$
+			\State $processed \gets false$
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, READY, $r$, $m$}
+			\If{tuple ($r$, $m$) $\notin readys$}
+				\State $readys \gets readys$ $\cup$ tuple ($r$, $m$)
+				\If {$\# readys > 2f$ \& $processed = false$}
+					\State Process($m$)
+					\State $processed \gets true$
+				\EndIf
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Chain: Source}\label{chain1}
+	\begin{algorithmic}[1]
+		\Function{Init}{}
+			\State $keys \gets$ set of keys for first $f + 1$ replicas
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Send, $m$}
+			\State $macs \gets \varnothing$
+			\For{$f + 1$ replicas}
+				\State $macs \gets macs$ $\cup$ CalculateMAC($keys$, $m$)
+			\EndFor
+			\State Send<$m$, $macs$>
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Chain: Replica}\label{chain2}
+	\begin{algorithmic}[1]
+		\Function{Init}{}
+			\State $sent \gets false$
+			\State $keys \gets$ set of keys for prior $f + 1$ replicas and next $f + 1$ replicas
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, $m$, $macs$}
+			\State $verified \gets true$
+			\If{$sent = false$}
+				\For{$f + 1$ previous replicas}
+					\If{VerifyMAC($m$, $macs$, $keys$) $= false$}
+						$verified \gets false$ 
+					\EndIf
+				\EndFor
+				\If{$verified = true$}
+					\For{$f + 1$ next replicas}
+						\State $macs \gets macs$ $\cup$ CalculateMAC($keys$, $m$)
+					\EndFor
+					\State Send<$m$, $macs$>
+					\State $sent \gets true$
+				\EndIf
+			\EndIf
+		\EndFunction
+		\State
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Chain: Destination}\label{chain3}
+	\begin{algorithmic}[1]
+		\Function{Init}{}
+			\State $processed \gets false$
+			\State $keys \gets$ set of keys for last $f + 1$ replicas
+		\EndFunction
+		\State
+		
+		\Function{OnEvent}{Receive, $m$, $macs$}
+			\State $verified \gets true$
+			\If{$processed = false$}
+				\For{$f + 1$ previous replicas}
+					\If{VerifyMAC($m$, $macs$, $keys$) $= false$}
+						$verified \gets false$ 
+					\EndIf
+				\EndFor
+				\If{$verified = true$}
+					\State Process($m$)
+					\State $processed \gets true$
+				\EndIf
+			\EndIf
+		\EndFunction
+		\State
+	\end{algorithmic}
+\end{algorithm}
+}

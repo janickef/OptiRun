@@ -24,28 +24,15 @@ Software testing constitutes a central aspect to the software development proces
     As an effect of this development, people have grown used to being in control of the software and media content they wish to subject themselves to. Users want constant access to all of their content on every platform, and thus, the demand for high quality software has accelerated rapidly.
 }
 
-%\PRLsep
-
-%\noindent
-
-
-
-
-
-
-
-% \subsection{Origin} % Briefly describe how this thesis came to be
-% Om Altibox? %Probably just remove this subsection altogether
-
 \subsection{Origin} % Briefly describe why this thesis has been done
-The subsidiary company of the Lyse Group, Altibox, is a telecommunication service provider. They offer a selection of services including broadband, \emph{Internet Protocol Television} (IPTV) and \emph{Voice over Internet Protocol}, (VoIP). Since its origin, the company has grown a great deal, and at a considerably higher pace than originally anticipated. Because the company had trouble keeping up with its rapid development, they neglected to apply a number of established business practices in several different areas, including the field of software testing. \comment{The existing test process will be discussed in Chapter \ref{chapter.discussion}.}
+Altibox, a subsidiary of the Lyse Group, is a company that provides telecommunication services. They offer a selection of services including broadband, \emph{Internet Protocol Television} (IPTV) and \emph{Voice over Internet Protocol}, (VoIP). Since its origin, the company has grown a great deal, and at a considerably higher pace than originally anticipated. Because the company had trouble keeping up with its rapid development, they neglected to apply a number of established business practices in several different areas, including the field of software testing. \comment{The existing test process will be discussed in Chapter \ref{chapter.discussion}.}
 
-IPTV has long been among Altibox' most prominent services, and has previously been available primarily through the use of TV decoders. In the later years, however, an important focus area for Altibox has been to expand the availability of their TV and \emph{Video On Demand} (VOD) content by applying \emph{Over-The-Top} (OTT) technology, which means that the content is made accessible over the Internet. This is accomplished through the development of \emph{TV Overalt}, which is available both as a web application for desktops and as mobile applications for portable devices. %The web-based version of TV Overalt has been used as the study object in this project. % Finn en bedre formulering av den siste setningen
+IPTV has long been among Altibox' most prominent services, and has previously been available primarily through the use of TV decoders. In the later years, however, an important focus area for Altibox has been to expand the availability of their TV and \emph{Video On Demand} (VOD) content by applying \emph{Over-The-Top} (OTT) technology, which means that the content is made accessible over the Internet. This is accomplished through the development of \emph{TV Overalt}, which is available both as a web application for desktops and as mobile applications for portable devices.
 
 \subsection{Motivation} % Briefly describe why this thesis has been done
-Altibox currently perform all software testing manually. For quite some time, ALtibox has wanted to automate some of the tests that are conducted manually on the web-based version on TV Overalt, but have failed to make it a priority. Since user level tests generally are time consuming, Altibox needed a system that would let them execute such tests efficiently. They also wanted the tests to be executed in a controlled environment.
+Altibox currently perform all software testing manually. For quite some time, Altibox has wanted to automate some of the tests that are conducted manually on the web-based version of TV Overalt, but have failed to make it a priority. Since user-level tests generally are time consuming, Altibox needed a system that would let them execute such tests efficiently. They also wanted the tests to be executed in a controlled environment.
 
-This thesis presents \toolname; a tool that will help Altibox incorporate test automation according to their needs. The tool is not limited to TV Overalt, however. It can be applied as a testing platform for a broad range of web applications.
+This thesis presents \toolname; a tool that will help Altibox incorporate test automation according to their needs. The tool is not limited to TV Overalt, however, as it can be applied as a testing platform for a broad range of web applications.
 
 \comment{
 FÅ FRAM AT HASTIGHET ER DET ALTIBOX TRENGER ALLER MEST. DE TRENGER AT DE RIKTIGE TEST CASENE BLIR KJØRT SÅ TIDLIG SOM MULIG I EN TEST RUN (within a reasonable amount of time, PRIORITY/BUSINESS IMPACT, ETC.), AT TEST RUNS GENERELT GÅR SUPERKJAPT (DERAV SCHEDULING ALGORITME), OG AT MAN FÅR SVAR ASAP (DJANGO-LOGG, JIRA ISSUES OG MOBILNOTIFIKASJONER)
@@ -69,9 +56,9 @@ pvr
 }
 
 \subsection{Purpose} % Briefly describe what you wish to accomplish with this thesis / problem statement
-The aim of this project was to design and create a tool that would substantiate test automation with a distinguished intent of optimizing the time of test runs as well as provide control and feedback of test results. The tool is intended to be utilized during system or acceptance testing by primarily technical testers.
+The aim of this project was to design and create a tool that would substantiate test automation with the intent to optimize the time of test runs, as well as provide control and feedback of test results. The tool is intended to be utilized during system or acceptance testing, primarily by technical testers.
 
-The main area of use is execution of Selenium test scripts for web applications. Tests should be able to be executed remotely in a controlled distributed environment. An algorithm for optimally allocating test cases on the available test machines in the distributed environment should be provided. Further, an interface for uploading, managing, executing and scheduling test scripts should be included, and logs from results of previous test runs should be available. Upon a failed test, an option to report this in the issue tracking system used by Altibox, JIRA \cite{jira}, should be provided.
+The main area of use is execution of Selenium test scripts for web applications. Tests should be able to be executed remotely in a controlled distributed environment. A major objective has been the design and implementation of \emph{OptiX}; a mechanism for allocating test cases to available machines in the distributed environment in such a way that the overall execution time of a test set is attempted minimized. Further, an interface for uploading, managing, executing and scheduling test scripts should be included, and logs from results of previous test runs should be made available. Upon a failed test, an option to report this in the issue tracking system used by Altibox, JIRA \cite{jira}, should be provided.
 
 \comment{
     \begin{itemize}

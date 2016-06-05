@@ -1,45 +1,85 @@
 \section{Technology}\label{chapter.technology}
 \thispagestyle{plain}
-A number of distinctive tools and technologies have been applied throughout the work on this project. This chapter briefly introduces the most essential of these tools and technologies.%The most essential of these tools and technologies will be introduced in this chapter. 
+A number of tools and technologies have been applied throughout the work on this project. This chapter briefly introduces the most essential of these tools and technologies.%The most essential of these tools and technologies will be introduced in this chapter. 
 
 \subsection{The Python Programming Language}
-The Python programming language has largely been used in the conduction of this project. Python has efficient high-level data structures, and is known for being simple, yet powerful. Since Python programs are executed by an interpreter, it is considered an interpreted language \cite{abyteofpython}.
+The Python programming language has been used in this project. Python has efficient high-level data structures, and is known for being simple, yet powerful. Since Python programs are executed by an interpreter, it is considered an interpreted language \cite{abyteofpython}.
 
-Building this project on Python was a natural choice for several reasons. Python is compatible with Selenium, which is introduced in Section \ref{subsec.selenium}. Other reasons include offering a large set of libraries and having high-quality documentation. Additionally, Python supports multithreading and is suitable for running a program as a service. Details of the implementation will be discussed in Chapter \ref{chapter.implementation}. Version 2.7.11 of Python was used in this project.
+Building this project in Python was a natural choice for several reasons. Python is compatible with Selenium, which is introduced in Section \ref{subsec.selenium}. Other reasons include offering a large set of libraries and having high-quality documentation. Details of the implementation will be discussed in Chapter \ref{chapter.implementation}. Version 2.7.11 of Python was used in this project.
 
 
 \subsection{Selenium}\label{subsec.selenium}
-Selenium is an umbrella project for automation of web browsers. Several different tools and libraries are included in the framework, all with the common goal of supporting browser automation. Selenium can be used to automate different types of browser jobs such as web-based administration tasks, but is primarily \comment{most commonly?} used for test automation. The project is released under the Apache 2.0 license and is thus free and open-sourced. Selenium has language bindings for several different programming languages, including Python. The Selenium tools used in this project will be introduced below. %[source]
+Selenium is an umbrella project for automation of web browsers, consisting of multiple tools and libraries. Selenium can be used to automate different types of browser jobs such as web-based administration tasks, but is primarily used for test automation \cite{http://www.seleniumhq.org/}. The project is released under the Apache 2.0 license, and is thus free and open-source. Selenium has language bindings for several different programming languages, including Python. The Selenium tools used in this project will be introduced subsequently.
 
 %%% SUBSUBSECTION: Selenium WebDriver %%%
-\subsubsection{Selenium WebDriver}
-Selenium WebDriver consists of a set of libraries that helps with automation of tests for web applications, and a set of executable WebDriver files, one for each browser, that perform the actual automation specified in the WebDriver scripts. Selenium WebDriver interacts directly with the browser by sending calls using the native support for automation for each browser \cite{selDocWebDriver}. Selenium WebDriver runs on Windows, Linux and Mac, and supports most conventional web browsers.
+\subsubsection{Selenium WebDriver}\label{sec.webdriver}
+\emph{Selenium WebDriver} is a tool for browser automation, largely used for test automation of websites. It interacts directly with browsers by sending calls using browser-specific WebDriver implementations called \emph{drivers}, that provide native support for automation \cite{selDocWebDriver}. There are drivers for most conventional web browsers, including Chrome, Edge, Firefox, Internet Explorer, Opera and Safari.
 
-The WebDriver is used to create a new instance of the requested web browser. It is used to fetch a given web page, and then locates UI elements. When an element is located, the WebDriver can be used to perform an action on the element, such as clicking a button, checking a checkbox, or populating a text field.
+The drivers differ from browser for browser. Some drivers, such as the SafariDriver, must be installed as a plugin in the browser, whereas others, such as the ChromeDriver binary, or the standalone server InternetExplorerDriver, must be stored locally, and the file locations must be specified upon driver instantiating in test scripts.
+
+Selenium WebDriver uses the drivers to create a new instance of the requested browser. It can navigate to web pages, locate UI elements and perform actions, such as clicking buttons, checking checkboxes, or populating text fields.
+
+Selenium itself does not provide a testing module, but is commonly used with Python's \emph{unittest} module, which is also specified at the framework of choice in the documentation for Selenium with Python Bindings \cite{http://selenium-python.readthedocs.io/index.html}. Note that despite the name of this testing module, Selenium tests implementing this module are not considered unit tests from a software testing perspective, as explained in Section \ref{sec.v_model}.
+
+\lstlistingname \space \ref{listing.selWebDriverEx} shows an example of a Selenium test script implemented as described above. When executed, this script will create a WebDriver instance using the ChromeDriver binary. A Chrome window will open, and automatically navigate to TV Overalt. It will wait for the \emph{Login} button to appear, or at most 10 seconds. If the button appears within the specified time-frame, it will be located and clicked. When this is done, the test is complete, and the driver closes the browser window. If all of the steps were conducted successfully, the test passes. Otherwise, the test fails, and an exception is thrown \cite{https://docs.python.org/2.7/library/unittest.html}.
 
 \vspace{4mm}
-\begin{lstlisting}[caption=Selenium WebDriver Example, label={listing.selWebDriverEx}]
- from selenium import webdriver
-    
- # Create a new instance of the Chrome WebDriver
- driverdriver = webdriver.Chrome("<file path>/chromedriver.exe")
-  
- # Go to the Altibox TV Overalt start page
- driver.get("https://tvoveraltstg.altibox.no/")
-  
- # Locate and click the Login button
- login_button = driver.find_element_by_class_name('btn-login')
- login_button.click()
+\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}[caption=Example Selenium Test Script, label={listing.selWebDriverEx}]
+import unittest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
+
+class Example(unittest.TestCase):
+    def setUp(self):
+        cls.driver = webdriver.Chrome("path/to/chromedriver.exe")
+
+    def test_example(self):
+        self.driver.get("http://tvoveralt.altibox.no/")
+        WebDriverWait(self.driver, 10).until(
+            expected_conditions.presence_of_element_located(
+                (webdriver.common.by.By.CLASS_NAME, 'btn-login'))
+        )
+        login_button = self.driver.find_element_by_class_name('btn-login')
+        login_button.click()
+
+    def tearDown(self):
+        self.driver.quit()
+
+if __name__ == "__main__":
+    unittest.main()
 \end{lstlisting}
-\noindent
-\lstlistingname \space \ref{listing.selWebDriverEx} shows a simple example of how Selenium WebDriver can be used with Python to open the Chrome web browser, navigate to the Altibox TV Overalt start page, locate the \emph{Login} button, and click it. \toolname \space revolves around executing scripts that uses the Selenium 2.0 libraries and WebDrivers to execute automated web browser tests.
+\end{minipage}
+
+
+
+
+
+
+
 
 \subsubsection{Selenium Grid}\label{subsubsec.seleniumGrid}
-Selenium Grid is a tool for executing Selenium tests on remote machines in a distributed environment, and thus allowing for executing tests on multiple machines in parallel. This also opens up for running tests on different operating systems.
+Selenium Grid is a tool for executing Selenium tests on remote machines in a distributed environment, and thus allowing for test executions on multiple machines in parallel.
 
-Reasons for wanting to incorporate Selenium Grid include being able to run tests against multiple browsers, browser versions and browsers running on different operating systems, and to reduce the execution time of the tests. In practice, a grid is made up of one Selenium Grid Server; a \emph{hub}, and one or more slave machines; \emph{nodes}, all running a Selenium Standalone Server. The nodes use Selenium WebDriver to communicate with the hub through a JSON wire protocol \cite{selGrid}.
+A Selenium Grid environment is made up of a \emph{hub} (master), and one or more \emph{nodes} (slaves), all running an instance of the \emph{Selenium Standalone Server}. The hub and the nodes interact through a JSON wire protocol \cite{selGrid}. Upon an execution of a Selenium test script in the grid, the hub sends the WebDriver calls specified in the test script to a node. The node then executes the browser calls locally, using a browser driver located on the node. The location of the driver on the node is specified upon starting a node, as described in Section \ref{section.selenium}.
 
-Selenium Grid 2.0 and Selenium Standalone Server 2.51.0 were used in this project.
+\lstlistingname \space \ref{listing.selWebDriverRemoteEx} shows how the driver can be instantiated in a test script that should be executed in Chrome on a node in the grid, as opposed to local execution in \lstlistingname \space \ref{listing.selWebDriverEx}. The script itself is executed on the hub, which maps the desired capabilities specified in the test script to a node with matching capabilities, and sends WebDriver calls to the specific node.
+
+\vspace{4mm}
+\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}[caption=Selenium Test Script WebDriver Instantiation for Remote Execution, label={listing.selWebDriverRemoteEx}]
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+driver = webdriver.Remote(
+   command_executor='http://<HubHost>:4444/wd/hub',
+   desired_capabilities=DesiredCapabilities.CHROME
+)
+\end{lstlisting}
+\end{minipage}
+
+Reasons for wanting to incorporate Selenium Grid in \toolname \space include being able to run tests against multiple browsers, browser versions and browsers running on different operating systems, and to reduce the execution time of test sets.
 
     \iffalse
         selenium web browser automation (collection of Python libraries)
@@ -48,12 +88,14 @@ Selenium Grid 2.0 and Selenium Standalone Server 2.51.0 were used in this projec
     \fi
 
 \subsection{Django}\label{subsection.django} % Read again towards the end and change the name of the Web interface to something more suitable
-Django is a high-level web development framework that is implemented in the Python programming language. It encourages rapid development and enables efficiently maintainable web applications of high quality. The framework is a free and open-sourced project maintained by the non-profit organization \emph{the Django Software Foundation}, who describe the framework as fast, secure and scalable \cite{djangoproject}. Comparable to Selenium, Django is also essentially a collection of Python libraries \cite{thedjangobook}. The Django libraries can be imported and used to implement web applications. Some additional HTML, CSS and JavaScript code has been applied along with the Python code.
+Django is a high-level web development framework that is implemented in the Python programming language. It encourages rapid development and enables efficiently maintainable web applications of high quality. The framework is a free and open-sourced project maintained by the non-profit organization \emph{the Django Software Foundation}, who describe the framework as fast, secure and scalable \cite{djangoproject}. Comparable to Selenium, Django is also essentially a collection of Python libraries \cite{thedjangobook}. The Django libraries can be imported and used to implement web applications. Some additional HTML, CSS and JavaScript code has been used along with the Python code.
 
 \comment{
 \emph{Models} play a central role in web applications built on Django. The models are sources of information that contain fields and behaviors of the data being stored. The models define the database layout, and each model typically maps to an individual table in the database, in which instances of the model are later stored \cite{https://docs.djangoproject.com/en/1.9/topics/db/models/}. \lstlistingname \space \ref{listing.djModelEx} shows a simple example of how a model is created in Django.
 \vspace{4mm}
 
+\vspace{4mm}
+%\noindent\begin{minipage}{\textwidth}
 \begin{lstlisting}[caption=Django Model Example, label={listing.djModelEx}]
 from django.db import models
 
@@ -63,26 +105,30 @@ class Schedule(models.Model):
 \end{lstlisting}
 \noindent
 }
+%\end{minipage}
 
 Aside from allowing rapid progression of development, one of the main reasons for choosing Django rather than building the dashboard from scratch or using a different web framework, is its powerful administrator site. An administrator site was exactly what was needed to build the dashboard of \toolname. Another contributing factor was to provide consistency and the ability to communicate seamlessly with the remaining parts of the system, since Django builds on the same programming language as the rest of the system. The dashboard will be presented in Chapter \ref{chapter.system_overview}. Details concerning the implementation will be explained in Chapter \ref{chapter.implementation}. Version 1.9 of Django was used in this project.
 
 \subsection{OR-Tools}\label{subsection.ortools}
-Google's \emph{Operations Research Tools} (OR-tools) \cite{ortools} is an open source library for combinatorial and constraint optimization. The tool set is written in C++, but is available with bindings for other programming languages such as Java, C\# and Python. The OR-tools library strictly conforms to the Google coding styles, and is of such high quality that it has been accepted for usage internally at Google.
+
+In order to measure and evaluate the performance of the test allocation mechanism OptiX, which represented a major objective in this project, an alternative allocation mechanism called \emph{ORX} was also implemented. Detailed explanations of OptiX and ORX will be presented in Chapter \ref{chapter.allocation_mechanism}, and a discussion, experimental evaluation and comparison of the two implementations will be presented in Chapter \ref{chapter.discussion}.
+
+ORX was implemented using Google's \emph{Operations Research Tools} (OR-tools) \cite{ortools}, which is an open source library for combinatorial programming and constraint optimization. The tool set is written in C++, but there are bindings for other programming languages such as Java, C\# and Python. The OR-tools library strictly conforms to the Google coding styles, and is of such high quality that it has been accepted for usage internally at Google.
 
 \lstlistingname \space \ref{listing.or_tools} shows how a simple optimization problem is solved using this library. In this problem, a list of integers will be assigned values ranging from 0 to 2. A constraint specifying that no two identical numbers should be placed beside each other is added as a constraint. Maximizing the sum of the integers is specified as the objective. The solver searches for better and better solutions until finally arriving at an optimal solution.
 
 \vspace{4mm}
-\begin{lstlisting}[caption=OR-Tool Implementation, label={listing.or_tools}]
+\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}[caption=OR-Tools Implementation Example, label={listing.or_tools}]
 from ortools.constraint_solver import pywrapcp
 
 solver = pywrapcp.Solver('')
-
 variables = [solver.IntVar(0, 2) for _ in range(3)]
 
 for i in range(len(variables) - 1):
     solver.Add(variables[i] != variables[i + 1])
 
-db = solver.Phase(variables, solver.CHOOSE_FIRST_UNBOUND, solver.ASSIGN_MAX_VALUE)
+db = solver.Phase(variables, solver.CHOOSE_RANDOM, solver.ASSIGN_RANDOM_VALUE)
 objective = solver.Maximize(solver.Sum(variables), 1)
 solver.NewSearch(db, objective)
 
@@ -90,10 +136,8 @@ while solver.NextSolution():
     result = [int(item.Value()) for item in variables]
     print result, "Sum =", sum(result)
 
->>> [0, 2, 0] Sum = 2
 >>> [0, 2, 1] Sum = 3
->>> [1, 2, 1] Sum = 4
+>>> [2, 0, 2] Sum = 4
 >>> [2, 1, 2] Sum = 5
 \end{lstlisting}
-
-As a means to evaluate the optimization mechanism of test allocations designed for this project, an alternative version using OR-tools has also been implemented. This alternative implementation will be presented in Chapter \ref{chapter.implementation}, and a discussion, evaluation and comparison of the two implementations will be presented in Chapter \ref{chapter.discussion}.
+\end{minipage}

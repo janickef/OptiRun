@@ -1,7 +1,7 @@
 \section{System Overview}\label{chapter.system_overview}
 \thispagestyle{plain}
 
-This chapter aims to provide an overview of how \toolname \space is assembled by describing the design and architecture of the system. System setup will be described thereafter, followed by a presentation of the web-based user interface of the tool.
+This chapter aims to provide an overview of how \toolname \space is assembled by describing the design and architecture of the system. System setup will be described thereafter, followed by a presentation of the web-based user interface.
 
 
 \comment{
@@ -25,7 +25,7 @@ Don't add screenshots until the product is finished. This chapter should be arou
 \begin{figure}[p]
     \centering
     \thisfloatpagestyle{empty}
-    \includegraphics[height=\textheight]{figures/architecture.pdf}
+    \includegraphics[height=\textheight]{figures/architecture4.pdf}
     \caption{System Architecture}
     \label{fig.architecture}
 \end{figure}
@@ -34,7 +34,7 @@ Don't add screenshots until the product is finished. This chapter should be arou
 
 Figure \ref{fig.architecture} shows the structural architecture of the system. In this case, the web server, the controller, the database, the file storage and the Selenium Grid Hub are all located on the same machine, hence the dashed border around these elements in the figure. They could, however, be separated with little effort if needed.
 
-The web server uploads test scripts to a file location on the server. Meta data about the test cases as well as other information such as test groups, planned test executions, test results and user authentication are also stored in the database. The web server can report defects in the issue tracker system, for which Altibox uses JIRA.
+The web server uploads test scripts to a file location on the server. Meta data about the test cases as well as other information such as test groups, planned test executions, test results and user authentication, including credentials and permissions, are also stored in the database. The web server can report defects in the issue tracker system, for which Altibox uses JIRA.
 
 The controller listens to test execution requests triggered through the dashboard, and checks the schedule. Upon a pending execution, it fetches the given test script from the file storage. Test scripts are sent to the current instance of the Selenium Grid Hub with specifications of which node in the grid that the test script should be executed on. The hub then triggers the given node to execute the test. After the test has finished, the controller stores the result in the database.
 
@@ -67,7 +67,7 @@ The controller listens to test execution requests triggered through the dashboar
 \subsection{Dashboard}
 The graphical user interface of \toolname \space is web-based, and is built on the high-level Web framework Django. The framework provides a powerful automatic administrator interface, which has been used as a foundation for the development of the dashboard. Working with Django thus allowed for rapid development while retaining control of the content and functionality of the website.
 
-This subsection will present the dashboard from the user's perspective. An in-depth presentation of how some of the functionality has been implemented can be found in Chapter \ref{chapter.implementation}.
+This section presents the dashboard from the user's perspective. An in-depth presentation of how some of the functionality has been implemented can be found in Chapter \ref{chapter.implementation}.
 
 \comment{
 \info[inline]{General explanation of how django change lists work? How attributes are chosen for listing, searching, filtering, that they are sortable. How object history works. Nah, maybe move that to implementation?}
@@ -90,7 +90,7 @@ This subsection will present the dashboard from the user's perspective. An in-de
     \label{fig.home}
 \end{figure}
 \noindent
-After logging in, the home screen is the first thing that meets the eye of the user. This screen provides navigation to all of the modules and pages described in the remaining subsections of this section. In order to give the user an indication of status, some graphs that show the results of recent test runs, as well as key performance indicators and other important information is displayed on this page.
+After logging in, the home screen is the first thing that meets the eye of the user. This screen provides navigation to all of the modules and pages described subsequently. In order to give the user an indication of status, some graphs that show the results of recent test runs, as well as key performance indicators and other important information is displayed on this page.
 
 
 %%%%%%%%%%%%
@@ -121,21 +121,9 @@ By default, all passwords are encrypted by Django before being stored in the dat
 
 
 %%%%%%%%%%%%
-% SUBSUBSECTION: Settings/Configuration
-%%%%%%%%%%%%
-\subsubsection{Settings/Configuration}
-
-\improvement[inline]{TODO}
-
-
-
-
-
-
-%%%%%%%%%%%%
 % SUBSUBSECTION: Test Case Module
 %%%%%%%%%%%%
-\subsubsection{Test Case Module}
+\subsubsection{Test Case Module}\label{subsubsection.test_case_module}
 
 \begin{figure}[h]
     \centering
@@ -148,9 +136,9 @@ All registered test cases are listed in this module. The list contains meta data
 
 New test cases can be created by clicking the button labeled \emph{Add Test Case} in the upper right of the view. This opens a new page with a form in which the test script can be uploaded and corresponding details about the test case can be filled in. Which groups the test case should be a member of can also be specified here. Test cases can be members of multiple groups, or none. After a test case has been created, it can be edited by clicking on the title of the test case in the test case list.
 
-It is possible to select test cases and perform actions on them. The action options - \emph{Delete selected test cases} and \emph{Execute selected test cases} - are located in a dropdown menu above the test case list. The former is a built-in Django function which, after the user confirms deletion in and intermediate page, removes all meta data regarding the selected items from the database. The latter action is implemented for \toolname. The action takes the user to an intermediate page in which they can specify the platform and browsers the test cases should be executed on.
+It is possible to select test cases and perform actions on them. The action options - \emph{Delete selected test cases} and \emph{Execute selected test cases} - are located in a dropdown menu above the test case list. The former is a built-in Django function which, after the user confirms deletion in and intermediate page, removes all meta data regarding the selected items from the database. The \emph{Execute selected test cases} action is implemented for \toolname. The action takes the user to an intermediate page in which they can specify the platform and browsers the test cases should be executed on.
 
-When an action has been performed, or attempted performed, a feedback message telling if the action was successful or not is displayed on the screen.
+After an action has been attempted performed, a feedback message stating whether the action was successful is displayed on the screen.
 
 \comment{
 \info[inline]{js must be extended to check which browsers/platforms are currently available and update each time a browser/platform is selected. Form validation must also be included (check if all platform/browser combinations are still available when Execute is pushed).}
@@ -158,16 +146,16 @@ When an action has been performed, or attempted performed, a feedback message te
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{figures/placeholder.png}
+    \includegraphics[width=\textwidth]{figures/screenshots/OptiRun_immediate_test_execution_intermediate.pdf}
     \caption{Intermediate Page for Immediate Test Execution Requests}
     \label{fig.tc_intermediate}
 \end{figure}
 
 \subsubsection{Test Group Module}
 
-Test groups are listed similar to individual test cases as described in the previous subsection. As with the test cases, group items can also be searched, filtered and sorted. Additionally, new groups can be created, and existing groups can be edited.
+Test groups are listed similarly to test cases as described in Section \ref{subsubsection.test_case_module}. As with the test cases, group items can also be searched, filtered and sorted. Additionally, new groups can be created, and existing groups can be edited.
 
-However, the group model is simpler than the test case model. The purpose of this model is to group together test cases that are often executed in the same test run, such as tests revolving around the same module in the test object.
+However, the group model is simpler than the test case model. The purpose of this model is to group together test cases that are often executed in the same test run, such as tests revolving around the same functionality in the test object.
 
 \subsubsection{Scheduling Module}
 
@@ -184,11 +172,16 @@ Upon creating or editing a schedule object, an execution time can be specified a
 
 \subsubsection{Execution Log}
 
-\comment{\info[inline]{Include issue reporting to Jira}}
+The layout of the log is the same as the remaining list views, but the functionality differs in that log items can not be edited. Log items are created and inserted into the database based on the result from test executions. Each log object corresponds to an execution of an individual test script. The information listed in the logs include a number of attributes such as the duration of the test execution, the IP address or hostname of the machine on which it was executed, as well as information such as browser, platform and test result. Additionally, the content from the standardized data streams \emph{standard error} (stderr) and \emph{standard output} (stdout) are also included. Stderr typically streams any automatically generated error messages or diagnostics from command line programs \cite{http://www.linfo.org/standard_error.html}, while stdout consists of the output data from the programs themselves (if any) \cite{http://www.linfo.org/standard_output.html}, using the \emph{print} command in Python scripts. For better human readability, the fields are labeled \emph{Console Log} and \emph{Output} respectively. Figure \ref{fig.log} shows a detail view of a log object.
 
-The layout of the log is the same as the remaining list views, but the functionality differs in that log items are read-only. They can not be created or deleted. Log items are created and inserted into the database based on the result from test executions. Each log object corresponds to an execution of an individual test script. The information listed in the logs include a number of attributes such as the duration of the test execution, the IP address or hostname of the machine on which it was executed, as well as information such as browser, platform, output and of course the result.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{figures/placeholder.png}
+    \caption{Execution Log Detail View}
+    \label{fig.log}
+\end{figure}
 
-Failed test executions can be reported to JIRA. This is done by marking the log items that should be reported and selecting \emph{Report to JIRA} from the actions menu. When clicking on a log item to view details about the execution, there is also an attribute displaying existing JIRA issues reported by \toolname \space for the specific test, and its status.
+Failed test executions can be reported to JIRA. This is done by marking the log items that should be reported and selecting \emph{Report to JIRA} from the actions menu. When clicking on a log item to view details about the execution, there is also an attribute displaying any existing JIRA issues reported by \toolname \space for the specific test, with links to the URL of the specific JIRA issues.
 
 
 
@@ -206,6 +199,6 @@ In addition to the content that has already been introduced, \toolname \space al
 
 \begin{Description}
     \item [Download] Test machine packages for Linux and Windows can be downloaded from this page as well as a test script template that needs to be used with \toolname.
-    \item [Help] This page contains information regarding how \toolname \space works, how to set it up and how to use it. This page can be of help to technical testers who wants to use the tool, and otherwise to those who wants insight of how it works.
-    \item [About] This page provides a presentation what \toolname \space is and how it came to be. Some licenses are also included in this page.
+    \item [Help] This page contains information regarding how \toolname \space works, how to set it up and how to use it. This page can be of help to technical testers who wants to use the tool, and otherwise to those who wants additional insight into how it works.
+    \item [About] This page provides a presentation of what \toolname \space is and how it came to be. Necessary licenses are also included in this page.
 \end{Description}

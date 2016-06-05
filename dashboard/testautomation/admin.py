@@ -314,7 +314,6 @@ class TestCaseAdmin(admin.ModelAdmin):
 
         js = (
             'http://code.jquery.com/jquery-2.2.1.min.js',
-            'https://code.highcharts.com/highcharts.js',
             'http://canvasjs.com/assets/script/jquery.canvasjs.min.js',
             'http://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.js',
             'js/test_case_admin.js',
@@ -828,7 +827,7 @@ class LogAdmin(admin.ModelAdmin):
                     ret_str += ', '
             return ret_str
         elif issues is False:
-            return '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Contact with JIRA server could not be established.'
+            return '<span class="red"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Contact with JIRA server could not be established.</span>'
         return '-'
 
     get_jira_issues.short_description = "JIRA Issues"
@@ -1072,6 +1071,56 @@ class TestMachineAdmin(admin.ModelAdmin):
         return capability_version_display(obj.operating_system, obj.operating_system_ver)
     platform_display.allow_tags = True
     platform_display.short_description = 'Platform'
+
+    def approve(self, request, queryset):
+        changed_count = 0
+        unchanged_count = 0
+
+        for obj in queryset:
+            if not obj.approved:
+                obj.approved = True
+                changed_count += 1
+                obj.save()
+            else:
+                unchanged_count += 1
+        if changed_count:
+            if changed_count == 1:
+                message_bit = "1 selected Test Machine was "
+            else:
+                message_bit = "%d selected Test Machine were " % changed_count
+            self.message_user(request, "%s successfully approved." % message_bit)
+        if unchanged_count:
+            if unchanged_count == 1:
+                message_bit = "1 selected Test Machine was "
+            else:
+                message_bit = "%d selected Test Machine were " % unchanged_count
+            self.message_user(request, "%s already approved." % message_bit, level=messages.WARNING)
+
+    def disapprove(self, request, queryset):
+        changed_count = 0
+        unchanged_count = 0
+
+        for obj in queryset:
+            if obj.approved:
+                obj.approved = False
+                changed_count += 1
+                obj.save()
+            else:
+                unchanged_count += 1
+        if changed_count:
+            if changed_count == 1:
+                message_bit = "1 selected Test Machine was "
+            else:
+                message_bit = "%d selected Test Machine were " % changed_count
+            self.message_user(request, "%s successfully disapproved." % message_bit)
+        if unchanged_count:
+            if unchanged_count == 1:
+                message_bit = "1 selected Test Machine was "
+            else:
+                message_bit = "%d selected Test Machine were " % unchanged_count
+            self.message_user(request, "%s already disapproved." % message_bit, level=messages.WARNING)
+
+    actions = [approve, disapprove]
 
     def save_model(self, request, obj, form, change):
         if obj.pk is None:

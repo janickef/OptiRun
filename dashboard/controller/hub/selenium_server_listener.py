@@ -59,7 +59,8 @@ class SeleniumHub:
             '-role',
             'hub',
             '-nodeTimeout',
-            self._node_timeout
+            self._node_timeout,
+            #'-host 10.0.0.4'
         ]
 
         p = Popen(cmd, creationflags=CREATE_NEW_CONSOLE, stderr=PIPE, shell=True)
@@ -68,4 +69,5 @@ class SeleniumHub:
 
         with p.stderr:
             for line in iter(p.stderr.readline, b''):
+                print line.split('\n')[0]
                 self._test_machine_manager.handle_hub_msg(line)

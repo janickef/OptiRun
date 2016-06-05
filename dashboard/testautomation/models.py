@@ -16,15 +16,6 @@ class TestCase(models.Model):
     script          = models.FileField(upload_to='scripts')
     description     = models.TextField(null=True, blank=True)
 
-    #priority        = models.IntegerField(
-    #    'Priority',
-    #    choices=(
-    #        (0, '1 - Low Priority'),
-    #        (1, '2 - Medium Priority'),
-    #        (2, '3 - High Priority')
-    #    ),
-    #    default=0,
-    #)
     groups          = models.ManyToManyField('Group', blank=True)
     schedules       = models.ManyToManyField('Schedule', blank=True)
 

@@ -46,7 +46,9 @@ def start_selenium_grid(browsers):
 
     command = 'java -jar \"' + selenium_path + '\" '
     command += '-hubHost LNOR010710 '
-    command += '-port %s ' % port
+    #command += '-hubHost 192.168.43.26 '
+    #command += '-port %s ' % port
+    command += '-port %s ' % 5555
     command += '-role webdriver '
     command += '-hostname %s ' % socket.gethostname()
     command += '-uuid %s ' % uu_id

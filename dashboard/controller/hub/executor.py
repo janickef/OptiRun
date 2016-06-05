@@ -175,7 +175,6 @@ class Executor:
                     self._executing_machines.remove(allocation['machine'].uuid)
                     if not self._executing_machines:
                         self._execution_lock.release()
-                        print "releasing execution lock..."
                 return
 
             browser_ver = None
@@ -195,9 +194,11 @@ class Executor:
 
         if allocation['machine'].uuid in self._executing_machines:
             self._executing_machines.remove(allocation['machine'].uuid)
-            if not self._executing_machines:
-                self._execution_lock.release()
-                print "releasing execution lock..."
+        if not self._executing_machines:
+            self._execution_lock.release()
+            print "releasing execution lock..."
+
+        print self._executing_machines, self._execution_lock, "returning"
 
     def execute(self, test, script_path, app_name):
         """
@@ -223,8 +224,10 @@ class Executor:
         json_data = json.dumps(data)
         start = time.clock()
 
-        p = Popen(['python', script_path, json_data], shell=True, stderr=PIPE, stdout=PIPE, universal_newlines=True)
+        #script_path.replace('\f', '\\f')
+        p = Popen(['python', script_path, json_data], shell=True, stderr=PIPE, stdout=PIPE)
         output, error = p.communicate()
+
         try:
             result = error.splitlines()[-3]
             duration = float(result.split()[-1].replace("s", ""))

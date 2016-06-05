@@ -3,42 +3,33 @@
 
 \comment{[Backend/Off-Stage]}
 
-This chapter aims to explain how \toolname \space is designed and implemented. \comment{It starts with a visualization and narrative of how data flows through the system.} It \comment{then} provides a description of how the system utilizes Selenium Grid. The implementation of the controller and some important details about this part of the system are then presented. Further, the test allocation mechanism called \emph{OptiX} is explained with an accompanying example to illustrate how the mechanism works step-by-step will be presented. The chapter then describes how the database is structured and explains how it is accessed using Django's API for database abstraction, before finally presenting some important implementation details about the dashboard.
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SUBSECTION: Data Flow
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\comment{
-\subsection{Data Flow}
-\comment{Figure of how the data moves through the system.}
-\improvement[inline]{TODO}
-}
+This chapter aims to explain how \toolname \space is designed and implemented. \comment{It starts with a visualization and narrative of how data flows through the system.} It \comment{then} provides a description of how the system utilizes Selenium Grid. The implementation of the controller and some important details about this part of the system are then presented. Further, the test allocation mechanism called \emph{OptiX} is explained along with an accompanying example to illustrate how the mechanism works step-by-step. The chapter then describes how the database is structured and explains how it is accessed using Django's API for database abstraction, before finally presenting some important implementation details about the dashboard.
 
 \subsection{Selenium Grid Integration}\label{section.selenium}
 
-In \toolname, Selenium Grid works as the backbone of all interaction between the server and the remaining machines in the distributed system. It is used to establish connections and to perform test executions.
+Selenium Grid works as the backbone of all interaction between the server and the remaining machines in the distributed system of \toolname. It is used to establish connections and to send browser calls to test machines upon test executions, as explained in Section \ref{subsubsec.seleniumGrid}.
 
-Setting up a Selenium Grid environment requires all involved machines to have a \emph{Selenium Standalone Server}, which is a file of the JAR (Java Archive) format, of the same version locally stored. The Selenium Standalone Server is started by executing a shell command.
-
-A Selenium Grid Hub (server) can be started simply by executing the command in Listing \ref{listing.hub}, although it is possible to assign additional configuration, such as port and IP address, using flags. The default port number is 4444 for hubs and 5555 for nodes, so if nothing else is specified, these ports will be used. When the hub has started, the configuration can be viewed by opening \url{http://<hub-host>:4444/grid/console} in a browser.
+A Selenium Grid hub can be started simply by executing the command in Listing \ref{listing.hub}, although it is possible to assign additional configuration, such as port and IP address, using flags. The default port number is 4444 for hubs and 5555 for nodes, so if nothing else is specified, these ports will be used. When the hub has started, the configuration details for the hub itself and any connected nodes can be viewed by opening \url{http://<HubHost>:4444/grid/console} in a browser.
 
 \vspace{4mm}
-\begin{lstlisting}[caption=Sample Shell Command for Starting Selenium Grid Hub, label={listing.hub}]
-java -jar "C:/selenium-server-standalone-2.51.0.jar"
+\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}[caption=Sample Shell Command for Starting Selenium Grid Hub, label={listing.hub}, language=bash,   stringstyle={}]
+$ java -jar "C:/selenium-server-standalone-2.51.0.jar"
 \end{lstlisting}
+\end{minipage}
 
-Starting Selenium Grid Nodes, or test machines, require much longer and heavier commands, and thus more work. Also, the command must be customized, as it represents the configuration of the node and the distributed system. Therefore, a script devoted to gathering all necessary information and executing the command to start Selenium Standalone Server is included in this project. This script identifies which browsers are installed and what versions, as well as creating a unique identifier for each machines.
+Starting Selenium Grid nodes, or test machines, require much longer and heavier commands, and thus more work. Also, the command must be customized, as it represents the configuration of the node and the distributed system. Therefore, a script devoted to gathering all necessary information and executing the command to start Selenium Standalone Server is included in this project. This script identifies which browsers are installed and what versions, as well as creating a unique identifier for each machines.
 
-Selenium Grid currently does not offer a documented method of specifying which machine a test should be executed on. Instead, it maps the test to a node whose configuration that matches the desired specifications stated in the test, in regard to operating system, browser and sometimes even browser version. It was therefore necessary to find a way to work around this problem. This is done by utilizing a browser parameter called \emph{applicationName}, in which additional information can be added. A 128-bit unique identifier based on the host ID, sequence number, and the current time, is created using Python's \emph{UUID} (Universally Unique Identifier) library. By adding as a requirement to a test that the applicationName should be equal to the UUID of a specific node, the test can only be executed on the machine with that UUID.
+Selenium Grid currently does not offer a documented method of specifying which machine a test should be executed on. Instead, it maps the test to a node whose configuration matches the desired specifications stated in the test, in regard to operating system, browser and sometimes even browser version. It was therefore necessary to find a way to work around this problem. This is done by utilizing a browser parameter called \emph{applicationName}, in which additional information can be added. A 128-bit unique identifier based on the host ID, sequence number, and the current time, is created using Python's \emph{UUID} (Universally Unique Identifier) library. By adding as a requirement to a test that the applicationName should be equal to the UUID of a specific node, the test can only be executed on the machine with that UUID.
 
 \vspace{4mm}
-\begin{lstlisting}[caption=Sample Shell Command for Starting Selenium Grid Node, label={listing.node}]
-java -jar "C:/selenium-server-standalone-2.51.0.jar" -role node -hubHost <hub-host> -uuid 1b234276-fc02-11e5-b752-080027f8a664 -browser "browserName=chrome, version=49.0.2623.110, applicationName=1b234276-fc02-11e5-b752-080027f8a664" -Dwebdriver.chrome.driver=path/to/chromedriver -browser "browserName=firefox, version=45.0, applicationName=1b234276-fc02-11e5-b752-080027f8a664"
+\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}[caption=Sample Shell Command for Starting Selenium Grid Node, label={listing.node}, language=bash,   stringstyle={}]
+$ java -jar "C:/selenium-server-standalone-2.51.0.jar" -role node -hubHost <HubHost> -uuid 1b234276-fc02-11e5-b752-080027f8a664 -browser "browserName=chrome, version=49.0.2623.110, applicationName=1b234276-fc02-11e5-b752-080027f8a664" -Dwebdriver.chrome.driver=path/to/chromedriver.exe -browser "browserName=firefox, version=45.0, applicationName=1b234276-fc02-11e5-b752-080027f8a664"
 \end{lstlisting}
+\end{minipage}
 
-Listing \ref{listing.node} shows an example of a command that will start a Selenium Grid Node with Chrome and Firefox installed, and with UUID \emph{1b234276-fc02-11e5-b752-080027f8a664}. Once the node is connected to the hub, the configuration can be retrieved as a JSON object from \url{http://<Hub Hostname/IP>:4444/grid/api/proxy?id=http://<Node IP>:5555}.
+Listing \ref{listing.node} shows an example of a command that will start a Selenium Grid Node with Chrome and Firefox installed, and with UUID \emph{1b234276-fc02-11e5-b752-080027f8a664}. Once the node is connected to the hub, the configuration can be retrieved as a JSON object from \url{http://<Hub Host>:4444/grid/api/proxy?id=http://<Node IP>:5555}.
 
 \comment{\info[inline]{Maybe start by explaining exactly Selenium Grid works and is used. How the hub and the nodes are started (cmd), how platform and version no and installed browsers and version nos are retrieved and included, how the distributed environment works. How a JSON object is retrieved from "10.0.0.6:4444/grid/api/proxy?id=http://10.0.0.10:8989" or whatever to check node settings/abilities. Explain briefly how Selenium WebDriver works.}}
 
@@ -51,25 +42,56 @@ Listing \ref{listing.node} shows an example of a command that will start a Selen
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Controller}
 
+The \emph{controller} consists of multiple processes running in different threads. Figure \ref{fig.controller_structure} shows the inner structure. Each of the modules in the figure will be explained in this section.
+
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{figures/new/controller.pdf}
+    \includegraphics[width=\textwidth]{figures/controller4.pdf}
     \thisfloatpagestyle{plain}
     \caption{Controller Structure}
     \label{fig.controller_structure}
 \end{figure}
 
-
-The \emph{controller} consists of multiple processes running in different threads. Figure \ref{fig.controller_structure} shows the inner structure. Each of the modules in the figure will be explained in this Section.
-
 \subsubsection{Selenium Server Listener}
-After starting the Selenium Grid Hub as described in Section\ref{section.selenium} using configuration details found in the configuration file, the main job of the Selenium Server Listener is to listen to the output from the Selenium Standalone Server and handle any incoming messages. This means that when a node connects or disconnects to the system, the Selenium Server Listener gets notified and sends notice to its instance of the Test Machine Manager.
+After starting a Selenium Grid hub as described in Section \ref{section.selenium} using configuration details found in the configuration file, the main job of the Selenium Server Listener is to listen to the output from the Selenium Standalone Server. The server runs as a command line program and outputs short information and warning messages. \lstlistingname \space \ref{listing.hub_output} shows some sample output of the server when running as a hub. The listing covers start-up output as well as node registering, test execution and node unregistering. Each output message is to the Test Machine Manager, which looks for strings similar to the bold lines in the listing, to see whether a node has been registered or marked as down.
+
+
+\vspace{4mm}
+\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}[caption=Sample Output from Selenium Standalone Server Running as a Hub, label={listing.hub_output}, language=bash, moredelim={[is][keywordstyle]{@@}{@@}}, deletekeywords={for, test}]
+# Start-up
+>>> 20:44:39.073 INFO - Launching Selenium Grid hub
+>>> 20:44:41.646 INFO - Will listen on 4444
+>>> 20:44:41.801 INFO - Nodes should register to http://<HubHost>:4444/grid/register/
+>>> 20:44:41.802 INFO - Selenium Grid hub is up and running
+>>> 20:44:59.072 WARN - Max instance not specified. Using default = 1 instance
+
+# Node Registering
+>>> @@20:44:59.094 INFO - Registered a node http://<NodeIP>:5555@@
+
+# Test Execution
+>>> 20:45:03.509 INFO - Got a request to create a new session: Capabilities [{browserName=internet explorer, applicationName=1b234276-fc02-11e5-b752-080027f8a664}]
+>>> 20:45:03.510 INFO - Available nodes: [http://<NodeIP>:5555]
+>>> 20:45:03.511 INFO - Trying to create a new session on node http://<NodeIP>:5555
+>>> 20:45:03.511 INFO - Trying to create a new session on test slot {platform=WIN8_1, seleniumProtocol=WebDriver, browserName=internet explorer, applicationName=1b234276-fc02-11e5-b752-080027f8a664, version=9.11.9600.18321}
+
+# Node Unregistering
+>>> @@20:45:26.240 INFO - Marking the node http://<NodeIP>:5555 as down: cannot reach the node for 2 tries@@
+>>> 20:46:26.607 INFO - Unregistering the node http://<NodeIP>:5555 because it\textquotesingles been down for 60367 milliseconds
+>>> 20:46:26.607 WARN - Cleaning up stale test sessions on the unregistered node http://<NodeIP>:5555
+\end{lstlisting}
+\end{minipage}
+
 
 \subsubsection{Test Machine Manager}
 
-As the name suggests, the responsibility of the Test Machine Manager is to manage the test machines. Upon receiving a message from the Selenium Server Listener, the Test Machine Manager checks the content of the message to identify whether a machine has connected or disconnected from the grid. As all test machines and their configuration other details are stored in the database, the any changes must be reported. To manage which machines can be used for test executions, there is a boolean \emph{Approved} attribute in the database. This attribute is set to \emph{False} for test machines that connects to the grid without being registered in the database. Test machine approval and disapproval can, as mentioned in Chapter \ref{chapter.system_overview} be managed from the dashboard.
+As the name suggests, the responsibility of the Test Machine Manager is to manage the test machines. Upon receiving a message from the Selenium Server Listener, the Test Machine Manager checks the content of the message to identify whether a machine has connected or disconnected from the grid. Configuration for newly connected machines is retrieved as a JSON object from the URL mentioned in Section \ref{section.selenium}. The specified UUID as well as information regarding installed browsers and operating system are all stored in the database.\comment{ As all test machines and their configuration other details are stored in the database, the any changes must be reported.}
 
-The Test Executor can request a list of all live test machines, in which case the Test Machine Manager queries the database for all approved test machines, and checks whether or not they're connected to the grid. This is done by checking the HTTP response from a URL constructed by the IP address and the port number of the machine. Entering the URL of a Selenium Grid Node results in error code 403, so the test machine is only assumed live if the URL returns this error code.
+There is a boolean \emph{Approved} attribute in the database which is used to manage which machines are allowed to be used for test executions. This attribute is set to \emph{False} by default for test machines that connects to the grid without being registered through the web interface. Test machine approval and disapproval can be managed from the dashboard.\improvement{TODO: implement as action. mention in ch 4.}
+
+The Test Executor can request a list of all live test machines, in which case the Test Machine Manager queries the database for all approved test machines, and checks whether or not they're connected to the grid. This is done by checking the HTML code retrieved from \url{http://<HubHost>:4444/grid/console}, mentioned in Section \ref{section.selenium}. The MIT-licensed library \emph{Beautiful Soup} is then used to extract necessary information in order to construct a list of active, connected machines, from which non-approved machines are then removed.
+
+a URL constructed by the IP address and the port number of the machine. Entering the URL of a Selenium Grid Node results in error code 403, so the test machine is only assumed live if the URL returns this error code.
 
 \subsubsection{Request Listener}
 
@@ -81,13 +103,14 @@ Upon receiving a request, the request listener unpacks the JSON object and creat
 
 
 \subsubsection{Schedule Listener}
-When the Schedule Listener first starts, it retrieves the schedule by querying the database for schedules. All schedule objects has a boolean \emph{Activated} attributes which defines whether the test cases in the schedule object should be executed according to schedule. Only activated schedule objects are retrieved from the database. The Schedule Listener then calculates if and when the next occurrence of each schedule object is due. The id and next occurrence time of all activated schedule objects with a next occurrence time are added to a list which the Schedule Listener uses to keep track of forthcoming test executions.
+When the Schedule Listener first starts, it retrieves schedule objects from the database. All schedule objects has a boolean \emph{Activated} attributes which defines whether the test cases in the schedule object should be executed according to schedule. Only activated schedule objects are retrieved from the database. The Schedule Listener then calculates if and when the next occurrence of each schedule object is due. The id and next occurrence time of all activated schedule objects with a next occurrence time are added to a list which the Schedule Listener uses to keep track of forthcoming test executions.
 
-After the initial schedule retrieval, the Schedule Listener starts listening for schedule updates. Like immediate test execution requests, schedule updates are also packed as JSON object and sent over the network using Python's socket library. An update is sent from the web when a schedule object is created, changed or when the activation properties of a group of schedule objects are changed from the dashboard. The Schedule Listener receives and decodes the JSON objects, and updates the schedule list accordingly.
+After the initial schedule retrieval, the Schedule Listener starts listening for schedule updates. As with immediate test execution requests, updates to schedule objects are also packed as JSON objects and sent over the network. An update is sent from the web when a schedule object is created, changed, or when the activation properties of a group of schedule objects are changed from the dashboard. The Schedule Listener receives and decodes the JSON objects, and updates the schedule list accordingly.
 
 In an infinite while-loop in a separate thread, the Schedule Listener constantly checks whether the next occurrence of any schedule items are scheduled since the last check. If any schedule objects are due for execution, the test cases of the given schedule object are retrieved from the database, packed correctly and sent to the Test Executor. Then, the next occurrence of the schedule object is calculated, and the schedule list is updated accordingly.
 
-Overriding Django's built-in functionality for model deletion is a complex task, and was thus excluded, the Schedule Listener is not notified when a schedule object is deleted. The schedule is updated every 900 seconds, or 15 minutes. 
+\comment{
+Overriding Django's built-in functionality for model deletion is a complex task, and was thus excluded, the Schedule Listener is not notified when a schedule object is deleted. The schedule is updated every 900 seconds, or 15 minutes.}
 
 \subsubsection{Test Executor \& Queue System}
 
@@ -110,191 +133,10 @@ If none of the test machines match the required browser/platform specification o
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SUBSECTION: Allocation Machanism
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Allocation Mechanism}\label{allocation}
 
-Since the test type intended for \toolname \space generally runs slowly, designing a mechanism that would efficiently allocate tests to test machines in an attempt to minimize the duration it takes to find and execute the schedule. This mechanism has been named \emph{OptiX}, and will be thoroughly described in the following subsection. As explained in Chapter \ref{chapter.background}, an alternative allocation mechanism has also been implemented using Google's OR-tools library, and has been used establish a benchmark for use in the evaluation process of OptiX, which will be presented in the next chapter. The alternative allocation mechanism has been named \emph{ORX}, and implementation details will be explained subsequently.
+\subsection{Test Allocation Mechanism}
 
-\subsubsection{OptiX}\label{subsection.orx}
-
-The OptiX allocation mechanism consists of a sequence three steps; sorting, initial allocation and enhancement iterations. It can be seen as an extended greedy algorithm, and will be explained in this section.
-
-In order to give a better understanding of how the algorithm works, a demonstration example will be used throughout the explanation. In this example, we assume that there are three test machines connected to the system, as well as the test set listed in table \ref{testsuite}. Note that the durations of the tests intended for \toolname \space generally range between approximately 30 and 120 seconds, but this example deliberately uses shorter durations to better illustrate how the mechanism works.
-
-\begin{table}[h!]
-  \begin{tabular}{c c c}
-    \hline
-    \textbf{Test} & \textbf{Duration} & \textbf{Executable on}\\
-    \hline
-    $t_{1}$     &   6   &   $m_{1}$, $m_{2}$, $m_{3}$\\
-    $t_{2}$     &   3   &   $m_{1}$, $m_{2}$, $m_{3}$\\
-    $t_{3}$     &   8   &   $m_{1}$, $m_{2}$, $m_{3}$\\
-    $t_{4}$     &   5   &   $m_{1}$, $m_{2}$, $m_{3}$\\
-    $t_{5}$     &   3   &   $m_{1}$, $m_{2}$, $m_{3}$\\
-    $t_{6}$     &   4   &   $m_{1}$, $m_{2}$, $m_{3}$\\
-    $t_{7}$     &   7   &   $m_{1}$\\
-    $t_{8}$     &   3   &   $m_{2}$\\
-    $t_{9}$     &   9   &   $m_{3}$\\
-    $t_{10}$    &   5   &   $m_{1}$, $m_{3}$\\
-    \hline
-  \end{tabular}
-  \centering
-  \caption{Example Test Set}
-  \label{testsuite}
-\end{table}
-
-\comment{(extended) greedy algorithm with iterations.}
-
-%\vspace{7px}
-\noindent \textbf{\betterfakesc{Sorting}}\\
-\noindent The first step is a preparation for the initial allocation. The sorting does not play a crucial role in the allocation mechanism, but is creates an excellent starting point as the tests are sorted in a way that makes them well suited for the initial allocation in the next step. If toward the end of the allocation process there would only be left tests that could run on a certain machine, the overall execution time could be greatly affected, so the sorting avoids this by ordering them fittingly beforehand.
-
-The test set is first divided into subsets determined by the number of machines they can be executed on. Each of the subsets is then sorted by their estimated duration in descending order, so that the longest tests are placed first and the shortest are placed last. The list is then assembled again.
-
-\begin{figure}[ptb]
-    \centering
-    \includegraphics[width=\textwidth]{figures/new/sorting.pdf}
-    \thisfloatpagestyle{plain}
-    \caption{Sorting of Example Test Set}
-    \label{fig.sorted_test_suite}
-\end{figure}
-
-Figure \ref{fig.sorted_test_suite} illustrates how the sorting method works with the example test set introduced earlier. Since $t_{7}$, $t_{8}$ and $t_{9}$ can only be executed on a single machine each, these are placed first in descending order of their duration. $t_{10}$, which can be executed on two machines comes after. Finally, tests $t_{1}$ through $t_{6}$, which can run on all of the machines, are ordered and added to the list of tests.
-
-
-
-
-
-
-\vspace{7px}
-\noindent \textbf{\betterfakesc{Initial Allocation}}\\
-\noindent The initial allocation is a greedy algorithm, which means that it always makes a locally optimal choice in the hopes that it will give the best result in the end \cite{Algorithms}. Greedy algorithms are powerful and work well for an extensive spectrum of problems. Creating a greedy algorithm was a suitable choice for this problem.
-
-This step creates the foundation of the test allocations. After being sorted, the list of tests is looped through, and the tests are allocated one by one, starting with the \emph{longest} of the tests that are executable on the \emph{fewest} machines. Each test is initially allocated to the machine that currently has the shortest overall duration among the machines that the test is executable on.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figures/new/initial_allocation2.pdf}
-    %\includegraphics[width=\textwidth]{figures/initial_allocation.pdf}
-    \caption{Initial Allocation of Example Test Set}
-    \label{fig.initial_allocation}
-\end{figure}
-
-Figure \ref{fig.initial_allocation} shows how the test set is initially allocated among the test machines. $t_{9}$, $t_{7}$ and $t_{8}$ are first allocated to $m_{3}$, $m_{1}$ and $m_{2}$ one by one, as each of them can only be executed on that machine. $t_{10}$ can be executed on both $m_{3}$ and $m_{1}$, but as the latter currently has the shortest overall execution time, this is the machine it is allocated to. The remaining tests are allocated in the same way. After the initial allocation is finished, the overall execution time is 19. However, the total durations among the machines are slightly uneven, so there might be room for improvement. This will be examined in the last step of OptiX.
-
-
-
-
-
-
-\vspace{7px}
-\noindent \textbf{\betterfakesc{Enhancement Iterations}}\\
-\noindent Greedy algorithms are simple, yet efficient, and provide adequate results most of the time. However, they do not always yield optimal solutions. In order to improve the result, an additional step has been included in the OptiX. This is the most complex element in the process.
-
-The basic idea behind the iteration step is to find subsets of tests among the machine with the longest execution time and the other machines, and swap the two subsets that will result in the largest reduction in overall duration. The subject of each iteration is the machine that currently has the longest execution time. In the case of the example test set, this is $m_{1}$. This will be referred to as the \emph{swapper}. Each of the remaining machines are addressed one by one, starting with $m_{2}$, which is a \emph{swappee} candidate. The tests that are currently allocated to the swapper, but also executable on the swappee candidate are retrieved, which in this case is $t_{5}$ and $t_{6}$. A list of all possible subsets from this set is then created. This is done by using Python's \emph{itertools} library. The same is done the other way around, with $t_{3}$ and $t_{4}$ for the swappee candidate. After this, we examine how each swap would affect the overall total duration of the two machines in question. After comparing all subsets, it is concluded that the best swap is $t_{5}$ and $t_{6}$ from $m_{1}$ for $t_{4}$ from $m_{2}$, which will decrease the overall duration among the two machines with 1 second. Since $m_{3}$ can not provide any better options, this swap is conducted. This process will repeat until there is no way to improve the allocations, which in this case is after one swap. In this example, \toolname \space found an optimal solution to the optimization problem. Figure \ref{fig.iteration} shows how the subset swap is conducted, and how it affects the overall duration.
-
-Upon evaluating each swappee candidate, a naive best-case duration is calculated by adding the durations of all the tests from the two machines and dividing the sum by two. If the time used to search for the best swap exceeds the difference between the total duration of the swapper (here: 19), and this best scenario duration (here: $\frac{19+17}{2} = 18$), which in this case is $1$, we will continue to the next swappee candidate. This means that we will examine the subsets of $m_{2}$ for maximum 1 second.
-
-%In an attempt to save time, the subsets are sorted according to their total durations; the swapper subsets descending and the swappee subsets ascending. This ensures that the subsets with the longest total durations are attempted removed from the swapper first.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\textwidth]{figures/new/iteration2.pdf}
-    %\includegraphics[width=\textwidth]{figures/iterations2.pdf}
-    \caption{Enhancement Iteration of Example Test Set}
-    \label{fig.iteration}
-\end{figure}
-
-Sometimes, however, we want to stop the searching earlier, as continuing is no longer beneficial. For that reason, two stop criteria are introduced:
-
-\begin{enumerate}
-    \item Prior to the first enhancement iteration, a naive best-case overall duration value is calculated by dividing the sum of all test durations by the number of machines available. Once the time difference between this value and the maximum machine duration is exceeded, the iteration process will stop.
-    \item There is a timeout set to 30 seconds. If the iterations still are not finished at this point, the method will be terminated, and the allocations arrived at that point will be kept.
-\end{enumerate}
-
-During the development phase, a clear problem stood out; creation of subset lists from extremely large interchangeable test sets between two machines could take several minutes, and sometimes even lead to memory leaks so that the whole system crashed. This was because there was simply too many possible subsets. To work around this problem, a restriction of the maximum size of the subsets had to be established. Through trial and error, the following was decided upon:
-
-\[
-\hfill
-    f(x)=\left\{
-        \begin{array}{l l}
-          x         &   \hspace{20px} if \hspace{32px} x < 10\\
-          20-x      &   \hspace{20px} if \ 10 \leq x < 20 \\
-          1         &   \hspace{20px} if \ 20 \leq x
-        \end{array}
-    \right.
-\hfill
-\]
-
-Thus, if the number of interchangeable tests are 19 or more, the subset list will only consist of single tests in addition to the empty set. Although not optimal, this was a compromise that helped on the problem. This means that for large interchangeable sets, tests can only be swapped one against one or moved from one machine to another. It is therefore reasonable to think that better swaps might exist, although identifying these would take too much time and potentially lead to memory leaks. \comment{  Figure \ref{fig.subsets} shows a plot of $f(x)$.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figures/new/subset_sizes.pdf}
-    %\includegraphics[width=\textwidth]{figures/iterations2.pdf}
-    \caption{Maximum Subset Sizes}
-    \label{fig.subsets}
-\end{figure}
-}
-
-Because of the stop criteria described earlier and the subset size restriction, \toolname \space cannot \emph{guarantee} to find an optimal solution to the allocation problem. However, as explained in Section \ref{subsection.cp}, the objective of the optimization problem is to minimize the total time, which means that the time used to search for the best solution is also of high importance, and should be prioritized as such.
-
-\subsubsection{ORX}
-
-The implementation of ORX is of the same style as the OR-tools example shown in \lstlistingname \space \ref{listing.or_tools} in Chapter \ref{chapter.technology}, but more complex. ORX takes two lists; one containing the durations of the tests, and another containing which machines each test is executable on. OR-tools does not support decimal values, so as opposed to OptiX, ORX regards all test durations as integer values. The \emph{executable on} list is nested, with one list belonging to each test. These inner lists contain binary values representing whether or not the test can be executed on a given machine. It is then added as a constraint that each test should be allocated to exactly one machine, and as the objective that the overall duration should be minimized.
-
-However, there was one major issue upon the implementation of ORX. It was not possible to interrupt or time out the \emph{NextSolution} method. For very small data sets, this was not a problem, but once the data sets grew slightly bigger and the combination of possibilities grew rapidly, the method could take hours. This meant that a set of stop criteria had to be introduced. However, the problem could still not be solved by running the solver in a separate thread, as there is no integrated method of terminating regular threads in Python to the best of the authors knowledge. The problem was solved by introducing Python's \emph{multiprocessing} library.
-
-The solving method is started as a \emph{Process} from the multiprocessing library. In order to allow two processes to share lists, a \emph{Manager} is needed, and to ensure synchronization, a \emph{Lock} has been used. \lstlistingname \space \ref{listing.orx_multiprocess} shows how these multiprocessing modules are used in ORX.
-
-ORX will be terminated if one of the following stop criteria are met:
-
-\begin{itemize}
-    \item The search for an enhancement has taken 100 times as long as it took to find the previous enhancement.
-    \item The previous enhancement took 10 times as long to find than the enhancement itself.
-    \item 30 seconds have passed (timeout).
-\end{itemize}
-
-\vspace{4mm}
-\begin{lstlisting}[caption=ORX Multiprocessing, label={listing.orx_multiprocess}]
-from multiprocessing import Process, Manager, Lock
-
-manager       = Manager()
-allocations   = manager.dict()
-max_durations = manager.list()
-last_updated  = manager.list()
-lock          = Lock()
-
-# ...
-
-p = Process(target=find_solution, args=(durations, executable_on, allocations, max_durations, last_updated, lock))
-p.start()
-
-while p.is_alive():
-  if lock.acquire():
-    if <stop criteria fulfilled>:
-      p.terminate()
-      break
-    lock.release()
-
-# ...
-
-def solution_loop(self, durations, executable_on, shared_allocations, max_durations, last_updated, lock):
-    # ...
-    
-    while solver.NextSolution():
-      lock.acquire()
-      # ...
-      lock.release()
-\end{lstlisting}
-
-
-
-
-
-
+\improvement[inline]{TODO: Write some stuff here, including maybe some implementation details of ORX, and how the allocation mechanism integrates with the rest of the project. Change section title since there are a chapter with same name}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUBSECTION: Database
@@ -308,13 +150,15 @@ As explained in Chapter \ref{chapter.technology}, Django data models define the 
 The database can be accessed either by writing raw SQL queries, or through Django's API for database abstraction. The former approach was first implemented in this system, but was then changed to the latter, as it was cleaner and more consistent with the implementation of the rest of the project. It was also interesting to use a different practice of database communications than the more commonly used raw SQL queries. \lstlistingname \space \ref{listing.db} shows how an \emph{insert} statement is conducted in \toolname \space using this approach, although the listing is somewhat simplified as less attributes are specified. The implementation of the Log model is imported and then an object of this type is created with pseudo values for a small set of attributes. Line 5 in the listing represents the transaction execution and commit, where an entry in the database is created.
 
 \vspace{4mm}
-\begin{lstlisting}[caption=Database Communication Using Abstraction API, label={listing.db}]
+\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}[caption=Database Communication Using Abstraction API, label={listing.db}, upquote=true]
 from testautomation.models import Log
 from datetime import datetime
  
-l = Log(title='test1', result=1, execution_time=datetime.utcnow())
+l = Log(title='test1', result=True, execution_time=datetime.utcnow())
 l.save()
 \end{lstlisting}
+\end{minipage}
 
 In addition to providing excellent readability, the abstraction greatly decreases the required number of code lines needed to achieve the same result compared to executing raw SQL queries. This is because the database location does not need to be stated, connection with the database does not need to be programmatically established and then closed when the transaction is finished, etc. The abstraction takes care of all of this. Other types of queries such as \emph{select}, \emph{update} and \emph{delete} are also supported with this API.
 
@@ -355,17 +199,18 @@ The models are located in \emph{/testautomation/models.py}. In this file, model 
 Models can also have attributes derived from functions, which can use other attributes stored in the database. Derived attributes are used in several of the models. For instance in the test case module, there are one function that query the Log table in the database, and counts number of instances linked to the particular test case. Average duration and previous execution date are retrieved in a similar manner.
 
 \vspace{4mm}
+\noindent\begin{minipage}{\textwidth}
 \begin{lstlisting}[caption=Model Implementation, label={listing.model}]
 from django.db import models
  
 class TestCase(models.Model):
-    title = models.CharField(max_length=80)
-    script = models.FileField(upload_to='scripts')
-    
-    def times_run(self):
-        tr = # perform query
-        return tr
+    title           = models.CharField(max_length=80, null=False)
+    script          = models.FileField(upload_to='scripts')
+    description = models.TextField(null=True, blank=True)
+    groups          = models.ManyToManyField('Group', blank=True)
+    schedules       = models.ManyToManyField('Schedule', blank=True)
 \end{lstlisting}
+\end{minipage}
 
 \lstlistingname \space \ref{listing.model} shows a reduced adaption of how the test case model has been implemented. This model contains two model fields and a function. The \emph{script} field is of the type \emph{model.FileField}, and the directory that the files should be uploaded to is passed as a parameter. The file upload itself is taken care of by Django.
 
@@ -378,17 +223,23 @@ class TestCase(models.Model):
 \improvement[inline]{TODO: Write introduction to this subsection}
 
 \vspace{4mm}
+%\begin{minipage}{\textwidth}
 \begin{lstlisting}[caption=Implementation of Model in Administrator Interface, label={listing.modeladmin}, float=bp, floatplacement=btp]
 from django.contrib import admin
 from .models import TestCase
 
 class TestCaseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'times_run', 'avg_dur')
+    list_display = ('title', 'times_run')
     search_fields = ['title',]
     fields = ('title', 'script')
+    
+    def times_run(self, obj):
+        return Log.objects.filter(test_id=obj.pk).exclude(result__isnull=True).count()
+    times_run.short_description = "Execution Count"
  
 admin.site.register(TestCase, TestCaseAdmin)
 \end{lstlisting}
+%\end{minipage}
 
 \lstlistingname \space \ref{listing.modeladmin} shows a simplified interpretation of how the test case model is represented in the administrator interface. This adaption builds on the model implementation from \lstlistingname \space \ref{listing.model}. Model administrator representations are subclasses of \emph{django.contrib.admin.ModelAdmin}, and specifies how the model should be represented in the administrator interface. This interpretation specifies values of three of the many ModelAdmin options; which fields of the model should be displayed in the overview list of the test case module (\emph{list\_display}), which fields should be searchable (\emph{search\_fields}) and which which fields should be present in the creation/change form (\emph{fields}). Line 9 registers the model to the administrator interface with the specifications stated in the TestCaseAdmin class.
 
@@ -408,6 +259,8 @@ On the log detail page, which is accessed by clicking on a log entry, there is a
 
 \lstlistingname \space \ref{listing.jira} shows how issue search, commenting and creation are performed using the JIRA REST API. The Python code for this are located in \emph{/testautomation/admin.py}, and is called from the methods \emph{report\_to\_jira} and \emph{get\_jira\_issues} in the \emph{LogAdmin} class of this file.
 
+\vspace{4mm}
+%\noindent\begin{minipage}{\textwidth}
 \begin{lstlisting}[caption={Issue search, commenting and creation using the \emph{JIRA REST API}}, label={listing.jira}, float=tp, floatplacement=tbp]
 from jira import JIRA
 
@@ -435,23 +288,27 @@ jira_instance.create_issue(
     components=[{'name': 'web'}]
 )
 \end{lstlisting}
+%\end{minipage}
 
 \subsubsection{Event Recurrence}
 \emph{RRULE} (Recurrence Rule) is a module in the Python library \emph{dateutil}, which provides an extension to Python's \emph{datetime} module. It  is a small and fast library used in \toolname \space to specify recurrence patterns of test executions. RRULE instances can be implemented multiple ways. In this project, it is achieved through passing a string with a specific format, containing information about the desired recurrence constraints. This string is stored in the database, and can be used at any point to create an RRULE instance in order to inquire when the next event should take place. An example of such a string, how RRULE instances are created in this project, and how the next occurrence is retrieved, can be seen in \lstlistingname \space \ref{listing.rrule}.
 
-The string in the listing above is used to create an RRULE instance in which the first occurrence is set to the 15\textsuperscript{th} of June 2016 at 4 pm, and repeats weekly. In addition to the recurrence properties shown in the listing above, the library provides an extensive number of recurrence options, including end date, occurrence count and interval.
+The string in the listing above is used to create an RRULE instance in which the first occurrence is set to the 15\textsuperscript{th} of June 2016 at 3 PM, and repeats weekly. The output shown in the listing is valid if the script was executed before this date, otherwise it will produce a different output  In addition to the recurrence properties shown in the listing above, the library provides an extensive number of recurrence options, including end date, occurrence count and interval.
 
+\vspace{4mm}
+\noindent\begin{minipage}{\textwidth}
 \begin{lstlisting}[caption=Recursion Rule, label={listing.rrule}]
 from dateutil.rrule import rrulestr
 from datetime import datetime
 
-rule_string = "DTSTART:20160615T160000\nRRULE:FREQ=WEEKLY"
+rule_string = "DTSTART:20160615T150000\nRRULE:FREQ=WEEKLY"
 rule = rrulestr(rule_string)
- 
+
 print rule.after(datetime.now())
- 
->>> 2016-06-15 16:00:00
+
+>>> 2016-06-15 15:00:00
 \end{lstlisting}
+\end{minipage}
 
 \comment{
     \missingfigure[figwidth=\textwidth]{Screenshot of filled-in schedule form? With corresponding rrulestr?}

@@ -5,15 +5,15 @@ This class keeps track of the test machines connected to the Selenium Grid syste
 import ConfigParser
 import json
 import re
+import socket
 import urllib2
 from os import path, environ
-import socket
-
-from objects.test_machine_obj import TestMachineObj
-
-import django
 from sys import path as syspath
 
+import django
+from bs4 import BeautifulSoup
+
+from objects.test_machine_obj import TestMachineObj
 
 environ['PYTHONPATH'] = path.abspath(path.join(syspath[0], '..', '..'))
 environ['DJANGO_SETTINGS_MODULE'] = 'dashboard.settings'
@@ -26,12 +26,27 @@ from testautomation.models import TestMachine
 class TestMachineManager:
     def __init__(self, project_path):
         self._base_url = 'http://%s:%s/grid/api/proxy?id=' % (socket.gethostname(), self.get_port(project_path))
+        self._project_path = project_path
+        self._hub_port = self.get_selenium_hub_port()
 
         for model in TestMachine.objects.all():
             model.url = None
             model.uuid = None
             model.active = False
             model.save()
+
+    def get_selenium_hub_port(self):
+        """
+        This method retrieves the hub port number from the configuration file.
+        """
+
+        config = ConfigParser.ConfigParser()
+
+        config_path = path.abspath(path.join(self._project_path, 'config.ini'))
+        config.read(config_path)
+
+        port = config.get('SELENIUMSERVER', 'hub_port')
+        return port
 
     @staticmethod
     def get_port(project_path):
@@ -51,10 +66,11 @@ class TestMachineManager:
         machines.
         """
 
-        tmp_machines = [machine for machine in TestMachine.objects.filter(approved=True) if self.is_active(machine)]
+        active_machines = self.get_active_machines()
+        approved_machines = [machine for machine in TestMachine.objects.filter(approved=True) if machine.url in active_machines]
 
         machines = []
-        for machine in tmp_machines:
+        for machine in approved_machines:
             browsers = []
             if machine.chrome:
                 browsers.append({
@@ -92,24 +108,33 @@ class TestMachineManager:
 
         return machines
 
-    @staticmethod
-    def is_active(machine):
+    def is_active(self, machine):
         """
-        This method checks whether a test machine is connected and active by checking the error code from the URL of the
-        test machine, which should return '403' if the machine is connected and active.
+        This method checks whether a test machine is connected and active by calling 'get_active_machines' to get a list
+        of currently active machines connected to the hub, and checking if the specific machine is in the list.
         """
 
-        active = False
+        if machine.url in self.get_active_machines():
+            return True
+        return False
+
+    def get_active_machines(self):
+        """
+        This method checks the response from 'http://<HubHost>:4444/grid/console#', and extracts necessary information
+        from the HTML code. The method creates a list of currently connected machines.
+        """
+
+        active_machines = []
+        grid_url = 'http://%s:%s/grid/console#' % (socket.gethostname(), self._hub_port)
         try:
-            urllib2.urlopen(machine.url)
-        except urllib2.HTTPError, e:
-            active = True if e.code == 403 else False
-        except:
-            pass
-        if not active:
-            machine.active = False
-            machine.save()
-        return active
+            soup = BeautifulSoup(urllib2.urlopen(grid_url).read(), "html.parser")
+            for proxy in soup.findAll('div', attrs={'class': 'proxy'}):
+                proxyname = proxy.find('p', attrs={'class': 'proxyname'}).text
+                proxy_url = re.findall('http://(?:[0-9]|[$-_@.&+])+', proxyname)[0].replace(",", "")
+                if 'connection refused' not in proxyname.lower():
+                    active_machines.append(proxy_url)
+        finally:
+            return active_machines
 
     def add_machine(self, url):
         """

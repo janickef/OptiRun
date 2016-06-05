@@ -22,30 +22,77 @@ class OptiX:
     def allocate(self, ms, ts):
         print "Allocating tests..."
 
-        non_executables, tests = self.sort_tests(self.create_test_list(ms, ts), len(ms))
+        tests, non_executables = self.tuplify(ms, ts)
         non_executables = [ts[item.id] for item in non_executables]
 
-        allocation_indices = self.solve(ts, tests, len(ms))
+        allocation_indices = self.solve(tests, len(ms))
         allocations = self.post_process(allocation_indices, ms, tests, ts)
 
-        print "Allocating finished"
+        print "Allocation finished."
         self.print_result(allocations, non_executables)
-
         return non_executables, allocations
 
-    def solve(self, ts, tests, num_machines):
+    def solve(self, tests, num_machines):
         """
         This method call the 'init_allocation' and 'iterate' methods and returns the allocation result.
         """
 
-        allocation_indices = self.init_allocation(ts, tests, num_machines)
+        tests = self.sort_tests(tests, num_machines)
+        allocation_indices = self.init_allocation(tests, num_machines)
         tests.sort(key=lambda x: x.id)
         allocation_indices = self.iterate(tests, allocation_indices, num_machines)
 
         return allocation_indices
 
+    def tuplify(self, ms, ts):
+        """
+        This method creates a named tuple of each test, containing only the information needed during the allocation,
+        to make the test list as light weight as possible. This information includes the index of the test in the
+        original test list, the duration of the test, and a list of the machines the test can be executed on.
+        """
+
+        tests = []
+        non_executables = []
+        for i, test in enumerate(ts):
+            tmp_test = self.test(id=i, duration=test.duration, executable_on=[])
+            for j, machine in enumerate(ms):
+                if test.browser.lower() == 'any':
+                    tmp_test.executable_on.append(j)
+                    continue
+                machine_browsers = [mb['browser'].lower() for mb in machine.browsers]
+                if test.browser.lower() in machine_browsers:
+                    tmp_test.executable_on.append(j)
+            if tmp_test.executable_on:
+                tests.append(tmp_test)
+            else:
+                non_executables.append(tmp_test)
+        return tests, non_executables
+
     @staticmethod
-    def init_allocation(ts, tests, num_machines):
+    def sort_tests(tests, num_machines):
+        """
+        This method sorts the tests in such a way that the initial allocation will be as effective as possible. The
+        tests are first grouped by how many test machines they are executable on. The tests that are not executable on
+        any machines are placed in a separate list. The groups are then looped through, starting with the smallest
+        number of machines, and sorted by duration in descending order. The tests are then assembled back to a list and
+        returned together with the non-executable tests.
+        """
+
+        tmp_tests = []
+
+        for i in range(0, num_machines + 1):
+            tmp = [test for test in tests if len(test.executable_on) == i]
+            tmp.sort(key=lambda t: t.duration, reverse=True)
+            tmp_tests.append(tmp)
+
+        tests = []
+        for tt in tmp_tests:
+            tests += tt
+
+        return tests
+
+    @staticmethod
+    def init_allocation(tests, num_machines):
         """
         This function performs the initial test allocation by looping through the test list and assigning each test
         to the machine that currently has the shortest total execution time among the machines that the test is
@@ -83,10 +130,15 @@ class OptiX:
         best_case_goal = sum(durations) / len(durations)
         best_case_win = longest_duration - best_case_goal
 
+        allocation_no = 0
+
         while True:
             durations = self.get_total_durations(tests, allocation_indices, num_machines)
             longest_duration = max(durations)
             x = durations.index(longest_duration)
+
+            allocation_no += 1
+            print allocation_no, longest_duration
 
             new_longest_duration = longest_duration
 
@@ -222,53 +274,6 @@ class OptiX:
                         tmp_subset.append(s)
                     subsets.append(subset_tuple(subset=tmp_subset, total_duration=sum([t.duration for t in tmp_subset])))
         return subsets
-
-    def create_test_list(self, ms, ts):
-        """
-        This method creates a named tuple of each test, containing only the information needed during the allocation,
-        to make the test list as light weight as possible. This information includes the index of the test in the
-        original test list, the duration of the test, and a list of the machines the test can be executed on.
-        """
-
-        tests = []
-        for i, test in enumerate(ts):
-            tmp_test = self.test(id=i, duration=test.duration, executable_on=[])
-            for j, machine in enumerate(ms):
-                if test.browser.lower() == 'any':
-                    tmp_test.executable_on.append(j)
-                    continue
-                machine_browsers = [mb['browser'].lower() for mb in machine.browsers]
-                if test.browser.lower() in machine_browsers:
-                    tmp_test.executable_on.append(j)
-            tests.append(tmp_test)
-        return tests
-
-    @staticmethod
-    def sort_tests(tests, num_machines):
-        """
-        This method sorts the tests in such a way that the initial allocation will be as effective as possible. The
-        tests are first grouped by how many test machines they are executable on. The tests that are not executable on
-        any machines are placed in a separate list. The groups are then looped through, starting with the smallest
-        number of machines, and sorted by duration in descending order. The tests are then assembled back to a list and
-        returned together with the non-executable tests.
-        """
-
-        non_executables = []
-        tmp_tests = []
-
-        for i in range(0, num_machines + 1):
-            tmp = [test for test in tests if len(test.executable_on) == i]
-            if i == 0:
-                non_executables = tmp
-            else:
-                tmp.sort(key=lambda t: t.duration, reverse=True)
-                tmp_tests.append(tmp)
-
-        tests = []
-        for tt in tmp_tests:
-            tests += tt
-
-        return non_executables, tests
 
     @staticmethod
     def get_total_durations(tests, allocation_indices, num_machines):

@@ -391,9 +391,11 @@ ul {
     color: #666;
 }
 
+/*
 #menubar #auth-nested, #menubar #testautomation-nested {
     display: none;
 }
+*/
 
 #menubar #auth-nested li, #menubar #testautomation-nested li {
     background: #ddd;
@@ -475,4 +477,8 @@ table.intermediate td {
 
 .messagelist {
     margin-left:
+}
+
+.red {
+    color: #ba2121;
 }

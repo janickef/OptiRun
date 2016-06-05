@@ -1,5 +1,11 @@
 {% extends "admin/base_site.html" %}
 
+{% block extrahead %}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
+{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="/admin/">Home</a>
@@ -10,8 +16,46 @@
 {% block content %}
 <!--<h1>About OptiRun</h1>-->
 
+
 <div id="error">
     <h1>ABOUT</h1>
     <p>Not Finished</p>
-</div>
+
+  <div id="piechart"><svg style="width:200px;height:200px;padding=0;margin=0;"></svg></div>
+    <script>
+    data_piechart=[{"values": [{"value": 3, "label": "Orange"}, {"value": 4, "label": "Banana"}, {"value": 0, "label": "Pear"}, {"value": 1, "label": "Kiwi"}, {"value": 5, "label": "Apple"}, {"value": 7, "label": "Strawberry"}, {"value": 3, "label": "Pineapple"}], "key": "Serie 1"}];
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart();
+        chart.margin({top: 0, right: 0, bottom: 0, left: 0})
+            .color(d3.scale.category20c().range())
+            .tooltipContent(function(key, y, e, graph) {
+                var x = String(key);
+                var y = String(y)  + ' cal';
+                tooltip_str = '<span class="piechart-tooltip"><b>'+x+'</b></br>' + y + '</span>';
+                return tooltip_str;
+            })
+            .showLabels(false)
+            .donut(false)
+            .showLegend(false)
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .width(200)
+            .height(200);
+
+        d3.select('#piechart svg')
+            .datum(data_piechart[0].values)
+            .transition().duration(500)
+            .call(chart);
+        });
+
+    $(document).ready(function() {
+        $.each(data, function(i, item){
+            alert(item.username);
+            //console.log(item.username);
+        });
+    });
+    </script>
+
+
+  </div>
 {% endblock %}
