@@ -28,3 +28,14 @@ dashboard/config.ini
 dashboard/db.sqlite3
 dashboard/.idea/workspace.xml
 *.iml
+dashboard/testautomation/migrations/0002_auto_20160531_2016.py
+dashboard/.idea/encodings.xml
+*.xml
+dashboard/controller/hub/ldkfjg.py
+dashboard/controller/hub/ok.py
+dashboard/controller/test_data/output/additional info_with worting.txt
+dashboard/controller/test_data/run_tests.py
+dashboard/testautomation/migrations/0004_auto_20160531_2037.py
+dashboard/controller/test_data/output/additional info_without sorting
+dashboard/testautomation/migrations/0005_auto_20160531_2046.py
+dashboard/testautomation/migrations/0003_schedule_new_field.py
