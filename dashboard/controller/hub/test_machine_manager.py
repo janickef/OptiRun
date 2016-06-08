@@ -7,16 +7,22 @@ import json
 import re
 import socket
 import urllib2
-from os import path, environ
-from sys import path as syspath
+
+import os
+import sys
 
 import django
 from bs4 import BeautifulSoup
 
 from objects.test_machine_obj import TestMachineObj
 
-environ['PYTHONPATH'] = path.abspath(path.join(syspath[0], '..', '..'))
-environ['DJANGO_SETTINGS_MODULE'] = 'dashboard.settings'
+project_path = os.path.abspath(os.path.join(sys.path[0], '..', '..'))
+
+if project_path not in sys.path:
+    sys.path.append(project_path)
+
+os.environ['PYTHONPATH'] = os.path.abspath(os.path.join(sys.path[0], '..', '..'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'dashboard.settings'
 
 django.setup()
 
@@ -42,7 +48,7 @@ class TestMachineManager:
 
         config = ConfigParser.ConfigParser()
 
-        config_path = path.abspath(path.join(self._project_path, 'config.ini'))
+        config_path = os.path.abspath(os.path.join(self._project_path, 'config.ini'))
         config.read(config_path)
 
         port = config.get('SELENIUMSERVER', 'hub_port')
@@ -55,7 +61,7 @@ class TestMachineManager:
         """
 
         config = ConfigParser.ConfigParser()
-        config_path = path.abspath(path.join(project_path, 'config.ini'))
+        config_path = os.path.abspath(os.path.join(project_path, 'config.ini'))
         config.read(config_path)
         return config.get('SELENIUMSERVER', 'hub_port')
 
@@ -143,32 +149,56 @@ class TestMachineManager:
         machines. Otherwise, the connection is ignored.
         """
 
+        print url
+
         json_url = self._base_url+url
         while True:
-            try:
-                response = urllib2.urlopen(json_url)
-                data = json.loads(response.read())
-
-                if data['success'] and not data['request']['configuration']['uuid']:
-                    break
-                if len(data['request']['capabilities']) >= 1:
-                    platform = self.get_platform(data['request']['capabilities'][0]['platform'])
-                else:
-                    break
-
-                model = TestMachine.objects.filter(
-                    hostname__iexact=data['request']['configuration']['hostname']
-                ).first()
-                if not model:
-                    model = TestMachine(
-                        hostname=data['request']['configuration']['hostname'],
-                        approved=False
-                    )
-                self.add_model(model, data, platform)
-                print "New test machine connected: %s" % url
+            #try:
+            print 1
+            response = urllib2.urlopen(json_url)
+            print 2
+            data = json.loads(response.read())
+            print 3
+            print json_url
+            print 4
+            if data['success'] and not data['request']['configuration']['uuid']:
+                print 5
+                print "breaking... 1"
                 break
-            except:
-                continue
+            if len(data['request']['capabilities']) >= 1:
+                print 6
+                platform = self.get_platform(data['request']['capabilities'][0]['platform'])
+            else:
+                print 7
+                print "breaking... 2"
+                break
+
+            print 8
+            if data['request']['configuration']['hostname']:
+                models = TestMachine.objects.filter(
+                    hostname__iexact=data['request']['configuration']['hostname']
+                )
+            else:
+                print "breaking...3"
+                break
+
+            if models:
+                model = models[0]
+            else:
+                print 10
+                model = TestMachine(
+                    hostname=data['request']['configuration']['hostname'],
+                    approved=False
+                )
+            print 11
+            self.add_model(model, data, platform)
+            print 12
+            print model
+            print "New test machine connected: %s" % url
+            break
+            #except:
+            #    continue
+        print "goodbye"
 
     @staticmethod
     def add_model(model, data, platform):

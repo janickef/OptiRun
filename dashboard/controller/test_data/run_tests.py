@@ -5,7 +5,7 @@ from collections import namedtuple
 from controller.hub.optix import OptiX
 from controller.test_data.orx import AllocationSolver
 
-file_name = 'test_set_1.json'
+file_name = 'test_set_10.json'
 
 
 def get_longest_dur(tests, num_machines, allocations):
@@ -75,15 +75,15 @@ if __name__ == '__main__':
         create_dict('opti-x', tests, num_machines, optix_searching_time, optix_execution_time, optix_allocations)
     )
 
-    orx = AllocationSolver()
-    orx_start = time.clock()
-    orx_allocations = orx.solve(tests, num_machines)
-    orx_searching_time = time.clock() - orx_start
-    orx_execution_time = get_longest_dur(tests, num_machines, orx_allocations)
+    #orx = AllocationSolver()
+    #orx_start = time.clock()
+    #orx_allocations = orx.solve(tests, num_machines)
+    #orx_searching_time = time.clock() - orx_start
+    #orx_execution_time = get_longest_dur(tests, num_machines, orx_allocations)
 
-    output.append(
-        create_dict('or-x', tests, num_machines, orx_searching_time, orx_execution_time, orx_allocations)
-    )
+    #output.append(
+    #    create_dict('or-x', tests, num_machines, orx_searching_time, orx_execution_time, orx_allocations)
+    #)
 
     print json.dumps(output)
 
@@ -94,5 +94,5 @@ if __name__ == '__main__':
     print "OPTI-X"
     print_summary(tests, num_machines, optix_allocations, optix_searching_time)
 
-    print "OR-X"
-    print_summary(tests, num_machines, orx_allocations, orx_searching_time)
+    #print "OR-X"
+    #print_summary(tests, num_machines, orx_allocations, orx_searching_time)

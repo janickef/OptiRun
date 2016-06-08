@@ -5,6 +5,7 @@ This class starts the Selenium Grid Hub and continuously listens to the output.
 import ConfigParser
 from os import path, listdir
 from subprocess import Popen, PIPE, CREATE_NEW_CONSOLE
+import urllib2
 
 
 class SeleniumHub:
@@ -40,7 +41,20 @@ class SeleniumHub:
         for f in listdir(self._controller_path):
             if f.startswith("selenium-server"):
                 return path.abspath(path.join(self._controller_path, str(f)))
-        print "Could not find Selenium Standalone Server executable JAR..."
+        try:
+            print "Could not find Selenium Standalone Server. Attempting to download..."
+            response = urllib2.urlopen("https://selenium-release.storage.googleapis.com/2.51/selenium-server-standalone-2.51.0.jar")
+            CHUNK = 16 * 1024
+            with open(path.abspath(path.join(self._controller_path, 'selenium-server-standalone-2.51.0.jar')), 'wb') as f:
+                while True:
+                    chunk = response.read(CHUNK)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+            print "Finished downloading Selenium Standalone Server."
+            return path.abspath(path.join(self._controller_path, 'selenium-server-standalone-2.51.0.jar'))
+        except:
+            print "Something went wrong while attempting to download Selenium Standalone Server. Exiting..."
         exit()
 
     def start_selenium_grid(self):
@@ -51,21 +65,13 @@ class SeleniumHub:
         """
 
         cmd = [
-            'java',
-            '-jar',
-            self._selenium_path,
-            '-port',
-            self._port,
-            '-role',
-            'hub',
-            '-nodeTimeout',
-            self._node_timeout,
-            #'-host 10.0.0.4'
+            'java', '-jar', self._selenium_path,
+            '-port', self._port,
+            '-role', 'hub',
+            '-nodeTimeout', self._node_timeout,
         ]
 
         p = Popen(cmd, creationflags=CREATE_NEW_CONSOLE, stderr=PIPE, shell=True)
-
-        print "hallo"
 
         with p.stderr:
             for line in iter(p.stderr.readline, b''):

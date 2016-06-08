@@ -34,13 +34,18 @@ class OptiX:
 
     def solve(self, tests, num_machines):
         """
-        This method call the 'init_allocation' and 'iterate' methods and returns the allocation result.
+        This method calls the 'sort_tests', 'init_allocation' and 'iterate' methods, and returns the allocation result.
         """
 
-        tests = self.sort_tests(tests, num_machines)
+        # OptiX Step 1: Sorting
+        tests = self.sort_tests(tests)
+
+        # OptiX Step 2: Initial Allocation
         allocation_indices = self.init_allocation(tests, num_machines)
         tests.sort(key=lambda x: x.id)
-        allocation_indices = self.iterate(tests, allocation_indices, num_machines)
+
+        # OptiX Step 3: Improvement Iterations
+        # allocation_indices = self.iterate(tests, allocation_indices, num_machines)
 
         return allocation_indices
 
@@ -56,12 +61,14 @@ class OptiX:
         for i, test in enumerate(ts):
             tmp_test = self.test(id=i, duration=test.duration, executable_on=[])
             for j, machine in enumerate(ms):
-                if test.browser.lower() == 'any':
-                    tmp_test.executable_on.append(j)
-                    continue
-                machine_browsers = [mb['browser'].lower() for mb in machine.browsers]
-                if test.browser.lower() in machine_browsers:
-                    tmp_test.executable_on.append(j)
+                browser = test.browser.lower()
+                platform = test.platform.lower()
+
+                print "*** test platform:", platform, "machine platform:", machine.platform['os'].lower(), "***"
+
+                if browser == 'any' or browser in [mb['browser'].lower() for mb in machine.browsers]:
+                    if platform == 'any' or platform == machine.platform['os'].lower():
+                        tmp_test.executable_on.append(j)
             if tmp_test.executable_on:
                 tests.append(tmp_test)
             else:
@@ -69,7 +76,7 @@ class OptiX:
         return tests, non_executables
 
     @staticmethod
-    def sort_tests(tests, num_machines):
+    def sort_tests(tests):
         """
         This method sorts the tests in such a way that the initial allocation will be as effective as possible. The
         tests are first grouped by how many test machines they are executable on. The tests that are not executable on
@@ -78,17 +85,7 @@ class OptiX:
         returned together with the non-executable tests.
         """
 
-        tmp_tests = []
-
-        for i in range(0, num_machines + 1):
-            tmp = [test for test in tests if len(test.executable_on) == i]
-            tmp.sort(key=lambda t: t.duration, reverse=True)
-            tmp_tests.append(tmp)
-
-        tests = []
-        for tt in tmp_tests:
-            tests += tt
-
+        tests.sort(key=lambda test: (len(test.executable_on), -test.duration))
         return tests
 
     @staticmethod

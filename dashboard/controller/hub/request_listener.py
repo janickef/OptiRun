@@ -4,8 +4,9 @@ This class listens for test execution requests triggered from the dashboard.
 
 import ConfigParser
 import json
+import os
 import socket
-from os import path
+import sys
 
 from objects.test_obj import TestObj
 
@@ -22,7 +23,7 @@ class RequestListener:
         """
 
         config = ConfigParser.ConfigParser()
-        config_path = path.abspath(path.join(path.dirname(__file__), '..\..', 'config.ini'))
+        config_path = os.path.abspath(os.path.join(sys.path[0], '..\..', 'config.ini'))
         config.read(config_path)
 
         port = config.get('CONTROLLER', 'request_port')

@@ -11,13 +11,17 @@ import threading
 import time
 from datetime import datetime
 from multiprocessing import Lock
-from os import path
 
 import django
 from dateutil.rrule import rrulestr
 from django.db.models import Avg
 
 from objects.test_obj import TestObj
+
+project_path = os.path.abspath(os.path.join(sys.path[0], '..', '..'))
+
+if project_path not in sys.path:
+    sys.path.append(project_path)
 
 os.environ['PYTHONPATH'] = os.path.abspath(os.path.join(sys.path[0], '..', '..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dashboard.settings'
@@ -62,7 +66,7 @@ class ScheduleListener:
         """
 
         config = ConfigParser.ConfigParser()
-        config_path = path.abspath(path.join(path.dirname(__file__), '..\..', 'config.ini'))
+        config_path = os.path.abspath(os.path.join(sys.path[0], '..\..', 'config.ini'))
         config.read(config_path)
 
         port = config.get('CONTROLLER', 'schedule_port')

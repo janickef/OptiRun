@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Launch OptiRun Node
-Name[en_US]=Launch OptiRun Node
-Exec=sh /home/mate/OptiRun/run.sh
-Icon=/home/mate/OptiRun/1459869856_Rocket.png
-Terminal=true
-X-GNOME-Autostart-enabled=true

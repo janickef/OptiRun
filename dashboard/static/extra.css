@@ -147,12 +147,24 @@ table.intermediate .fa {
     width: 700px;
 }
 
+.submit-row input[type=submit]{
+    padding: 10px;
+    margin: 0 0 0 8px;
+    height: 35px;
+}
+
 .submit-row {
     padding: 12px 14px;
     background: #fff;
     text-align: right;
     overflow: hidden;
     margin-top: 35px;
+    height: 35px;
+}
+
+.submit-row p.deletelink-box {
+    float: left;
+    margin: 0;
 }
 
 .intermediate {
@@ -481,4 +493,9 @@ table.intermediate td {
 
 .red {
     color: #ba2121;
+}
+
+
+.submit-row a.deletelink:focus, .submit-row a.deletelink:hover, .submit-row a.deletelink:active {
+    background: #6C9CB4;
 }

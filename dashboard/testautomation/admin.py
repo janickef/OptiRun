@@ -1,28 +1,27 @@
 import ConfigParser
-import httplib
 import json
-import os
 import socket
 from datetime import datetime
 from os import path
 
+import urllib3
 from django.contrib import admin
 from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
 from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ChangeList
-from django.core import serializers
 from django.db import models
 from django.db.models import Avg
 from django.forms import TextInput, Textarea
-from django.http import HttpResponse
 from django.template.response import TemplateResponse
 from django.utils import formats
-
-from django.contrib.admin import SimpleListFilter
 from django.utils import timezone
 
 from .forms import TestCaseAdminForm, ScheduleAdminForm
 from .models import TestCase, Group, Schedule, Log, TestMachine
+
+urllib3.disable_warnings()
+#logging.captureWarnings(True)
 
 browsers = ['chrome', 'edge', 'firefox', 'internet explorer']
 
@@ -186,7 +185,7 @@ class TestCaseAdmin(admin.ModelAdmin):
             prev = Log.objects.filter(test_id=obj.pk).exclude(result__isnull=True).order_by('-end_time').first()
             prev_time = prev.end_time.replace(tzinfo=timezone.utc).astimezone(timezone.get_current_timezone())
             formatted = formats.date_format(prev_time, "DATETIME_FORMAT")
-            tag_wrap = '<a href="/admin/web_test_automation/log/%d/change/" target="_blank">%s</a>' % (prev.pk, formatted)
+            tag_wrap = '<a href="/admin/test_automation/log/%d/change/" target="_blank">%s</a>' % (prev.pk, formatted)
             return tag_wrap
         except:
             return "-"
@@ -552,169 +551,6 @@ class ScheduleAdmin(admin.ModelAdmin):
 admin.site.register(Schedule, ScheduleAdmin)
 
 
-def get_jira_settings():
-    """
-    This method retrieves the URL of the Jira server, the username and the password from the configuration file.
-    """
-
-    config = ConfigParser.ConfigParser()
-    config_path = os.path.abspath(os.path.join(path.dirname(__file__), '..', 'config.ini'))
-    config.read(config_path)
-
-    server = config.get('JIRA', 'server')
-    username = config.get('JIRA', 'username')
-    password = config.get('JIRA', 'password')
-    project_key = config.get('JIRA', 'project_key')
-
-    return server, username, password, project_key
-
-
-jira_server, username, password, project_key = get_jira_settings()
-
-jira_options = {
-    'server':          jira_server,
-    'verify':          False,
-    'get_server_info': False
-}
-
-
-def check_access():
-    try:
-        httplib.HTTPConnection(jira_server.split("/")[-1], timeout=1).request("HEAD", "/")
-        return True
-    except:
-        return False
-
-
-def initiate_jira():
-    from jira import JIRA
-
-    return JIRA(
-        options=jira_options,
-        basic_auth=(username, password)
-    )
-
-
-def initiate():
-    if check_access():
-        return initiate_jira()
-    return False
-
-
-def get_description(obj):
-    msg = '|*Test*|#%s: %s\n' % (str(obj.test_id), obj.test)
-    msg += '|*Machine*|%s\n' % obj.test_machine_ip
-    msg += '|*Browser*| %s ' % obj.browser.capitalize()
-    if obj.browser_ver:
-        msg += obj.browser_ver
-    msg += '|\n'
-    msg += '|*Operating System*| %s ' % obj.platform.capitalize()
-    if obj.platform_ver:
-        msg += obj.platform_ver
-    msg += '|\n'
-    if obj.note:
-        msg += '|*Note*|%s|\n' % obj.note
-    if obj.console_log:
-        msg += '*Console Log:*\n{noformat}%s{noformat}\n' % obj.console_log
-    if obj.output:
-        msg += '*Output:*\n{noformat}%s{noformat}\n' % obj.output
-    msg += '*/OptiRun*'
-    return msg
-
-
-def search(jira_instance, obj):
-    """
-    This method uses the JIRA REST API to search for issues that matches the search string that includes the ID and the
-    title of the test, and returns a list of any matching results.
-    """
-
-    try:
-        return jira_instance.search_issues(
-            'project=%s '
-            'AND reporter = currentUser() '
-            'AND status != Closed '
-            'AND type = Bug '
-            'AND summary ~ "OptiRun: %s (%s) FAILED" '
-            % (project_key, obj.test, str(obj.test_id))
-        )
-    except:
-        return False
-
-
-def create(jira_instance, obj):
-    """
-    This method uses the JIRA REST API to create a new issue.
-    """
-
-    try:
-        jira_instance.create_issue(
-            project=project_key,
-            summary='OptiRun: %s (%s) FAILED' % (obj.test, str(obj.test_id)),
-            description='*_Produced %s._*\n\n' % obj.end_time.strftime("%d.%m.%Y %H:%M") + get_description(obj),
-            issuetype={'name': 'Bug'},
-            components=[{'name': 'web'}],
-            labels=[{'name': 'optirun'}]
-        )
-        return True
-    except:
-        return False
-
-
-def comment(jira_instance, issue, obj):
-    """
-    This method uses the JIRA REST API to search for issues that matches the search string that includes the ID and the
-    title of the test, and returns a list of any matching results.
-    """
-
-    try:
-        msg = '*_Reproduced %s._*\n\n' % obj.end_time.strftime("%d.%m.%Y %H:%M")
-        msg += get_description(obj)
-        jira_instance.add_comment(issue.id, msg)
-        return True
-    except:
-        return False
-
-
-def report(obj):
-    """
-    This method uses the search method to find out if there are any non-closed issues regarding the same failed
-    test. A comment saying that the problem has been reproduced is posted on any existing issues. If the search does
-    not return any issues, a new issue is created.
-    """
-
-    jira_instance = initiate()
-    if jira_instance:
-        search_res = search(jira_instance, obj)
-        if search_res:
-            for issue in search_res:
-                if not comment(jira_instance, issue, obj):
-                    return create(jira_instance, obj)
-            return True
-        else:
-            return create(jira_instance, obj)
-    else:
-        return False
-
-
-def get_issues(obj):
-    """
-    This method uses the search method to find any existing non-closed issues regarding a specific test, and returns
-    a dictionary of relevant information about them.
-    """
-
-    jira_instance = initiate()
-    if jira_instance:
-        try:
-            return [{'key': item.key, 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
-            # return [{'key': item.key, 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
-            # return [{'key': "%s (%s)" % (item.key, item.status), 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
-            # return [{'key': item.key + item.fields.status, 'url': '%s/browse/%s' % (jira_server, item.key)} for item in search(jira_instance, obj)]
-        except:
-            return False
-    else:
-        return False
-
-
 class LogResultFilter(SimpleListFilter):
     title = 'Result'
     parameter_name = 'result'
@@ -778,13 +614,21 @@ class LogAdmin(admin.ModelAdmin):
     )
 
     def get_fieldsets(self, request, obj=None):
+        tmp_list = ['test', 'result_display', 'get_jira_issues']
+        if obj.note:
+            tmp_list.append('note')
+
         fieldsets = [
-            (None,               {'fields': ['test', 'result_display', 'get_jira_issues', 'note']}),
-            ('Test Environment', {'fields': ['browser_version_display', 'platform_display', 'test_machine_ip']}),
-            ('Time',             {'fields': ['start_time', 'end_time', 'duration']}),
+            (None,               {'fields': tmp_list}),
         ]
 
-        if obj.console_log:
+        if obj.result is not None:
+            fieldsets += [('Test Environment', {'fields': ['browser_version_display', 'platform_display', 'test_machine_ip']})]
+        fieldsets += [('Time',             {'fields': ['start_time', 'end_time', 'duration']})]
+
+        if obj.result is False and obj.console_log:
+            fieldsets += [('Console Log', {'fields': ['console_log_display']})]
+        elif obj.result is True and obj.console_log:
             fieldsets += [('Console Log', {'fields': ['console_log_display'], 'classes': ['collapse']})]
 
         if obj.output:
@@ -817,19 +661,12 @@ class LogAdmin(admin.ModelAdmin):
     ]
 
     def get_jira_issues(self, obj):
-        issues = get_issues(obj)
-
+        issues = get_jira_issue_list(get_jira_search_result(obj))
         if issues:
-            ret_str = ''
-            for i, issue in enumerate(issues):
-                ret_str += '<a href="%s" target="_blank">%s</a>' % (issue['url'], issue['key'])
-                if i < len(issues) - 2:
-                    ret_str += ', '
-            return ret_str
+            return "</br>".join(['<a href="%s" target="_blank">%s (%s)</a>' % (issue['url'], issue['key'], issue['status']) for issue in issues])
         elif issues is False:
-            return '<span class="red"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Contact with JIRA server could not be established.</span>'
+            return '<span class="red">Something went wrong.</span>'
         return '-'
-
     get_jira_issues.short_description = "JIRA Issues"
     get_jira_issues.allow_tags = True
 
@@ -1130,3 +967,124 @@ class TestMachineAdmin(admin.ModelAdmin):
         obj.save()
 
 admin.site.register(TestMachine, TestMachineAdmin)
+
+
+""" JIRA """
+
+
+def get_jira_settings():
+    config = ConfigParser.ConfigParser()
+
+    config_path = path.abspath(path.join(path.dirname(__file__), '..', 'config.ini'))
+    config.read(config_path)
+
+    return (
+        config.get('JIRA', 'server'),
+        config.get('JIRA', 'project'),
+        config.get('JIRA', 'project_key'),
+        config.get('JIRA', 'username'),
+        config.get('JIRA', 'password')
+    )
+
+jira_server, jira_project, jira_project_key, jira_username, jira_password = get_jira_settings()
+
+
+def get_jira_instance():
+    from jira import JIRA
+    return JIRA(
+        options={
+            'server'         : jira_server,
+            'verify'         : False,
+            'get_server_info': False
+        },
+        basic_auth=(jira_username, jira_password)
+    )
+
+jira_instance = get_jira_instance()
+
+
+def get_jira_search_result(obj, additional=""):
+    return jira_instance.search_issues(
+        'project = %s '
+        'AND reporter = currentUser() '
+        'AND type = Bug '
+        'AND summary ~ "OptiRun: %s (%s) FAILED"'
+        '%s '
+        'order by status ASC'
+        % (jira_project, obj.test, str(obj.test_id), additional)
+    )
+
+
+def get_jira_issue_list(search_result):
+    return [{
+                'key': item.key,
+                'url': '%s/browse/%s' % (jira_server, item.key),
+                'status': item.fields.status,
+            } for item in search_result]
+
+
+def report(obj):
+    """
+    This method uses the search method to find out if there are any non-closed issues regarding the same failed
+    test. A comment saying that the problem has been reproduced is posted on any existing issues. If the search does
+    not return any issues, a new issue is created.
+    """
+
+    search_res = get_jira_search_result(obj, 'AND status not in (Done, Closed)')
+    if search_res:
+        for issue in search_res:
+            if not comment(issue, obj):
+                return create(obj)
+        return True
+    else:
+        return create(obj)
+
+
+def create(obj):
+    """
+    This method uses the JIRA REST API to create a new issue.
+    """
+
+    try:
+        jira_instance.create_issue(
+            project=jira_project_key,
+            summary='OptiRun: %s (%s) FAILED' % (obj.test, str(obj.test_id)),
+            description='*_Produced %s._*\n\n' % obj.end_time.strftime("%d.%m.%Y %H:%M") + get_description(obj),
+            issuetype={'name': 'Bug'},
+            components=[{'name': 'web'}],
+            labels=['OptiRun']
+        )
+        return True
+    except:
+        return False
+
+
+def comment(issue, obj):
+    try:
+        msg = '*_Reproduced %s._*\n\n' % obj.end_time.strftime("%d.%m.%Y %H:%M")
+        msg += get_description(obj)
+        jira_instance.add_comment(issue.id, msg)
+        return True
+    except:
+        return False
+
+
+def get_description(obj):
+    msg = '|*Test*|%s\n' % obj.test
+    msg += '|*Machine*|%s\n' % obj.test_machine_ip
+    msg += '|*Browser*| %s ' % obj.browser.capitalize()
+    if obj.browser_ver:
+        msg += obj.browser_ver
+    msg += '|\n'
+    msg += '|*Operating System*| %s ' % obj.platform.capitalize()
+    if obj.platform_ver:
+        msg += obj.platform_ver
+    msg += '|\n'
+    if obj.note:
+        msg += '|*Note*|%s|\n' % obj.note
+    if obj.console_log:
+        msg += '*Console Log:*\n{noformat}%s{noformat}\n' % obj.console_log
+    if obj.output:
+        msg += '*Output:*\n{noformat}%s{noformat}\n' % obj.output
+    msg += '*/OptiRun*'
+    return msg

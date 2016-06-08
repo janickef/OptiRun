@@ -17,14 +17,17 @@ from optix import OptiX
 import django
 from django.utils import timezone
 
+project_path = os.path.abspath(os.path.join(sys.path[0], '..', '..'))
+
+if project_path not in sys.path:
+    sys.path.append(project_path)
+
 os.environ['PYTHONPATH'] = os.path.abspath(os.path.join(sys.path[0], '..', '..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dashboard.settings'
 
 django.setup()
 
 from testautomation.models import Log
-
-print "lakjdsgf"
 
 class Executor:
     def __init__(self, test_machine_manager):
@@ -227,6 +230,9 @@ class Executor:
         #script_path.replace('\f', '\\f')
         p = Popen(['python', script_path, json_data], shell=True, stderr=PIPE, stdout=PIPE)
         output, error = p.communicate()
+
+        print "ERROR:", error
+        print "OUTPUT:", output
 
         try:
             result = error.splitlines()[-3]
