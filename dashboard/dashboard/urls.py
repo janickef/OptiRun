@@ -34,4 +34,5 @@ if settings.DEBUG is False:   #if DEBUG is True it will be served automatically
         url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     )
 
+admin.site.site_title = 'OptiRun'
 admin.site.site_header = 'OptiRun'

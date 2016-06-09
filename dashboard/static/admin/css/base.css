@@ -43,7 +43,13 @@ a.section:focus, a.section:hover {
 
 /* GLOBAL DEFAULTS */
 
+/*
 p, ol, ul, dl {
+    margin: .2em 0 .8em 0;
+}
+*/
+
+p, ol, dl {
     margin: .2em 0 .8em 0;
 }
 

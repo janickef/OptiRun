@@ -1,21 +1,117 @@
 {% extends "admin/base_site.html" %}
 
+{% block extrastyle %}
+    <link href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Orbitron&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="{{ STATIC_URL }}extra.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}js/toggles.js" language="JavaScript" type="text/javascript"></script>
+{% endblock %}
+
 {% block breadcrumbs %}
-<div class="breadcrumbs">
-<a href="/admin/">Home</a>
-› Download
-</div>
+    <div class="breadcrumbs">
+    <a href="/admin/">Home</a>
+    › Download
+    </div>
 {% endblock %}
 
 {% block content %}
-<!--<h1>Downloads</h1>-->
 
-<div id="error">
-    <h1>DOWNLOADS</h1>
-    <p>Not Finished</p>
-    <a href="/files/selenium-template.py" download="Selenium Template">Download Selenium Test Script Template</a>
+<div class="static-pg">
+    <h1>Downloads</h1>
 
-    <a href="/files/linux.zip" download="OptiRun Test Machine (Linux)">Linux</a>
-    <a href="/files/windows.zip" download="OptiRun Test Machine (Windows)">Windows</a>
+    <hr style="height:3pt;"/>
+
+    <h2><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&ensp;Test Script Template</h2>
+
+    <br>
+
+    <p class="download-btn">
+        <a href="/files/test-script-template.py" download="Selenium Template.py">
+            <i class="fa fa-download" aria-hidden="true"></i>&ensp;
+            Download Test Script Template
+        </a>
+    </p>
+
+    <br>
+
+    <p>This test script template should be strictly conformed to for test scripts uploaded to OptiRun.</p>
+
+    <br>
+
+    <h2><i class="fa fa-windows" aria-hidden="true"></i>&ensp;Windows Test Machine</h2>
+
+    <br>
+
+    <p class="download-btn">
+        <a href="/files/windows.zip" download="OptiRun Test Machine.zip">
+            <i class="fa fa-download" aria-hidden="true"></i>&ensp;
+            Download OptiRun Test Machine package for Windows
+        </a>
+    </p>
+
+    <br>
+
+    <h3>Instructions</h3>
+
+    <ol>
+        <li>Unzip downloaded archive file</li>
+        <li>Double-click <B>OptiRun Test Machine.bat</B></li>
+    </ol>
+
+    <h3>Trouble-Shooting</h3>
+
+    <p>These steps can be of help if it doesn't work as it should:</p>
+
+    <ul class="troubleshooting">
+        <li>
+            To run tests in Internet Explorer, Protected Mode must be set to the same value (enabled or disabled) for all
+            zones. Click <B>Internet Options</B> from Internet Explorer's settings menu, select the <B>Security</B> tab,
+            and either check or uncheck <B>Enable Protected Mode</B> for all zones.
+        </li>
+        <li>
+            WebDriver files may not match your installed browsers. Click <I><B><a href="http://www.seleniumhq.org/download/">here</a></B></I>
+            for information about drivers for Chrome, Internet Explorer and Microsoft Edge. The drivers are located in the
+            <B>drivers/</B> directory of the archive file, and can be replaced if necessary (but do not change their names).
+        </li>
+        <li>
+            Your Selenium installation might be out of date. Open a command prompt and enter <B>pip install -U selenium</B>.
+        </li>
+        <li>
+            The OptiRun server may have been moved to a new location since you downloaded your Test Machine package. Open the
+            OptiRun user interface and download a new package.
+        </li>
+        <li>
+            Java may not be installed. Click <I><B><a href="https://java.com/en/download/">here</a></B></I> to download Java.
+        </li>
+        <li>
+            Python 2.7.x might not be installed. Click <I><B><a href="https://www.python.org/downloads/release/python-2711/">
+            here</a></B></I> to download Python 2.7.11.
+        </li>
+    </ul>
+
+    <br>
+
+    <h2><i style="font-size:20px" class="fa fa-linux fa-4" aria-hidden="true"></i>&ensp;Linux Test Machine</h2>
+
+    <br>
+
+    <p class="download-btn">
+        <a href="/files/linux.zip" download="OptiRun Test Machine.zip">
+            <i class="fa fa-download" aria-hidden="true"></i>&ensp;
+            Download OptiRun Test Machine package for Linux
+        </a>
+    </p>
+
+    <br>
+
+    <h3>Instructions</h3>
+    <ol>
+        <li>Unzip downloaded archive file</li>
+        <li>Open terminal in the directory, and enter <B>sudo sh "OptiRun Test Machine.sh"</B></li>
+    </ol>
 </div>
 {% endblock %}

@@ -75,6 +75,7 @@ div.breadcrumbs {
 
 #branding h1 a:focus, #branding h1 a:hover {
     color: #6C9CB4;
+    text-decoration: none;
 }
 
 #header {
@@ -372,6 +373,11 @@ html, body, #container {
     top: 128px;
 }
 
+#menubar ul {
+    padding: 0;
+    margin: 0;
+}
+
 ul {
     -webkit-padding-start: 0px;
     -webkit-margin-before: 0px;
@@ -398,6 +404,10 @@ ul {
     float: right;
 }
 
+#menubar #auth-nested ul, #menubar #testautomation-nested ul {
+    margin: 0;
+}
+
 #menubar ul li:hover, #menubar #auth-nested li:hover, #menubar #testautomation-nested li:hover {
     background: #eee;
     color: #666;
@@ -411,7 +421,7 @@ ul {
 
 #menubar #auth-nested li, #menubar #testautomation-nested li {
     background: #ddd;
-    padding-left: 25px;
+    padding-left: 50px;
 }
 
 .deletelink {
@@ -498,4 +508,32 @@ table.intermediate td {
 
 .submit-row a.deletelink:focus, .submit-row a.deletelink:hover, .submit-row a.deletelink:active {
     background: #6C9CB4;
+}
+
+.download-btn a {
+    background: #777;
+    margin: 0 0 0 8px;
+    height: 15px;
+    color: white;
+    border-radius: 4px;
+    padding: 10px 15px;
+    height: 15px;
+    line-height: 15px;
+}
+
+.download-btn a:hover {
+    background: #555;
+}
+
+.troubleshooting {
+    margin: .2em 0 .8em 0;
+    padding-left: 40px;
+}
+
+.troubleshooting ul {
+    list-style-type: disc;
+}
+
+.static-pg {
+    max-width: 700px;
 }

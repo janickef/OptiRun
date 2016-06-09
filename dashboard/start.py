@@ -34,7 +34,8 @@ if __name__ == "__main__":
     connect_to = ip + ":" + port
 
     start_process(['python', current_folder + '\manage.py', 'runserver', '10.0.0.4:80'], 0, PIPE)
+    #start_process(['python', current_folder + '\manage.py', 'runserver', '152.94.145.41:80'], 0, PIPE)
     #start_process(['python', current_folder + '\manage.py', 'runserver', connect_to], CREATE_NEW_CONSOLE, None)
     #Popen(['python', current_folder + '\manage.py', 'runserver', connect_to], stderr=PIPE)
     #Popen(['python', current_folder + '\manage.py', 'runserver', '--insecure', connect_to], creationflags=CREATE_NEW_CONSOLE)
-    start_process(['python', current_folder + '\controller\hub\controller.py'], 0, PIPE)
+    #start_process(['python', current_folder + '\controller\hub\controller.py'], 0, PIPE)

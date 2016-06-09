@@ -8,10 +8,199 @@
 {% endblock %}
 
 {% block content %}
-<!--<h1>Help</h1>-->
+<div class="static-pg">
+    <h1>Help</h1>
 
-<div id="error">
-    <h1>HELP</h1>
-    <p>Not Finished</p>
+    <h2><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&ensp;General</h2>
+    <ul class="troubleshooting">
+        <li>
+            Test scripts used with OptiRun should strictly conform to the test script template found in the
+            <I><B><a href="{% url 'admin:index' %}download">Downloads</a></B></I> page.
+        </li>
+
+        <li>
+            Computers running Windows or Linux can be used as test machines. Test machine packages and setup
+            instructions are located in the <I><B><a href="{% url 'admin:index' %}download">Downloads</a></B></I> page.
+        </li>
+
+        <li>
+            Information about Selenium WebDriver and how to write Selenium test scripts can be found
+            <I><B><a href="http://www.seleniumhq.org/docs/03_webdriver.jsp">here</a></B></I>.
+        </li>
+    </ul>
+
+    <br>
+
+    <h3>Troubleshooting Windows Test Machine</h3>
+    <p>These steps can be of help if it doesn't work as it should:</p>
+    <ul class="troubleshooting">
+        <li>
+            To run tests in Internet Explorer, Protected Mode must be set to the same value (enabled or disabled) for all
+            zones. Click <B>Internet Options</B> from Internet Explorer's settings menu, select the <B>Security</B> tab,
+            and either check or uncheck <B>Enable Protected Mode</B> for all zones.
+        </li>
+        <li>
+            WebDriver files may not match your installed browsers. Click <I><B><a href="http://www.seleniumhq.org/download/">here</a></B></I>
+            for information about drivers for Chrome, Internet Explorer and Microsoft Edge. The drivers are located in the
+            <B>drivers/</B> directory of the archive file, and can be replaced if necessary (but do not change their names).
+        </li>
+        <li>
+            Your Selenium installation might be out of date. Open a command prompt and enter <B>pip install -U selenium</B>.
+        </li>
+        <li>
+            The OptiRun server may have been moved to a new location since you downloaded your Test Machine package. Open the
+            OptiRun user interface and download a new package.
+        </li>
+        <li>
+            Java may not be installed. Click <I><B><a href="https://java.com/en/download/">here</a></B></I> to download Java.
+        </li>
+        <li>
+            Python 2.7.x might not be installed. Click <I><B><a href="https://www.python.org/downloads/release/python-2711/">
+            here</a></B></I> to download Python 2.7.11.
+        </li>
+    </ul>
+
+    {% if perms.testautomation or perms.auth %}
+        <br>
+        <h2><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&ensp;User Manual</h2>
+
+        {% if perms.testautomation %}
+            {% if perms.testautomation.can_change_test_cases or perms.testautomation.can_add_test_cases %}
+                <h3>Writing and Uploading Test Scripts</h3>
+                <ol>
+                    <li>
+                        Test scripts used with OptiRun should strictly conform to the test script template found in the
+                        <I><B><a href="{% url 'admin:index' %}download">Downloads</a></B></I> page. Execute the script locally
+                        before uploading, to verify that it works.
+                    </li>
+                    <li>
+                        Go to the <I><B><a href="{% url 'admin:index' %}testautomation/testcase">Test Case</a></B></I> page and
+                        click <B>Add Test Case</B>.
+                    </li>
+                    <li>
+                        Give the test a suitable name, upload the test script and provide a description (optional).
+                    </li>
+                    <li>
+                        Test cases can be added to <I><B><a href="{% url 'admin:index' %}testautomation/group">Groups</a></B></I>.
+                    </li>
+                </ol>
+
+                <br>
+
+                <h3>Executing Tests</h3>
+                <ol>
+                    <li>
+                        Go to the <I><B><a href="{% url 'admin:index' %}testautomation/testcase">Test Case</a></B></I> page. Mark
+                        the test cases you want to execute, and select <B>Execute Now</B> from the <B>Actions</B> menu.
+                    </li>
+                    <li>
+                        Specify the environment you wish the tests should be executed in. You can select multiple browsers, but only
+                        one operating system for each test. Optionally, you can select the <i class="fa fa-random" aria-hidden="true"></i>
+                        symbol to allow the test to be executed in a random browser/operating system based on the available test
+                        machines.
+                    </li>
+                    <li>
+                        Click <B>Execute</B>.
+                    </li>
+                </ol>
+                <br>
+            {% endif %}
+
+            {% if perms.testautomation.can_change_schedules or perms.testautomation.can_add_schedules %}
+                <h3>Scheduling Tests</h3>
+                <ol>
+                    <li>
+                        Go to the <I><B><a href="{% url 'admin:index' %}testautomation/schedule">Schedule</a></B></I> page and
+                        click <B>Add Schedule</B>.
+                    </li>
+                    <li>
+                        Give the chedule a suitable title and set a start time. This will be the time of the first schedules
+                        execution.
+                    </li>
+                    <li>
+                        Check the <B>Repeat</B> checkbox if you wish for the schedule to repeat regularly. Specify recurrence
+                        pattern and whether the schedule should continue indefinitely or until a specified date.
+                    </li>
+                    <li>
+                        Add any test groups or individual tests you wish should be included in the schedule.
+                    </li>
+                    <li>
+                        Schedule items are activated upon creation, but can be deactivated from the <B>Actions</B> menu. Only
+                        activated will be executed as planned.
+                    </li>
+                </ol>
+                <br>
+            {% endif %}
+
+            {% if perms.testautomation.can_change_test_machines or perms.testautomation.can_add_test_machines %}
+                <h3>Managing Test Machines</h3>
+                <ol>
+                    <li>
+                        To register a new test machine, go to the
+                        <I><B><a href="{% url 'admin:index' %}testautomation/testmachine">Test Machine</a></B></I> page and
+                        click <B>Add Test Machine</B>. Enter the hostname of the test machine and hit <B>Save</B>.
+                    </li>
+                    <li>
+                        Test machines can be approved or disapproved from the <B>Actions</B> menu. When a test machine connects to
+                        the system, details regarding the installed browsers and the operating system are stored.
+                    </li>
+                    <li>
+                        Test machines that connects without being registered will automatically be disapproved. They must be
+                        approved before OptiRun can execute tests on them.
+                    </li>
+                </ol>
+                <br>
+            {% endif %}
+
+            {% if perms.testautomation.can_change_logs or perms.testautomation.can_add_logs %}
+                <h3>Test Results</h3>
+                <ul class="troubleshooting">
+                    <li>
+                        To view the results from test executions, go to the
+                        <I><B><a href="{% url 'admin:index' %}testautomation/log">Execution Log</a></B></I> page.
+                    </li>
+                    <li>
+                        Detailed information about each test execution can be found in the detail page of every execution.
+                    </li>
+                    <li>
+                        Failed executions can be automatically reported to JIRA from the log list. Mark the executions you want to
+                        report, and select <B>Report to JIRA</B> from the <B>Actions</B> menu. A comment saying that the bug has
+                        been reproduced will be left in any open JIRA issues on the selected tests. If there are none, a new issue
+                        will be created.
+                    </li>
+                    <li>
+                        A list of JIRA issues linked to each test in the execution log, as well as their statuses, is available in
+                        the log detail page.
+                    </li>
+                </ul>
+                <br>
+            {% endif %}
+        {% endif %}
+
+        {% if perms.auth %}
+        <h3>User Administration</h3>
+
+        <ul class="troubleshooting">
+            <li>Only superusers or users with special permissions can add, edit or delete other users.</li>
+            <li>Only users with staff status will be able to log into OptiRun</li>
+            <li>
+                To register a user, go to the <I><B><a href="{% url 'admin:index' %}auth/user">User</a></B></I> page and
+                click <B>Add User</B>. Enter the username and a password, and hit <B>Save</B>. This will lead you to a page
+                where more information can be added, including <I>active</I>, <I>staff</I> and <I>superuser</I> status and
+                user permissions. The password can later be changed by the user.
+            </li>
+            <li>
+                All passwords are encrypted with a strong encryption algorithm, and it will not be possible to extract
+                passwords from the database.
+            </li>
+            <li>
+                The content of the OptiRun web interface changes according to the permissions of the logged in user. For
+                instance, you can only see this user administration module because you are a superuser or a staff member
+                with administration privileges. Lucky you!
+            </li>
+        </ul>
+        {% endif %}
+    {% endif %}
+
 </div>
 {% endblock %}
