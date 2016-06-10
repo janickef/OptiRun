@@ -56,10 +56,8 @@ class BrowserRetrieverWindows:
         if ver:
             browsers['internet explorer'] = ver
 
-        ver = self.get_registry_value('HKEY_LOCAL_MACHINE', 'SOFTWARE\\Microsoft\\Edge', 'Version', 'edge')
-        print ver
-        if ver:
-            browsers['edge'] = ver
+        if os.path.isfile("C:\Windows\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\MicrosoftEdge.exe"):
+            browsers['microsoft edge'] = True
 
         return browsers
 
@@ -89,25 +87,28 @@ def get_selenium_path():
     try:
         print "Could not find Selenium Standalone Server. Attempting to download..."
         response = urllib2.urlopen(
-            "https://selenium-release.storage.googleapis.com/2.51/selenium-server-standalone-2.51.0.jar")
+            "https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.0.jar")
         CHUNK = 16 * 1024
-        with open(os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.51.0.jar')), 'wb') as f:
+        with open(os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.53.0.jar')), 'wb') as f:
             while True:
                 chunk = response.read(CHUNK)
                 if not chunk:
                     break
                 f.write(chunk)
         print "Finished downloading Selenium Standalone Server."
-        return os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.51.0.jar'))
+        return os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.53.0.jar'))
     except:
         print "Something went wrong while attempting to download Selenium Standalone Server. Exiting..."
 
 
-def get_driver(browser):
+def get_driver(browser, name=None):
     driver_dir = os.path.abspath(os.path.join(sys.path[0], 'drivers'))
     for f in os.listdir(driver_dir):
         if browser in f.lower():
-            return '-Dwebdriver.%s.driver="%s" ' % (browser, os.path.abspath(os.path.join(driver_dir, str(f))))
+            if name:
+                return '-Dwebdriver.%s.driver="%s" ' % (name, os.path.abspath(os.path.join(driver_dir, str(f))))
+            else:
+                return '-Dwebdriver.%s.driver="%s" ' % (browser, os.path.abspath(os.path.join(driver_dir, str(f))))
 
 
 def start_selenium_grid(browsers):
@@ -120,14 +121,16 @@ def start_selenium_grid(browsers):
     command = 'java -jar \"' + selenium_path + '\" '
     command += '-port %s ' % port
     command += '-hubHost %s ' % hub_host
-    #command += '-hubHost %s ' % '10.0.0.6'
     command += '-role webdriver '
     command += '-hostname %s ' % socket.gethostname()
     command += '-uuid %s ' % uu_id
     command += get_driver('ie')
     command += get_driver('chrome')
+    command += get_driver('microsoft', 'edge')
 
     for browser_name, version in browsers.iteritems():
+        if browser_name == 'microsoft edge':
+            browser_name = browser_name.title().replace(' ', '')
         command += '-browser \"browserName=' + browser_name
         if version is not True:
             command += ",version=" + version
@@ -142,16 +145,7 @@ def start_selenium_grid(browsers):
             print line.split('\n')[0]
 
 if __name__ == "__main__":
-    get_selenium_settings()
-    print socket.gethostbyname(socket.gethostname())
-
-    browser_retriever = None
-    browsers = {}
-
     browser_retriever = BrowserRetrieverWindows()
     browsers = browser_retriever.get_browsers()
-
-    for k, v in browser_retriever.get_browsers().iteritems():
-        print k, v
 
     start_selenium_grid(browsers)

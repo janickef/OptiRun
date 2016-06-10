@@ -25,11 +25,6 @@ class TestCase(models.Model):
     last_updated    = models.DateTimeField('Last Updated', auto_now=True)
     last_updated_by = models.ForeignKey(User, related_name='test_case_update')
 
-    # JIRA
-    #jira_priority   =
-
-    #jira_severity   =
-
     def __str__(self):
         return self.title
 
@@ -115,28 +110,28 @@ class Schedule(models.Model):
 @python_2_unicode_compatible
 class Log(models.Model):
     # Test
-    test_id         = models.IntegerField(editable=False)  # Integer and not ForeignKey because of cascading delete
-    test            = models.CharField('Test Case', max_length=80)
-    script_name     = models.CharField(max_length=200)
-    result          = models.NullBooleanField()
+    test_id               = models.IntegerField(editable=False)
+    test                  = models.CharField('Test Case', max_length=80)
+    script_name           = models.CharField(max_length=200)
+    result                = models.NullBooleanField()
 
     # Time
-    start_time      = models.DateTimeField()
-    end_time        = models.DateTimeField()
-    total_duration  = models.FloatField(null=True)
-    test_duration   = models.FloatField(null=True)
+    start_time            = models.DateTimeField()
+    end_time              = models.DateTimeField()
+    total_duration        = models.FloatField(null=True)
+    test_duration         = models.FloatField(null=True)
 
     # Environment
-    test_machine_ip = models.CharField('Test Machine IP', max_length=30, null=True, blank=True)
-    browser         = models.CharField(max_length=30, null=True, blank=True)
-    browser_ver     = models.CharField(max_length=30, null=True, blank=True)
-    platform        = models.CharField(max_length=30, null=True, blank=True)
-    platform_ver    = models.CharField(max_length=30, null=True, blank=True)
+    test_machine_hostname = models.CharField('Test Machine', max_length=30, null=True, blank=True)
+    browser               = models.CharField(max_length=30, null=True, blank=True)
+    browser_ver           = models.CharField(max_length=30, null=True, blank=True)
+    platform              = models.CharField(max_length=30, null=True, blank=True)
+    platform_ver          = models.CharField(max_length=30, null=True, blank=True)
 
     # Extra
-    note            = models.TextField(blank=True, null=True)
-    console_log     = models.TextField(blank=True, null=True)
-    output          = models.TextField(blank=True, null=True)
+    note                  = models.TextField(blank=True, null=True)
+    console_log           = models.TextField(blank=True, null=True)
+    output                = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.test
@@ -145,7 +140,7 @@ class Log(models.Model):
 @python_2_unicode_compatible
 class TestMachine(models.Model):
     # BASIC
-    hostname             = models.CharField(max_length=80)
+    hostname             = models.CharField(max_length=80, unique=True)
     ip                   = models.CharField('IP', max_length=80, null=True, blank=True)
     url                  = models.CharField('URL', editable=False, max_length=80, null=True, blank=True)
     uuid                 = models.CharField('UUID', editable=False, max_length=80, null=True, blank=True)

@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    alert();
     toggleDisabling($("#id_repeat"));
     toggleEndBy();
 

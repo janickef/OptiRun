@@ -40,16 +40,16 @@ def get_selenium_path():
 	try:
 		print "Could not find Selenium Standalone Server. Attempting to download..."
 		response = urllib2.urlopen(
-			"https://selenium-release.storage.googleapis.com/2.51/selenium-server-standalone-2.51.0.jar")
+			"https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.0.jar")
 		CHUNK = 16 * 1024
-		with open(os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.51.0.jar')), 'wb') as f:
+		with open(os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.53.0.jar')), 'wb') as f:
 			while True:
 				chunk = response.read(CHUNK)
 				if not chunk:
 					break
 				f.write(chunk)
 		print "Finished downloading Selenium Standalone Server."
-		return os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.51.0.jar'))
+		return os.path.abspath(os.path.join(sys.path[0], 'selenium-server-standalone-2.53.0.jar'))
 	except:
 		print "Something went wrong while attempting to download Selenium Standalone Server. Exiting..."
 

@@ -11,6 +11,8 @@
     <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
     <script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
     <script src="{{ STATIC_URL }}js/toggles.js" language="JavaScript" type="text/javascript"></script>
+
+    <link rel="shortcut icon" type="image/png" href="{{STATIC_URL}}admin/favicon.ico"/>
 {% endblock %}
 
 {% block title %}
@@ -81,7 +83,7 @@
                     </ul>
                 {% endif %}
 
-                <a href="/admin/download/"><li><i class="fa fa-download" aria-hidden="true"></i>&emsp;Download</li></a>
+                <a href="/admin/download/"><li><i class="fa fa-download" aria-hidden="true"></i>&emsp;Downloads</li></a>
                 <a href="/admin/about/"><li><i class="fa fa-dot-circle-o" aria-hidden="true"></i>&emsp;About</li></a>
                 <a href="/admin/help/"><li><i class="fa fa-info-circle" aria-hidden="true"></i>&emsp;Help</li></a>
             </ul>

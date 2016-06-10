@@ -106,7 +106,7 @@ class TestMachineManager:
 
             machines.append(TestMachineObj(
                 browsers,
-                machine.ip,
+                machine.hostname,
                 platform,
                 machine.url,
                 machine.uuid,

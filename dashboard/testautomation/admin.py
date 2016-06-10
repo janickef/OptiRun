@@ -4,7 +4,7 @@ import socket
 from datetime import datetime
 from os import path
 
-import urllib3
+#import urllib3
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
@@ -20,25 +20,33 @@ from django.utils import timezone
 from .forms import TestCaseAdminForm, ScheduleAdminForm
 from .models import TestCase, Group, Schedule, Log, TestMachine
 
-urllib3.disable_warnings()
-#logging.captureWarnings(True)
-
-browsers = ['chrome', 'edge', 'firefox', 'internet explorer']
+import logging
 
 
-def capability_version_display(attr, attr_ver):
+logging.captureWarnings(True)
+
+browsers = ['chrome', 'firefox', 'internet explorer', 'edge']
+
+
+def capability_version_display(attr, attr_ver, display_name=None):
     try:
-        ret_str = '<i class="fa fa-%s"></i> %s' % (attr.replace(" ", "-").lower(), attr.replace("-", " ").title())
-        if attr_ver:
+        if display_name:
+            ret_str = '<i class="fa fa-%s"></i> %s' % (attr.replace(" ", "-").lower(), display_name.replace("-", " ").title())
+        else:
+            ret_str = '<i class="fa fa-%s"></i> %s' % (attr.replace(" ", "-").lower(), attr.replace("-", " ").title())
+        if attr_ver and attr_ver != "True":
             ret_str += ' %s' % attr_ver
         return ret_str
     except:
         return "-"
 
 
-def capability_display(attr):
+def capability_display(attr, display_name=None):
     try:
-        return '<i class="fa fa-%s"></i> %s' % (attr.replace(" ", "-").lower(), attr.replace("-", " ").title())
+        if display_name:
+            return '<i class="fa fa-%s"></i> %s' % (attr.replace(" ", "-").lower(), display_name.replace("-", " ").title())
+        else:
+            return '<i class="fa fa-%s"></i> %s' % (attr.replace(" ", "-").lower(), attr.replace("-", " ").title())
     except:
         return "-"
 
@@ -185,7 +193,7 @@ class TestCaseAdmin(admin.ModelAdmin):
             prev = Log.objects.filter(test_id=obj.pk).exclude(result__isnull=True).order_by('-end_time').first()
             prev_time = prev.end_time.replace(tzinfo=timezone.utc).astimezone(timezone.get_current_timezone())
             formatted = formats.date_format(prev_time, "DATETIME_FORMAT")
-            tag_wrap = '<a href="/admin/test_automation/log/%d/change/" target="_blank">%s</a>' % (prev.pk, formatted)
+            tag_wrap = '<a href="/admin/testautomation/log/%d/change/" target="_blank">%s</a>' % (prev.pk, formatted)
             return tag_wrap
         except:
             return "-"
@@ -251,52 +259,6 @@ class TestCaseAdmin(admin.ModelAdmin):
 
     admin_action.short_description = 'Execute Now'
 
-    """
-    def execute_now(self, request, queryset):
-        response = HttpResponse(content_type="application/json")
-        serializers.serialize("json", queryset, stream=response)
-
-        data = []
-
-        for obj in queryset:
-            data.append({
-                'avg_duration': self.avg_dur(obj),
-                'browser':      'firefox',
-                'pk':           obj.pk,
-                'platform':     'any',
-                'script':       str(obj.script),
-                'title':        obj.title,
-            })
-
-        json_data = json.dumps(data)
-
-        #hostname, port = get_server_settings()
-        port = get_server_settings('request_port')
-
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((socket.gethostname(), port))
-            s.send(json_data)
-            s.close()
-
-            executions = len(queryset)
-            if executions == 1:
-                message_bit = "1 test case was"
-            else:
-                message_bit = "%s test cases were" % executions
-            self.message_user(
-                request,
-                "%s sent to server for execution." % message_bit
-            )
-        except:
-            self.message_user(
-                request,
-                "Selected test cases were not executed. Contact with server could not be established.",
-                level=messages.ERROR
-            )
-    """
-
-    # actions = [execute_now, admin_action]
     actions = [admin_action]
 
     # On save method for TestCaseAdmin
@@ -596,7 +558,7 @@ class LogAdmin(admin.ModelAdmin):
         return LogChangeList
 
     readonly_fields = (
-        'test',
+        'test_display',
         'result_display',
         'script_name',
         'start_time',
@@ -605,7 +567,7 @@ class LogAdmin(admin.ModelAdmin):
         'total_duration',
         'test_duration',
         'note',
-        'test_machine_ip',
+        'test_machine_hostname_display',
         'browser_version_display',
         'platform_display',
         'console_log_display',
@@ -614,17 +576,17 @@ class LogAdmin(admin.ModelAdmin):
     )
 
     def get_fieldsets(self, request, obj=None):
-        tmp_list = ['test', 'result_display', 'get_jira_issues']
+        tmp_list = ['test_display', 'result_display', 'get_jira_issues']
         if obj.note:
             tmp_list.append('note')
 
-        fieldsets = [
-            (None,               {'fields': tmp_list}),
-        ]
+        fieldsets = [(None, {'fields': tmp_list}),]
 
         if obj.result is not None:
-            fieldsets += [('Test Environment', {'fields': ['browser_version_display', 'platform_display', 'test_machine_ip']})]
-        fieldsets += [('Time',             {'fields': ['start_time', 'end_time', 'duration']})]
+            fieldsets += [('Test Environment', {'fields': ['browser_version_display', 'platform_display', 'test_machine_hostname_display']})]
+            fieldsets += [('Time',             {'fields': ['start_time', 'end_time', 'duration']})]
+        else:
+            fieldsets += [('Time', {'fields': ['start_time']})]
 
         if obj.result is False and obj.console_log:
             fieldsets += [('Console Log', {'fields': ['console_log_display']})]
@@ -660,16 +622,38 @@ class LogAdmin(admin.ModelAdmin):
         'platform'
     ]
 
+    def test_machine_hostname_display(self, obj):
+        model = TestMachine.objects.filter(hostname=obj.test_machine_hostname).first()
+        if model:
+            return '<a href="/admin/testautomation/testmachine/%d/change/" target="_blank"/>%s</a>' % (model.pk, model.hostname)
+        else:
+            return obj.test_machine_hostname
+    test_machine_hostname_display.short_description = "Test Machine"
+    test_machine_hostname_display.allow_tags = True
+
     def get_jira_issues(self, obj):
         issues = get_jira_issue_list(get_jira_search_result(obj))
         if issues:
-            return "</br>".join(['<a href="%s" target="_blank">%s (%s)</a>' % (issue['url'], issue['key'], issue['status']) for issue in issues])
+            return "</br>".join(['<a href="%s" target="_blank">%s</a> (%s)' % (issue['url'], issue['key'], issue['status']) for issue in issues])
         elif issues is False:
             return '<span class="red">Something went wrong.</span>'
         return '-'
     get_jira_issues.short_description = "JIRA Issues"
     get_jira_issues.allow_tags = True
 
+    def test_display(self, obj):
+        test = TestCase.objects.filter(pk=obj.test_id).first()
+        # return obj.test
+        if test:
+            string = obj.test
+            if obj.test != test.title:
+                string += " (Now: %s)" % test.title
+            tag_wrap = '<a href="/admin/testautomation/testcase/%d/change/" target="_blank">%s</a>' % (test.pk, string)
+            return tag_wrap
+        else:
+            return obj.test
+    test_display.allow_tags = True
+    test_display.short_description = "Test"
 
     def result_display(self, obj):
         return get_result(obj.result)
@@ -680,12 +664,14 @@ class LogAdmin(admin.ModelAdmin):
         return format_number(obj.test_duration)
 
     def browser_version_display(self, obj):
-        return capability_version_display(obj.browser, obj.browser_ver)
+        display_name = "microsoft edge" if obj.browser == "edge" else obj.browser
+        return capability_version_display(obj.browser, obj.browser_ver, display_name)
     browser_version_display.allow_tags = True
     browser_version_display.short_description = "Browser"
 
     def browser_display(self, obj):
-        return capability_display(obj.browser)
+        display_name = "microsoft edge" if obj.browser == "edge" else obj.browser
+        return capability_display(obj.browser, display_name)
     browser_display.allow_tags = True
     browser_display.short_description = "Browser"
 
@@ -755,15 +741,9 @@ class LogAdmin(admin.ModelAdmin):
 
     actions = [report_to_jira]
 
-    ###
     def has_add_permission(self, request):
         return False
 
-    # def has_delete_permission(self, request, obj=None):
-    #     return False
-
-    """def has_change_permission(self, request, obj=None):
-        return False"""
 
 admin.site.register(Log, LogAdmin)
 
@@ -781,7 +761,6 @@ class TestMachineBrowserFilter(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        queryset = queryset.filter(active=True)
         if self.value() == 'CHROME':
             return queryset.filter(chrome__isnull=False)
         elif self.value() == 'EDGE':
@@ -819,14 +798,6 @@ class TestMachineAdmin(admin.ModelAdmin):
     def get_changelist(self, request, **kwargs):
         return TestMachineChangeList
 
-    readonly_fields = [
-        'url',
-        'uuid',
-        'active',
-        'platform_display',
-        'browsers_display',
-    ]
-
     def get_fieldsets(self, request, obj=None):
         if obj is None:
             return [
@@ -836,6 +807,18 @@ class TestMachineAdmin(admin.ModelAdmin):
             (None, {'fields': ['hostname', 'approved']}),
             (None, {'fields': ['active', 'platform_display', 'browsers_display']}),
         ]
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_list = [
+            'url',
+            'uuid',
+            'active',
+            'platform_display',
+            'browsers_display',
+        ]
+        if obj is not None:
+            readonly_list += ['hostname',]
+        return readonly_list
 
     search_fields = [
         'hostname',
@@ -857,25 +840,23 @@ class TestMachineAdmin(admin.ModelAdmin):
     ]
 
     def hostname_display(self, obj):
-        #return obj.hostname.upper()
         return obj.hostname
     hostname_display.short_description = "Hostname"
 
     def browsers_list_display(self, obj):
         ret_str = ''
-        if obj.active:
-            if obj.chrome:
-                hint = '%s %s' % (browsers[0].title(), obj.chrome if obj.chrome is not True else '')
-                ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[0], hint)
-            if obj.edge:
-                hint = '%s %s' % (browsers[1].title(), obj.edge if obj.edge is not True else '')
-                ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[1], hint)
-            if obj.firefox:
-                hint = '%s %s' % (browsers[2].title(), obj.firefox if obj.firefox is not True else '')
-                ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[2], hint)
-            if obj.internet_explorer:
-                hint = '%s %s' % (browsers[3].title(), obj.internet_explorer if obj.internet_explorer is not True else '')
-                ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[3].replace(' ', '-'), hint)
+        if obj.chrome:
+            hint = '%s %s' % (browsers[0].title(), obj.chrome if obj.chrome is not True else '')
+            ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[0], hint)
+        if obj.firefox:
+            hint = '%s %s' % (browsers[1].title(), obj.firefox if obj.firefox is not True else '')
+            ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[1], hint)
+        if obj.internet_explorer:
+            hint = '%s %s' % (browsers[2].title(), obj.internet_explorer if obj.internet_explorer is not True else '')
+            ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[2].replace(' ', '-'), hint)
+        if obj.edge:
+            hint = '%s' % ('Microsoft ' + browsers[3].title())
+            ret_str += '<i class="fa fa-%s" title="%s"></i> ' % (browsers[3], hint)
         if not ret_str:
             ret_str = '-'
         return ret_str
@@ -884,19 +865,18 @@ class TestMachineAdmin(admin.ModelAdmin):
 
     def browsers_display(self, obj):
         tmp_browsers = []
-        if obj.active:
-            if obj.chrome:
-                hint = '%s %s' % (browsers[0].title(), obj.chrome if obj.chrome is not True else '')
-                tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[0], hint))
-            if obj.edge:
-                hint = '%s %s' % (browsers[1].title(), obj.edge if obj.edge is not True else '')
-                tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[1], hint))
-            if obj.firefox:
-                hint = '%s %s' % (browsers[2].title(), obj.firefox if obj.firefox is not True else '')
-                tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[2], hint))
-            if obj.internet_explorer:
-                hint = '%s %s' % (browsers[3].title(), obj.internet_explorer if obj.internet_explorer is not True else '')
-                tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[3].replace(' ', '-'), hint))
+        if obj.chrome:
+            hint = '%s %s' % (browsers[0].title(), obj.chrome if obj.chrome is not True else '')
+            tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[0], hint))
+        if obj.firefox:
+            hint = '%s %s' % (browsers[1].title(), obj.firefox if obj.firefox is not True else '')
+            tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[1], hint))
+        if obj.internet_explorer:
+            hint = '%s %s' % (browsers[2].title(), obj.internet_explorer if obj.internet_explorer is not True else '')
+            tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[2].replace(' ', '-'), hint))
+        if obj.edge:
+            hint = '%s' % ('Microsoft ' + browsers[3].title())
+            tmp_browsers.append('<i class="fa fa-%s"></i> %s' % (browsers[3], hint))
         if tmp_browsers:
             return "<br>".join(tmp_browsers)
         else:
@@ -1071,13 +1051,13 @@ def comment(issue, obj):
 
 def get_description(obj):
     msg = '|*Test*|%s\n' % obj.test
-    msg += '|*Machine*|%s\n' % obj.test_machine_ip
-    msg += '|*Browser*| %s ' % obj.browser.capitalize()
-    if obj.browser_ver:
+    msg += '|*Machine*|%s\n' % obj.test_machine_hostname
+    msg += '|*Browser*| %s ' % "Microsoft Edge" if obj.browser == "edge" else obj.browser.capitalize()
+    if obj.browser_ver and obj.browser_ver != "True":
         msg += obj.browser_ver
     msg += '|\n'
     msg += '|*Operating System*| %s ' % obj.platform.capitalize()
-    if obj.platform_ver:
+    if obj.platform_ver and obj.platform_ver != "True":
         msg += obj.platform_ver
     msg += '|\n'
     if obj.note:

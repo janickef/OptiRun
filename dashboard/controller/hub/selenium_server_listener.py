@@ -43,16 +43,16 @@ class SeleniumHub:
                 return path.abspath(path.join(self._controller_path, str(f)))
         try:
             print "Could not find Selenium Standalone Server. Attempting to download..."
-            response = urllib2.urlopen("https://selenium-release.storage.googleapis.com/2.51/selenium-server-standalone-2.51.0.jar")
+            response = urllib2.urlopen("https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.0.jar")
             CHUNK = 16 * 1024
-            with open(path.abspath(path.join(self._controller_path, 'selenium-server-standalone-2.51.0.jar')), 'wb') as f:
+            with open(path.abspath(path.join(self._controller_path, 'selenium-server-standalone-2.53.0.jar')), 'wb') as f:
                 while True:
                     chunk = response.read(CHUNK)
                     if not chunk:
                         break
                     f.write(chunk)
             print "Finished downloading Selenium Standalone Server."
-            return path.abspath(path.join(self._controller_path, 'selenium-server-standalone-2.51.0.jar'))
+            return path.abspath(path.join(self._controller_path, 'selenium-server-standalone-2.53.0.jar'))
         except:
             print "Something went wrong while attempting to download Selenium Standalone Server. Exiting..."
         exit()

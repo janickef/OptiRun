@@ -1,5 +1,9 @@
 {% extends "admin/base_site.html" %}
 
+{% block title %}
+    404 | {{ site_title|default:_('OptiRun') }}
+{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs">404</div>
 {% endblock %}

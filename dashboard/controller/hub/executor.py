@@ -143,7 +143,13 @@ class Executor:
         if non_executables:
             t = timezone.now()
             for test in non_executables:
-                note = "Not executed"
+                note = (
+                    'Because no test machine matched the desired test environment at the time, '
+                    'this test was not executed.'
+                    '\nDesired browser: %s'
+                    '\nDesired OS: %s'
+                    % (test.browser.title(), test.platform.title())
+                )
                 self.report_results(test, t, t, note, None, None, None, None, None, None, None, None, None, None)
 
         if len(tests) == len(non_executables):
@@ -191,7 +197,7 @@ class Executor:
 
             self.report_results(
                 test, start_time, end_time, None, result, test_duration, precise_duration,
-                output, console_log, allocation['machine'].ip, test.browser, browser_ver,
+                output, console_log, allocation['machine'].hostname, test.browser, browser_ver,
                 allocation['machine'].platform['os'], allocation['machine'].platform['version']
             )
 
@@ -213,9 +219,8 @@ class Executor:
         """
 
         command_executor = 'http://%s:%s/wd/hub' % (socket.gethostname(), self._hub_port)
-
         desired_capabilities = {
-            'browserName'    : test.browser,
+            'browserName'    : "MicrosoftEdge" if test.browser == "edge" else test.browser,
             'applicationName': app_name
         }
 
@@ -253,7 +258,7 @@ class Executor:
 
     @staticmethod
     def report_results(test, start_time, end_time, note, result, duration, total_duration,
-                       output, console_log, ip, browser, browser_ver, platform, platform_ver):
+                       output, console_log, hostname, browser, browser_ver, platform, platform_ver):
         """
         This method creates a new 'Log' instance and saves it to the database using Django's database API
         """
@@ -269,7 +274,7 @@ class Executor:
             note=note,
             output=output,
             console_log=console_log,
-            test_machine_ip=ip,
+            test_machine_hostname=hostname,
             browser=browser,
             browser_ver=browser_ver,
             platform=platform,

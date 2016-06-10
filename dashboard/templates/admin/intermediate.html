@@ -18,10 +18,8 @@
 {% block content %}
 <form action="" method="post">{% csrf_token %}
     <div id="intermediate-container">
-        <p>Select which browsers and platforms you want each test case to be executed on. If no browsers are selected
-            for a given test case, a browser and platform will be selected at random based on the current pool of
-            available test machines.</p>
-
+        <p>Select which browsers and platforms you want the tests to be executed on. If no browsers are selected, a
+            browser and platform will be selected at random based on the current pool of available test machines.</p>
 
         <table class="intermediate">
             <thead>

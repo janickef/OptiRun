@@ -9,6 +9,12 @@
     <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
     <script language="JavaScript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
     <script src="{{ STATIC_URL }}js/toggles.js" language="JavaScript" type="text/javascript"></script>
+
+    <link rel="shortcut icon" type="image/png" href="{{STATIC_URL}}admin/favicon.ico"/>
+{% endblock %}
+
+{% block title %}
+    Downloads | {{ site_title|default:_('OptiRun') }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -62,7 +68,7 @@
         <li>Double-click <B>OptiRun Test Machine.bat</B></li>
     </ol>
 
-    <h3>Trouble-Shooting</h3>
+    <h3>Troubleshooting</h3>
 
     <p>These steps can be of help if it doesn't work as it should:</p>
 

@@ -1,8 +1,8 @@
 class TestMachineObj:
 
-    def __init__(self, browsers, ip, platform, url, uuid):
+    def __init__(self, browsers, hostname, platform, url, uuid):
         self._browsers = browsers
-        self._ip       = ip
+        self._hostname       = hostname
         self._platform = platform
         self._url      = url
         self._uuid     = uuid
@@ -12,8 +12,8 @@ class TestMachineObj:
         return self._browsers
 
     @property
-    def ip(self):
-        return self._ip
+    def hostname(self):
+        return self._hostname
 
     @property
     def platform(self):
@@ -29,4 +29,4 @@ class TestMachineObj:
 
     def __str__(self):
         return "%s, %s, %s, %s, %s"\
-               % (str(self._platform), self._ip, self._url, str(self._browsers), self._uuid)
+               % (str(self._platform), self._hostname, self._url, str(self._browsers), self._uuid)
